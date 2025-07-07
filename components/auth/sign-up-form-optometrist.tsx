@@ -1,7 +1,6 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { getURL } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -46,15 +45,13 @@ export function SignUpFormOptometrist({
       setIsLoading(false);
       return;
     }
-    const redirectUrl = `${getURL()}auth/sign-up/optometrist`;
-    console.log("Redirect URL for Sign Up:", redirectUrl);
 
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
+          emailRedirectTo: `${window.location.origin}/auth/sign-up/optometrist`,
         },
       });
 
