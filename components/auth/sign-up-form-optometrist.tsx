@@ -46,7 +46,7 @@ export function SignUpFormOptometrist({
       setIsLoading(false);
       return;
     }
-    const redirectUrl = `${getURL()}/auth/sign-up/optometrist`;
+    const redirectUrl = `${getURL()}auth/sign-up/optometrist`;
     console.log("Redirect URL for Sign Up:", redirectUrl);
 
     try {

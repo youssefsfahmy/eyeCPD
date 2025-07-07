@@ -52,7 +52,7 @@ export function LoginForm() {
     setIsGoogleLoading(true);
     setError(null);
 
-    const redirectUrl = `${getURL()}/auth/confirm`;
+    const redirectUrl = `${getURL()}auth/confirm`;
 
     try {
       console.log("Redirect URL for Google Sign In:", redirectUrl);
