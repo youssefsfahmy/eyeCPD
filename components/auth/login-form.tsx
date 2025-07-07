@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { getURL } from "@/lib/utils";
 import {
   Box,
   Button,
@@ -51,12 +52,14 @@ export function LoginForm() {
     setIsGoogleLoading(true);
     setError(null);
 
+    const redirectUrl = `${getURL()}/auth/confirm`;
+
     try {
-      console.log(`${window.location.origin}/auth/confirm`);
+      console.log("Redirect URL for Google Sign In:", redirectUrl);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/confirm`,
+          redirectTo: redirectUrl,
         },
       });
       if (error) throw error;
