@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -8,52 +8,80 @@ import {
   Alert,
   Box,
   CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import Link from "next/link";
+import { ProfileData } from "@/lib/types/profile";
+import { useProfile } from "@/lib/hooks/use-profile";
+type ProfileDataState = Omit<ProfileData, "createdAt" | "updatedAt" | "id">;
 
 export default function CompleteProfileStep() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [userData] = useState({
+  const {
+    profile: fetchedProfile,
+    user,
+    error: profileError,
+    fetchProfile,
+    updateProfile,
+  } = useProfile();
+  const [profile, setProfile] = useState<ProfileDataState>({
     firstName: "",
     lastName: "",
+    phone: "",
     registrationNumber: "",
-    qualifications: "",
+    role: "optometrist",
+    userId: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [initialLoading, setInitialLoading] = useState(true);
 
-  const handleInputChange =
-    (field: string) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      console.log("Input changed:", e.target.value, field);
-      setError("");
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setInitialLoading(true);
+        await fetchProfile();
+      } catch (error) {
+        console.error("Error loading profile:", error);
+        setError("Failed to load profile data");
+      } finally {
+        setInitialLoading(false);
+      }
     };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSelectChange = (field: string) => (event: any) => {
-    console.log("Selected value:", event.target.value, field);
+
+    loadProfile();
+  }, [fetchProfile]);
+
+  useEffect(() => {
+    if (fetchedProfile) {
+      setProfile(fetchedProfile);
+    }
+  }, [fetchedProfile]);
+
+  useEffect(() => {
+    if (profileError) {
+      setError(profileError);
+    }
+  }, [profileError]);
+
+  const handleInputChange = (field: keyof ProfileData, value: string) => {
+    setProfile((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
     setError("");
   };
 
   const handleComplete = async () => {
     // Validation
-    if (!userData.firstName.trim()) {
+    if (!profile.firstName.trim()) {
       setError("First name is required");
       return;
     }
-    if (!userData.lastName.trim()) {
+    if (!profile.lastName.trim()) {
       setError("Last name is required");
       return;
     }
-    if (!userData.registrationNumber.trim()) {
+    if (!profile.registrationNumber?.trim()) {
       setError("Registration number is required");
-      return;
-    }
-    if (!userData.qualifications.trim()) {
-      setError("Qualifications are required");
       return;
     }
 
@@ -61,28 +89,37 @@ export default function CompleteProfileStep() {
     setError("");
 
     try {
-      // Simulate API call to complete registration
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (!user) throw new Error("No user found");
 
-      // Redirect to success page or dashboard
-      window.location.href = "/auth/sign-up-success";
+      await updateProfile({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phone: profile.phone || undefined,
+        registrationNumber: profile.registrationNumber || undefined,
+      });
+
+      // Redirect to dashboard
+      window.location.href = "/opt";
     } catch (err) {
-      console.error("Registration error:", err);
-      setError("Failed to complete registration. Please try again.");
+      console.error("Profile update error:", err);
+      setError("Failed to complete profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const qualificationOptions = [
-    "Bachelor of Optometry",
-    "Master of Optometry",
-    "Doctor of Optometry",
-    "Bachelor of Vision Science",
-    "Master of Vision Science",
-    "PhD in Optometry/Vision Science",
-    "Other",
-  ];
+  if (initialLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box className="space-y-4">
@@ -104,43 +141,38 @@ export default function CompleteProfileStep() {
         <TextField
           fullWidth
           label="First Name"
-          value={userData.firstName}
-          onChange={handleInputChange("firstName")}
+          value={profile.firstName}
+          onChange={(e) => handleInputChange("firstName", e.target.value)}
           required
         />
 
         <TextField
           fullWidth
           label="Last Name"
-          value={userData.lastName}
-          onChange={handleInputChange("lastName")}
+          value={profile.lastName}
+          onChange={(e) => handleInputChange("lastName", e.target.value)}
           required
         />
       </Box>
 
       <TextField
         fullWidth
+        label="Phone"
+        value={profile.phone}
+        onChange={(e) => handleInputChange("phone", e.target.value)}
+        helperText="Your contact phone number"
+      />
+
+      <TextField
+        fullWidth
         label="Registration Number"
-        value={userData.registrationNumber}
-        onChange={handleInputChange("registrationNumber")}
+        value={profile.registrationNumber}
+        onChange={(e) =>
+          handleInputChange("registrationNumber", e.target.value)
+        }
         helperText="Your professional registration number"
         required
       />
-
-      <FormControl fullWidth required>
-        <InputLabel>Highest Qualification</InputLabel>
-        <Select
-          value={userData.qualifications}
-          label="Highest Qualification"
-          onChange={handleSelectChange("qualifications")}
-        >
-          {qualificationOptions.map((qualification) => (
-            <MenuItem key={qualification} value={qualification}>
-              {qualification}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
 
       <Box className="flex flex-col gap-3 mt-6">
         <Button
@@ -153,10 +185,10 @@ export default function CompleteProfileStep() {
           {isLoading ? (
             <>
               <CircularProgress size={20} className="mr-2" />
-              Completing Registration...
+              Completing Profile...
             </>
           ) : (
-            "Complete Registration"
+            "Complete Profile"
           )}
         </Button>
 

@@ -43,7 +43,6 @@ export default function Page() {
 
   // Update current step based on user state
   useEffect(() => {
-    console.log("User:", user);
     if (!loading) {
       if (user) {
         // User is logged in, check if they need to complete profile

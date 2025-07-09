@@ -10,7 +10,7 @@ export default function EmailVerificationStep({ email }: { email?: string }) {
       </Typography>
 
       <Typography variant="body2" className="text-center text-gray-600">
-        We`&apos;`ve sent a verification email to <strong>{email}</strong>
+        We&apos;ve sent a verification email to <strong>{email}</strong>
       </Typography>
 
       <Alert severity="info" className="mb-4">
@@ -19,7 +19,7 @@ export default function EmailVerificationStep({ email }: { email?: string }) {
             Please check your email and click the verification link.
           </strong>
           <br />
-          If you don`&apos;`t see the email, check your spam folder.
+          If you don&apos;t see the email, check your spam folder.
         </Typography>
       </Alert>
 

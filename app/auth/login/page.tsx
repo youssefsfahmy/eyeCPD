@@ -1,34 +1,27 @@
 import { LoginForm } from "@/components/auth/login-form";
-import { UnprotectedRoute } from "@/components/auth/unprotected-page";
-import { Card, Typography } from "@mui/material";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 export default function Page() {
   return (
-    <UnprotectedRoute redirectTo="/opt">
-      <div className="flex items-center justify-center w-full p-6 min-h-svh md:p-10">
-        <div className="w-full max-w-sm">
-          <Typography variant="h4" component="h1" align="center" gutterBottom>
-            Login
-          </Typography>
-          <Typography
-            variant="body2"
-            mb={8}
-            color="text.secondary"
-            align="center"
-          >
-            Enter your email below to login to your account
-          </Typography>
-          <Card
+    <div className="flex items-center justify-center w-full p-6 min-h-svh md:p-1 bg-primary-50">
+      <div className="w-full max-w-md text-center">
+        <h1 className="mt-10 text-4xl font-bold">
+          <VisibilityOutlinedIcon
             sx={{
-              maxWidth: 400,
-              mx: "auto",
-              boxShadow: 3,
+              width: "3rem",
+              height: "3rem",
+              marginRight: "1rem",
             }}
-          >
-            <LoginForm />
-          </Card>
-        </div>
+            color="primary"
+          />
+          EyeCPD
+        </h1>
+        <p className="mt-4 text-lg text-gray-500 mb-10">
+          Login to your account to access all EyeCPD features
+        </p>
+
+        <LoginForm />
       </div>
-    </UnprotectedRoute>
+    </div>
   );
 }

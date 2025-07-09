@@ -7,7 +7,6 @@ import {
   CardContent,
   TextField,
   Typography,
-  Link as MuiLink,
   Divider,
   Alert,
   CircularProgress,
@@ -74,14 +73,15 @@ export function SignUpFormOptometrist({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/confirm`,
+          redirectTo: `${window.location.origin}/api/auth/confirm?next=/auth/sign-up/optometrist`,
         },
       });
-      if (error) throw error;
+      if (error) {
+        throw error;
+        setIsGoogleLoading(false);
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsGoogleLoading(false);
     }
   };
 
@@ -210,8 +210,12 @@ export function SignUpFormOptometrist({
             {/* Login Link */}
             <Typography variant="body2" align="center" color="text.secondary">
               Already have an account?{" "}
-              <Link href="/auth/login" passHref>
-                <MuiLink underline="hover">Login</MuiLink>
+              <Link
+                href="/auth/login"
+                passHref
+                className="hover:underline text-primary"
+              >
+                Login
               </Link>
             </Typography>
           </Stack>

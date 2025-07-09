@@ -16,9 +16,9 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";
+import Link from "next/link";
 
 const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard"];
 
 function ResponsiveAppBar() {
   const router = useRouter();
@@ -68,7 +68,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/opt"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -180,13 +180,14 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Link
+                  href="/opt/account"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography sx={{ textAlign: "center" }}>Account</Typography>
+                </Link>
+              </MenuItem>
               <MenuItem onClick={logout}>
                 <Typography sx={{ textAlign: "center" }}>Logout</Typography>
               </MenuItem>

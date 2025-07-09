@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/client";
 import {
   Box,
   Button,
-  CardContent,
   TextField,
   Typography,
   Link as MuiLink,
@@ -12,6 +11,7 @@ import {
   Alert,
   CircularProgress,
   Stack,
+  Card,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,7 +55,7 @@ export function LoginForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/confirm`,
+          redirectTo: `${window.location.origin}/api/auth/confirm?next=/opt`,
         },
       });
       if (error) throw error;
@@ -68,8 +68,24 @@ export function LoginForm() {
 
   return (
     <>
-      <CardContent sx={{ width: "100%" }}>
-        <Box component="form" onSubmit={handleLogin} noValidate>
+      <Card
+        sx={{
+          justifyItems: "center",
+          borderRadius: 1,
+          padding: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          position: "relative",
+          border: "1px solid #e0e0e0",
+        }}
+        className="max-w-md min-w-[320px]"
+        component="form"
+        onSubmit={handleLogin}
+        noValidate
+      >
+        <Box sx={{ width: "100%" }}>
           <Stack spacing={3}>
             {/* Google Sign In Button */}
             <Button
@@ -198,7 +214,7 @@ export function LoginForm() {
             </Typography>
           </Stack>
         </Box>
-      </CardContent>
+      </Card>
     </>
   );
 }
