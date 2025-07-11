@@ -28,7 +28,7 @@ export function LoginForm() {
   const router = useRouterNav();
   // check if there is a next query parameter in the URL
   // const next = useRouter().query.next || "/opt";
-  const next = "opt";
+  const next = "/opt";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
