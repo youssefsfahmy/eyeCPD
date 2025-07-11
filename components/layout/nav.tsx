@@ -17,7 +17,7 @@ import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";
 import Link from "next/link";
 
-const pages = ["Products", "Pricing", "Blog"];
+const pages = ["Pricing"];
 
 function ResponsiveAppBar() {
   const router = useRouter();

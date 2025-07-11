@@ -102,8 +102,14 @@ export async function GET(request: NextRequest) {
         stripePriceId: plan.id,
         status: subscription.status,
         planName: (plan.product as Stripe.Product).name,
-        // currentPeriodStart: new Date(subscription.current_period_start * 1000),
-        // currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        currentPeriodStart: new Date(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (subscription as any).current_period_start * 1000
+        ),
+        currentPeriodEnd: new Date(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (subscription as any).current_period_end * 1000
+        ),
       });
     }
 

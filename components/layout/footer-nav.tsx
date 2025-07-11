@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { ThemeSwitcher } from "../theme-switcher";
 import {
   Facebook,
@@ -75,13 +74,13 @@ function FooterNav() {
             </Typography>
             <div className="grid grid-cols-2 gap-2">
               {quickLinks.map((link, index) => (
-                <Link
+                <Typography
                   key={index}
-                  href={link.href}
+                  // href={link.href}
                   className="text-sm text-gray-600 transition-colors duration-200 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                   {link.name}
-                </Link>
+                </Typography>
               ))}
             </div>
           </div>
