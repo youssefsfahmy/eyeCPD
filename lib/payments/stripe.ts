@@ -49,8 +49,8 @@ export async function handleSubscriptionChange(
         currentPeriodEnd: new Date(
           subscriptionWithPeriods.current_period_end * 1000
         ),
-        cancelAtPeriodEnd: subscription.canceled_at
-          ? new Date(subscription.canceled_at * 1000)
+        cancelAtPeriodEnd: subscription.cancel_at
+          ? new Date(subscription.cancel_at * 1000)
           : null,
       });
 
