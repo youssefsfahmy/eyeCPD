@@ -6,31 +6,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Person, CreditCard, Settings } from "@mui/icons-material";
-import ProfileTab from "@/app/opt/account/components/profile";
-import SubscriptionsTab from "@/app/opt/account/components/subscription";
-import PreferencesTab from "@/app/opt/account/components/preferences";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`account-tabpanel-${index}`}
-      aria-labelledby={`account-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
+import { usePathname } from "next/navigation";
 
 function a11yProps(index: number) {
   return {
@@ -39,12 +15,19 @@ function a11yProps(index: number) {
   };
 }
 
-export default function AccountPage() {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+export default function AccountPageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const path = usePathname();
+  const value = path.includes("profile")
+    ? 0
+    : path.includes("subscriptions")
+    ? 1
+    : path.includes("preferences")
+    ? 2
+    : 0;
 
   return (
     <Box sx={{ p: 3, width: "80%" }}>
@@ -65,7 +48,6 @@ export default function AccountPage() {
           orientation="vertical"
           variant="scrollable"
           value={value}
-          onChange={handleChange}
           aria-label="Account settings tabs"
           sx={{
             borderRight: 1,
@@ -79,6 +61,7 @@ export default function AccountPage() {
             {...a11yProps(0)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
+            href="/opt/account/profile"
           />
           <Tab
             icon={<CreditCard />}
@@ -86,6 +69,7 @@ export default function AccountPage() {
             {...a11yProps(1)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
+            href="/opt/account/subscriptions"
           />
           <Tab
             icon={<Settings />}
@@ -93,20 +77,11 @@ export default function AccountPage() {
             {...a11yProps(2)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
+            href="/opt/account/preferences"
           />
         </Tabs>
 
-        <Box sx={{ flexGrow: 1 }}>
-          <TabPanel value={value} index={0}>
-            <ProfileTab />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <SubscriptionsTab />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <PreferencesTab />
-          </TabPanel>
-        </Box>
+        <Box sx={{ flexGrow: 1, p: 4 }}>{children}</Box>
       </Box>
     </Box>
   );

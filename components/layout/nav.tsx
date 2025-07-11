@@ -9,7 +9,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { createClient } from "@/lib/supabase/client";
@@ -109,9 +108,9 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
-                </MenuItem>
+                <Link href={`/${page.toLowerCase()}`} key={page} passHref>
+                  <Typography sx={{ textAlign: "center" }}>{page}k</Typography>
+                </Link>
               ))}
             </Menu>
           </Box>
@@ -133,15 +132,22 @@ function ResponsiveAppBar() {
           >
             CPD Optometry
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex", gap: 10 } }}
+          >
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
+              <Link href={`/${page.toLowerCase()}`} key={page} passHref>
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                  }}
+                >
+                  {page}
+                </Typography>
+              </Link>
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
@@ -182,7 +188,7 @@ function ResponsiveAppBar() {
             >
               <MenuItem onClick={handleCloseUserMenu}>
                 <Link
-                  href="/opt/account"
+                  href="/opt/account/profile"
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <Typography sx={{ textAlign: "center" }}>Account</Typography>

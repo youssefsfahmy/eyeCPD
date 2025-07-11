@@ -95,8 +95,9 @@ export default function ProfileTab() {
       <Box
         display="flex"
         justifyContent="center"
+        p={4}
+        height="100%"
         alignItems="center"
-        minHeight="200px"
       >
         <CircularProgress />
       </Box>

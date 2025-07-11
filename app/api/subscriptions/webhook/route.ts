@@ -21,16 +21,26 @@ export async function POST(request: NextRequest) {
   }
 
   console.log(`Received event: ${event.type}`);
-  switch (event.type) {
-    case "customer.subscription.updated":
-    case "customer.subscription.deleted":
-      console.log(`Processing event.data.object: ${event.data.object}`);
-      const subscription = event.data.object as Stripe.Subscription;
-      await handleSubscriptionChange(subscription);
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
 
-  return NextResponse.json({ received: true });
+  try {
+    switch (event.type) {
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted":
+        await handleSubscriptionChange(
+          event.data.object as Stripe.Subscription
+        );
+        break;
+
+      default:
+      // console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error(`Error processing webhook event ${event.type}:`, error);
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    );
+  }
 }

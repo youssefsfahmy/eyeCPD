@@ -51,11 +51,23 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/api/auth") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/cpd-provider")
+    !request.nextUrl.pathname.startsWith("/cpd-provider") &&
+    !request.nextUrl.pathname.startsWith("/pricing") &&
+    !request.nextUrl.pathname.startsWith("/api/subscriptions")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
+  if (
+    user &&
+    (request.nextUrl.pathname === "/" ||
+      request.nextUrl.pathname.startsWith("/auth"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/opt";
     return NextResponse.redirect(url);
   }
 

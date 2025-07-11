@@ -16,7 +16,7 @@ interface UseProfileReturn {
 export function useProfile(): UseProfileReturn {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetchProfile = useCallback(async () => {
     setIsLoading(true);

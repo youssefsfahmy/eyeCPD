@@ -15,8 +15,9 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter as useRouterNav } from "next/navigation";
 import { useState } from "react";
+// import { useRouter } from "next/router";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,10 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const router = useRouter();
+  const router = useRouterNav();
+  // check if there is a next query parameter in the URL
+  // const next = useRouter().query.next || "/opt";
+  const next = "opt";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +42,7 @@ export function LoginForm() {
         password,
       });
       if (error) throw error;
-      router.push("/opt");
+      router.push("${next}");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -55,7 +59,7 @@ export function LoginForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/api/auth/confirm?next=/opt`,
+          redirectTo: `${window.location.origin}/api/auth/confirm?next=${next}`,
         },
       });
       if (error) throw error;
