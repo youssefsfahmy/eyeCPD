@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "is_therapeutically_endorsed" boolean DEFAULT false NOT NULL;

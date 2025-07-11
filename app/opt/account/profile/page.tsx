@@ -11,7 +11,12 @@ import {
   Box,
   CircularProgress,
   Alert,
+  FormControlLabel,
+  Checkbox,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import { InfoOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useProfile } from "@/lib/hooks/use-profile";
 import { ProfileData } from "@/lib/types/profile";
@@ -35,6 +40,7 @@ export default function ProfileTab() {
     registrationNumber: "",
     role: "",
     userId: "",
+    isTherapeuticallyEndorsed: false,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +62,10 @@ export default function ProfileTab() {
     }
   }, [profileError]);
 
-  const handleInputChange = (field: keyof ProfileData, value: string) => {
+  const handleInputChange = (
+    field: keyof ProfileData,
+    value: string | boolean
+  ) => {
     setProfile((prev) => ({
       ...prev,
       [field]: value,
@@ -76,6 +85,7 @@ export default function ProfileTab() {
         lastName: profile.lastName,
         phone: profile.phone || undefined,
         registrationNumber: profile.registrationNumber || undefined,
+        isTherapeuticallyEndorsed: profile.isTherapeuticallyEndorsed,
       });
 
       setSuccess("Profile updated successfully!");
@@ -177,6 +187,31 @@ export default function ProfileTab() {
                 variant="outlined"
                 sx={{ flex: 1, minWidth: 200 }}
               />
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={profile.isTherapeuticallyEndorsed}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "isTherapeuticallyEndorsed",
+                        e.target.checked
+                      )
+                    }
+                  />
+                }
+                label="Therapeutically Endorsed"
+              />
+              <Tooltip
+                title="Indicates if the Optometrist is therapeutically endorsed. Endorsed: 30 hours total (including 10 therapeutic). Not endorsed: 20 hours total."
+                arrow
+                placement="right"
+              >
+                <IconButton size="small">
+                  <InfoOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Box>
 

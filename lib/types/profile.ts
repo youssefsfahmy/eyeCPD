@@ -11,6 +11,7 @@ export interface ProfileUpdateData {
   phone?: string;
   registrationNumber?: string;
   role?: string;
+  isTherapeuticallyEndorsed?: boolean;
 }
 
 // Legacy compatibility types (camelCase to snake_case mapping)

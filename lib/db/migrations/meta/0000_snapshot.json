@@ -1,6 +1,6 @@
 {
-  "id": "2f103660-7402-4104-b1af-1ad9541aa852",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "a506d71c-81e3-4648-93de-fb4eb192a6e2",
+  "prevId": "2f103660-7402-4104-b1af-1ad9541aa852",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -64,6 +64,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "is_therapeutically_endorsed": {
+          "name": "is_therapeutically_endorsed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},

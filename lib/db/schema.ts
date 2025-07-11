@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   uuid,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -18,6 +19,9 @@ export const profiles = pgTable("profiles", {
   role: varchar("role", { length: 20 }).notNull().default("optometrist"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  isTherapeuticallyEndorsed: boolean("is_therapeutically_endorsed")
+    .notNull()
+    .default(false),
 });
 
 export const subscriptions = pgTable("subscriptions", {

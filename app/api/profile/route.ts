@@ -50,6 +50,7 @@ export async function PUT(request: NextRequest) {
       phone: body.phone,
       registrationNumber: body.registrationNumber || body.registrationNumber,
       role: body.role,
+      isTherapeuticallyEndorsed: body.isTherapeuticallyEndorsed,
     };
 
     // Get current user first
@@ -68,6 +69,7 @@ export async function PUT(request: NextRequest) {
       phone: profileData.phone || "",
       registrationNumber: profileData.registrationNumber || "",
       role: profileData.role || "optometrist",
+      isTherapeuticallyEndorsed: profileData.isTherapeuticallyEndorsed ?? false,
     };
 
     const updatedProfile = await ProfileQueries.upsertProfile(
