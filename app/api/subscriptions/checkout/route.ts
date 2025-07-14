@@ -72,6 +72,11 @@ export async function GET(request: NextRequest) {
       .where(eq(subscriptions.userId, userId))
       .limit(1);
 
+    const startDateString =
+      subscription.items?.data[0]?.current_period_start || null;
+    const endDateString =
+      subscription.items?.data[0]?.current_period_end || null;
+
     if (existingSubscription.length > 0) {
       // Update existing subscription
       await db
@@ -82,14 +87,12 @@ export async function GET(request: NextRequest) {
           stripePriceId: plan.id,
           status: subscription.status,
           planName: (plan.product as Stripe.Product).name,
-          currentPeriodStart: new Date(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (subscription as any).current_period_start * 1000
-          ),
-          currentPeriodEnd: new Date(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (subscription as any).current_period_end * 1000
-          ),
+          currentPeriodStart: startDateString
+            ? new Date(startDateString * 1000)
+            : null,
+          currentPeriodEnd: endDateString
+            ? new Date(endDateString * 1000)
+            : null,
           updatedAt: new Date(),
         })
         .where(eq(subscriptions.userId, userId));
@@ -102,14 +105,10 @@ export async function GET(request: NextRequest) {
         stripePriceId: plan.id,
         status: subscription.status,
         planName: (plan.product as Stripe.Product).name,
-        currentPeriodStart: new Date(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (subscription as any).current_period_start * 1000
-        ),
-        currentPeriodEnd: new Date(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (subscription as any).current_period_end * 1000
-        ),
+        currentPeriodStart: startDateString
+          ? new Date(startDateString * 1000)
+          : null,
+        currentPeriodEnd: endDateString ? new Date(endDateString * 1000) : null,
       });
     }
 

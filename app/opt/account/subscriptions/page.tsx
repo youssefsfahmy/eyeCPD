@@ -148,8 +148,13 @@ export default function SubscriptionsTab() {
               </Typography>
               {subscription.cancelAtPeriodEnd && (
                 <Typography variant="body2" color="error" gutterBottom>
-                  Subscription will cancel on:{" "}
-                  {formatDate(subscription.cancelAtPeriodEnd)}
+                  {new Date(subscription.cancelAtPeriodEnd) > new Date()
+                    ? `Subscription will be cancelled on: ${formatDate(
+                        subscription.cancelAtPeriodEnd
+                      )}`
+                    : `Subscription was cancelled on: ${formatDate(
+                        subscription.cancelAtPeriodEnd
+                      )}`}
                 </Typography>
               )}
 
