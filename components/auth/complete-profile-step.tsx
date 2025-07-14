@@ -8,7 +8,12 @@ import {
   Alert,
   Box,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
+import { InfoOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import { ProfileData } from "@/lib/types/profile";
 import { useProfile } from "@/lib/hooks/use-profile";
@@ -29,6 +34,7 @@ export default function CompleteProfileStep() {
     registrationNumber: "",
     role: "optometrist",
     userId: "",
+    isTherapeuticallyEndorsed: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -62,7 +68,10 @@ export default function CompleteProfileStep() {
     }
   }, [profileError]);
 
-  const handleInputChange = (field: keyof ProfileData, value: string) => {
+  const handleInputChange = (
+    field: keyof ProfileData,
+    value: string | boolean
+  ) => {
     setProfile((prev) => ({
       ...prev,
       [field]: value,
@@ -96,6 +105,7 @@ export default function CompleteProfileStep() {
         lastName: profile.lastName,
         phone: profile.phone || undefined,
         registrationNumber: profile.registrationNumber || undefined,
+        isTherapeuticallyEndorsed: profile.isTherapeuticallyEndorsed,
       });
 
       // Redirect to dashboard
@@ -173,6 +183,29 @@ export default function CompleteProfileStep() {
         helperText="Your professional registration number"
         required
       />
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={profile.isTherapeuticallyEndorsed}
+              onChange={(e) =>
+                handleInputChange("isTherapeuticallyEndorsed", e.target.checked)
+              }
+            />
+          }
+          label="Therapeutically Endorsed"
+        />
+        <Tooltip
+          title="Therapeutically endorsed or not, this will determine whether they need to complete 20 or 30 (endorsed) hours of activities and this should be represented in the dashboard. Additionally, therapeutically endorsed Optometrists should complete 10 hours of therapeutic activities as part of the 30, whereas non therapeutically endorsed don't need to."
+          arrow
+          placement="right"
+        >
+          <IconButton size="small">
+            <InfoOutlined fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       <Box className="flex flex-col gap-3 mt-6">
         <Button
