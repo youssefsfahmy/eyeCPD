@@ -112,10 +112,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.redirect(new URL("/opt", request.url));
+    return NextResponse.redirect(
+      new URL("/opt/account/subscriptions", request.url)
+    );
   } catch (error) {
     console.error("Error handling successful checkout:", error);
-    return NextResponse.redirect(new URL("/auth/error", request.url));
+    return NextResponse.redirect(new URL("/error", request.url));
   }
 }
 
