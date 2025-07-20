@@ -17,6 +17,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import { useSubscription } from "@/lib/hooks/use-subscription";
 import { useState, useEffect } from "react";
+import { FullPageLoading, LoadingPulse } from "@/components/ui/loading";
 
 export default function PricingPage() {
   const { plans, fetchPlans, createCheckoutSession } = useSubscription();
@@ -156,13 +157,7 @@ export default function PricingPage() {
             ))
           )
         ) : (
-          <Grid size={{ xs: 12 }}>
-            <Box textAlign="center" py={8}>
-              <Typography variant="h6" color="text.secondary">
-                Loading subscription plans...
-              </Typography>
-            </Box>
-          </Grid>
+          <LoadingPulse />
         )}
       </Grid>
 
