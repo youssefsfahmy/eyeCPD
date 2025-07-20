@@ -17,7 +17,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import { useSubscription } from "@/lib/hooks/use-subscription";
 import { useState, useEffect } from "react";
-import { FullPageLoading, LoadingPulse } from "@/components/ui/loading";
+import { LoadingPulse } from "@/components/ui/loading";
 
 export default function PricingPage() {
   const { plans, fetchPlans, createCheckoutSession } = useSubscription();
