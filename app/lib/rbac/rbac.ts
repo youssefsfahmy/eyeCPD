@@ -129,7 +129,8 @@ export class RoleBasedAccessControl {
 
       return {
         isAuthorized: false,
-        redirectUrl: "/pricing",
+        redirectUrl:
+          "/error?error=Access denied. An active subscription is required to access this resource.",
         message:
           "Access denied. An active subscription is required to access this resource.",
         reason: "inactive_subscription",
@@ -152,7 +153,7 @@ export class RoleBasedAccessControl {
 
       return {
         isAuthorized: false,
-        redirectUrl: "/opt/account/subscriptions",
+        redirectUrl: `/error?error=Access denied. Required subscription status: ${requiredStatuses}. Current status: ${currentStatus}`,
         message: `Access denied. Required subscription status: ${requiredStatuses}. Current status: ${currentStatus}`,
         reason: "invalid_subscription_status",
       };
@@ -174,7 +175,7 @@ export class RoleBasedAccessControl {
 
       return {
         isAuthorized: false,
-        redirectUrl: "/pricing",
+        redirectUrl: `/error?error=Access denied. Required subscription plan: ${requiredTypes}. Current plan: ${currentType}`,
         message: `Access denied. Required subscription plan: ${requiredTypes}. Current plan: ${currentType}`,
         reason: "invalid_subscription_type",
       };
