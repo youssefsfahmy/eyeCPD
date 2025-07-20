@@ -19,6 +19,10 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
     requiresActiveSubscription: false,
   },
+  "/pricing": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
 
   // Admin routes - only admin role
   "/api/admin/*": {
