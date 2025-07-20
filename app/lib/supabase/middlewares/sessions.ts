@@ -6,7 +6,6 @@ import type { SessionMiddlewareResult } from "./types";
 export async function sessionMiddleware(
   request: NextRequest
 ): Promise<SessionMiddlewareResult> {
-  console.log("sessionMiddleware called", request.nextUrl?.pathname);
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -61,6 +60,10 @@ export async function sessionMiddleware(
     !request.nextUrl.pathname.startsWith("/error")
   ) {
     // no user, potentially respond by redirecting the user to the login page
+    console.log(
+      "No user found, redirecting to /auth/login",
+      request.nextUrl.pathname
+    );
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return { response: NextResponse.redirect(url), user };
@@ -70,9 +73,15 @@ export async function sessionMiddleware(
     user &&
     (request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname.startsWith("/auth")) &&
-    !request.nextUrl.pathname.startsWith("/auth/sign-up")
+    !request.nextUrl.pathname.startsWith("/auth/complete-profile")
   ) {
     const url = request.nextUrl.clone();
+    console.log(
+      "User is authenticated & trying to access",
+      url.pathname,
+      "redirecting to /opt"
+    );
+
     url.pathname = "/opt";
     return { response: NextResponse.redirect(url), user };
   }

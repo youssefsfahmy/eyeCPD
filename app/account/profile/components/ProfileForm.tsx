@@ -13,14 +13,19 @@ import {
 import { InfoOutlined } from "@mui/icons-material";
 
 import { createProfileServerAction } from "../actions/profile";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { ActionState, ProfileDataState } from "../types/profile";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/app/lib/supabase/client";
 
 export default function ProfileForm({
   initialState,
+  isCompleteProfileStep = false,
 }: {
   initialState: ProfileDataState;
+  isCompleteProfileStep?: boolean;
 }) {
+  const router = useRouter();
   const init: ActionState = {
     profile: initialState,
     success: false,
@@ -32,6 +37,36 @@ export default function ProfileForm({
     createProfileServerAction,
     init
   );
+
+  useEffect(() => {
+    if (
+      initialState.firstName.trim() &&
+      initialState.lastName.trim() &&
+      initialState.phone?.trim() &&
+      initialState.registrationNumber?.trim() &&
+      isCompleteProfileStep
+    ) {
+      router.push("/account/profile");
+    }
+
+    if (state.success && isCompleteProfileStep) {
+      // Redirect to the next page after successful profile update
+      const supabase = createClient();
+      supabase.auth.refreshSession();
+      setTimeout(() => {
+        router.push("/opt");
+      }, 1000);
+    }
+  }, [
+    state.success,
+    isCompleteProfileStep,
+    initialState.firstName,
+    initialState.lastName,
+    initialState.phone,
+    initialState.registrationNumber,
+    router,
+  ]);
+
   return (
     <form action={action}>
       {state.error && (
@@ -53,6 +88,7 @@ export default function ProfileForm({
             variant="outlined"
             defaultValue={state.profile.firstName || ""}
             sx={{ flex: 1, minWidth: 200 }}
+            required
           />
           <TextField
             label="Last Name"
@@ -60,12 +96,13 @@ export default function ProfileForm({
             variant="outlined"
             defaultValue={state?.profile.lastName || ""}
             sx={{ flex: 1, minWidth: 200 }}
+            required
           />
         </Box>
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
           <TextField
             label="Email"
-            // value={state?.email || ""}
+            value={state?.profile.email || ""}
             variant="outlined"
             disabled
             sx={{ flex: 1, minWidth: 200 }}
@@ -88,6 +125,7 @@ export default function ProfileForm({
             variant="outlined"
             defaultValue={state?.profile.phone || ""}
             sx={{ flex: 1, minWidth: 200 }}
+            required
           />
           <TextField
             label="Registration Number"
@@ -96,6 +134,7 @@ export default function ProfileForm({
             defaultValue={state?.profile.registrationNumber || ""}
             helperText="This is your AHPRA registration number"
             sx={{ flex: 1, minWidth: 200 }}
+            required
           />
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

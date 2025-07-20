@@ -18,6 +18,7 @@ export async function getProfileServerAction(): Promise<ActionState> {
     lastName: profile?.lastName || "",
     phone: profile?.phone || "",
     registrationNumber: profile?.registrationNumber || "",
+    email: user?.email || "",
     role: profile?.role || "",
     userId: profile?.userId || "",
     isTherapeuticallyEndorsed: profile?.isTherapeuticallyEndorsed || false,

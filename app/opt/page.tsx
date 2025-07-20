@@ -120,7 +120,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth: "100%", width: "100%" }} p={3}>
+    <Box sx={{ flexGrow: 1, maxWidth: "100%", width: "100%" }} py={3}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Optometrist Dashboard

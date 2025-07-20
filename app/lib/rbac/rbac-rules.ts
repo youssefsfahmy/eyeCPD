@@ -1,7 +1,25 @@
 import { UserRole, SubscriptionStatus } from "@/lib/db/schema";
-import { RouteAuthConfig } from "../supabase/middlewares/rbac";
+import { RouteAuthConfig } from "./rbac";
 
 export const defaultRouteAuthConfig: RouteAuthConfig = {
+  // Public routes - no authentication required
+  "/": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+  "/auth": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+  "/auth/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+  "/error": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   // Admin routes - only admin role
   "/api/admin/*": {
     roles: [UserRole.ADMIN],

@@ -15,6 +15,20 @@ export interface RouteAuthConfig {
   [urlPattern: string]: AuthorizationRule;
 }
 
+// Define the structure for authorization result
+export interface AuthorizationResult {
+  isAuthorized: boolean;
+  redirectUrl?: string;
+  message?: string;
+  reason?:
+    | "no_rules"
+    | "invalid_role"
+    | "inactive_subscription"
+    | "invalid_subscription_status"
+    | "invalid_subscription_type"
+    | "incomplete_profile";
+}
+
 export class RoleBasedAccessControl {
   private claims: SupabaseClaimsResult;
   private routeConfig: RouteAuthConfig;
@@ -31,15 +45,30 @@ export class RoleBasedAccessControl {
    * Check if the user is authorized to access a specific URL
    * @param url - The URL to check authorization for
    * @param customRules - Optional custom authorization rules to override defaults
-   * @returns boolean indicating if access is authorized
+   * @returns AuthorizationResult with authorization status, redirect URL, and message
    */
-  isAuthorized(url: string, customRules?: AuthorizationRule): boolean {
+  isAuthorized(
+    url: string,
+    customRules?: AuthorizationRule
+  ): AuthorizationResult {
+    if (url.includes("/error")) {
+      return {
+        isAuthorized: true,
+        message: "Access granted to error page",
+      };
+    }
     const rules = customRules || this.findMatchingRule(url);
 
     if (!rules) {
       console.log("No authorization rules found for URL:", url);
-      // If no rules are found, deny access by default
-      return false;
+      return {
+        isAuthorized: false,
+        redirectUrl:
+          "error?error=Access denied. No authorization rules found for this resource.",
+        message:
+          "Access denied. No authorization rules found for this resource.",
+        reason: "no_rules",
+      };
     }
 
     // Check role authorization
@@ -50,7 +79,44 @@ export class RoleBasedAccessControl {
         "to URL:",
         url
       );
-      return false;
+
+      const userRole = this.claims.profile?.role;
+      const requiredRoles = rules.roles.join(", ");
+
+      return {
+        isAuthorized: false,
+        redirectUrl: this.getRedirectUrlForRole(
+          userRole as UserRole,
+          `Access denied. Required roles: ${requiredRoles}. Your role: ${userRole}`
+        ),
+        message: `Access denied. Required roles: ${requiredRoles}. Your role: ${userRole}`,
+        reason: "invalid_role",
+      };
+    }
+
+    // Check if profile is complete (skip for profile completion routes)
+    if (
+      !url.includes("/profile") &&
+      !url.includes("/auth") &&
+      !this.hasCompleteProfile()
+    ) {
+      console.log("claims", this.claims);
+      console.log(
+        "Access denied for user:",
+        this.getUserInfo(),
+        "due to incomplete profile"
+      );
+
+      const missingFields = this.getMissingProfileFields();
+
+      return {
+        isAuthorized: false,
+        redirectUrl: "/auth/complete-profile",
+        message: `Please complete your profile. Missing fields: ${missingFields.join(
+          ", "
+        )}`,
+        reason: "incomplete_profile",
+      };
     }
 
     // Check subscription requirements
@@ -60,7 +126,14 @@ export class RoleBasedAccessControl {
         this.getUserInfo(),
         "due to missing active subscription"
       );
-      return false;
+
+      return {
+        isAuthorized: false,
+        redirectUrl: "/pricing",
+        message:
+          "Access denied. An active subscription is required to access this resource.",
+        reason: "inactive_subscription",
+      };
     }
 
     // Check subscription status requirements
@@ -73,7 +146,16 @@ export class RoleBasedAccessControl {
         this.getUserInfo(),
         "due to invalid subscription status"
       );
-      return false;
+
+      const requiredStatuses = rules.subscriptionStatuses.join(", ");
+      const currentStatus = this.claims.subscription?.status;
+
+      return {
+        isAuthorized: false,
+        redirectUrl: "/opt/account/subscriptions",
+        message: `Access denied. Required subscription status: ${requiredStatuses}. Current status: ${currentStatus}`,
+        reason: "invalid_subscription_status",
+      };
     }
 
     // Check subscription type/plan requirements
@@ -86,10 +168,30 @@ export class RoleBasedAccessControl {
         this.getUserInfo(),
         "due to invalid subscription type"
       );
-      return false;
+
+      const requiredTypes = rules.subscriptionTypes.join(", ");
+      const currentType = this.claims.subscription?.plan_name || "none";
+
+      return {
+        isAuthorized: false,
+        redirectUrl: "/pricing",
+        message: `Access denied. Required subscription plan: ${requiredTypes}. Current plan: ${currentType}`,
+        reason: "invalid_subscription_type",
+      };
     }
 
-    return true;
+    return {
+      isAuthorized: true,
+      message: "Access granted",
+    };
+  }
+
+  /**
+   * Legacy method for backward compatibility - returns just the boolean
+   * @deprecated Use isAuthorized() instead which returns full AuthorizationResult
+   */
+  canAccess(url: string, customRules?: AuthorizationRule): boolean {
+    return this.isAuthorized(url, customRules).isAuthorized;
   }
 
   /**
@@ -126,8 +228,40 @@ export class RoleBasedAccessControl {
    * Check if user's subscription type/plan matches any of the required types
    */
   private hasValidSubscriptionType(requiredTypes: string[]): boolean {
-    const userPlanName = this.claims.subscription?.planName;
+    const userPlanName = this.claims.subscription?.plan_name;
     return userPlanName ? requiredTypes.includes(userPlanName) : false;
+  }
+
+  /**
+   * Check if user has a complete profile
+   */
+  hasCompleteProfile(): boolean {
+    const profile = this.claims.profile;
+    if (!profile) return false;
+
+    // Check required fields: firstName, lastName, registrationNumber, phone
+    return !!(
+      profile.first_name?.trim() &&
+      profile.last_name?.trim() &&
+      profile.registration_number?.trim() &&
+      profile.phone?.trim()
+    );
+  }
+
+  /**
+   * Get missing profile fields
+   */
+  getMissingProfileFields(): string[] {
+    const profile = this.claims.profile;
+    const missingFields: string[] = [];
+
+    if (!profile?.first_name?.trim()) missingFields.push("First Name");
+    if (!profile?.last_name?.trim()) missingFields.push("Last Name");
+    if (!profile?.registration_number?.trim())
+      missingFields.push("Registration Number");
+    if (!profile?.phone?.trim()) missingFields.push("Phone");
+
+    return missingFields;
   }
 
   /**
@@ -141,7 +275,6 @@ export class RoleBasedAccessControl {
 
     // Then try pattern matching (wildcards)
     for (const pattern in this.routeConfig) {
-      console.log("Checking pattern:", pattern, "for URL:", url);
       if (this.matchesPattern(url, pattern)) {
         return this.routeConfig[pattern];
       }
@@ -169,9 +302,9 @@ export class RoleBasedAccessControl {
       userId: this.claims.sub,
       role: this.claims.profile?.role,
       subscriptionStatus: this.claims.subscription?.status,
-      planName: this.claims.subscription?.planName,
-      firstName: this.claims.profile?.firstName,
-      lastName: this.claims.profile?.lastName,
+      planName: this.claims.subscription?.plan_name,
+      firstName: this.claims.profile?.first_name,
+      lastName: this.claims.profile?.last_name,
     };
   }
 
@@ -200,7 +333,7 @@ export class RoleBasedAccessControl {
    * Check if user has therapeutic endorsement
    */
   hasTherapeuticEndorsement(): boolean {
-    return this.claims.profile?.isTherapeuticallyEndorsed === true;
+    return this.claims.profile?.is_therapeutically_endorsed === true;
   }
 
   /**
@@ -221,36 +354,21 @@ export class RoleBasedAccessControl {
       requiresActiveSubscription: options.requiresActiveSubscription,
     };
   }
+
+  /**
+   * Get appropriate redirect URL based on user role
+   */
+  private getRedirectUrlForRole(
+    userRole: UserRole,
+    errorMessage: string
+  ): string {
+    switch (userRole) {
+      case UserRole.ADMIN:
+        return "/admin";
+      case UserRole.OPTOMETRIST:
+        return "/opt";
+      default:
+        return "/error?error=" + errorMessage;
+    }
+  }
 }
-
-// Utility functions for common authorization checks
-export const AuthUtils = {
-  /**
-   * Create RBAC instance from claims
-   */
-  fromClaims: (
-    claims: SupabaseClaimsResult,
-    customConfig?: RouteAuthConfig
-  ) => {
-    return new RoleBasedAccessControl(claims, customConfig);
-  },
-
-  /**
-   * Quick authorization check
-   */
-  isAuthorized: (
-    claims: SupabaseClaimsResult,
-    url: string,
-    customRules?: AuthorizationRule
-  ) => {
-    const rbac = new RoleBasedAccessControl(claims);
-    return rbac.isAuthorized(url, customRules);
-  },
-
-  /**
-   * Check if claims are valid and complete
-   */
-  validateClaims: (claims: SupabaseClaimsResult): boolean => {
-    return !!claims?.profile?.role;
-  },
-};

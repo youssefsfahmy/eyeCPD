@@ -16,8 +16,35 @@ import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";
 import Link from "next/link";
+import { Button } from "@mui/material";
 
-const pages = ["Pricing"];
+const pagesObject = [
+  {
+    name: "Pricing",
+    path: "/pricing",
+    icon: <Visibility />,
+    authRequired: false,
+  },
+  { name: "Dashboard", path: "/opt", icon: <Visibility />, authRequired: true },
+  {
+    name: "Add Activity",
+    path: "/opt/add-activity",
+    icon: <Visibility />,
+    authRequired: true,
+  },
+  {
+    name: "Browse CPD",
+    path: "/opt/browse-cpd",
+    icon: <Visibility />,
+    authRequired: false,
+  },
+  {
+    name: "Profile",
+    path: "/account/profile",
+    icon: <Visibility />,
+    authRequired: true,
+  },
+];
 
 function ResponsiveAppBar() {
   const router = useRouter();
@@ -59,10 +86,28 @@ function ResponsiveAppBar() {
   }, []);
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "white",
+        mx: "2%",
+        mt: 2,
+        mb: 1,
+        color: "text.primary",
+        width: "96%",
+        borderRadius: 1,
+        boxShadow: 1,
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Visibility sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <Visibility
+            sx={{
+              color: "primary.main",
+              display: { xs: "none", md: "flex" },
+              mr: 1,
+            }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -73,11 +118,11 @@ function ResponsiveAppBar() {
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
-              color: "inherit",
+              color: "primary.main",
               textDecoration: "none",
             }}
           >
-            CPD Optometry
+            EyeCPD
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -107,14 +152,20 @@ function ResponsiveAppBar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
-                <Link href={`/${page.toLowerCase()}`} key={page} passHref>
-                  <Typography sx={{ textAlign: "center" }}>{page}k</Typography>
+              {pagesObject.map((page) => (
+                <Link href={page.path} key={page.path} passHref>
+                  <Typography
+                    sx={{ textAlign: "center", color: "primary.main" }}
+                  >
+                    {page.name}
+                  </Typography>
                 </Link>
               ))}
             </Menu>
           </Box>
-          <Visibility sx={{ color: "primary.main" }} />
+          <Visibility
+            sx={{ color: "primary.main", display: { xs: "flex", md: "none" } }}
+          />
           <Typography
             variant="h5"
             noWrap
@@ -133,42 +184,63 @@ function ResponsiveAppBar() {
             CPD Optometry
           </Typography>
           <Box
-            sx={{ flexGrow: 1, display: { xs: "none", md: "flex", gap: 10 } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex", gap: 10 },
+              justifyContent: "flex-end",
+              mx: 2,
+            }}
           >
-            {pages.map((page) => (
-              <Link href={`/${page.toLowerCase()}`} key={page} passHref>
-                <Typography
-                  sx={{
-                    textAlign: "center",
-                    my: 2,
-                    color: "white",
-                    display: "block",
-                  }}
-                >
-                  {page}
-                </Typography>
-              </Link>
-            ))}
+            {pagesObject.map((page) => {
+              if (page.authRequired && !user) return null;
+
+              return (
+                <Link href={page.path} key={page.path} passHref>
+                  <Button
+                    variant="text"
+                    sx={{
+                      textAlign: "center",
+                      my: 2,
+                      color: "text.primary",
+                      display: "block",
+                    }}
+                  >
+                    {page.name}
+                  </Button>
+                </Link>
+              );
+            })}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {/* first letter of user email */}
-                <Avatar
-                  alt={user?.email || "User"}
-                  // src="/static/images/avatar/2.jpg"
-                  sx={{
-                    bgcolor: "white",
-                    color: "primary.main",
-                    width: 32,
-                    height: 32,
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                  }}
+              {user ? (
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  {/* first letter of user email */}
+                  <Avatar
+                    alt={user?.email || "User"}
+                    // src="/static/images/avatar/2.jpg"
+                    sx={{
+                      bgcolor: "primary.main",
+                      color: "white",
+                      width: 32,
+                      height: 32,
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </Avatar>
+                </IconButton>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => router.push("/auth/login")}
+                  sx={{ textTransform: "none" }}
                 >
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
-                </Avatar>
-              </IconButton>
+                  Login
+                </Button>
+              )}
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}

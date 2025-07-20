@@ -85,8 +85,8 @@ export default function Page() {
   };
 
   return (
-    <div className="flex items-center justify-center w-full p-6 min-h-svh md:p-1 bg-primary-50">
-      <div className="w-full max-w-md text-center">
+    <div className="flex items-center justify-center w-full p-6 min-h-[80vh] md:p-1 bg-primary-50">
+      <div className="my-6 w-full max-w-md text-center">
         <Typography variant="h4" component="h1" mb={4} textAlign={"center"}>
           Sign Up as Optometrist
         </Typography>

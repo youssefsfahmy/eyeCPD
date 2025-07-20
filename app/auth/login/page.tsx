@@ -3,9 +3,9 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
 export default function Page() {
   return (
-    <div className="flex items-center justify-center w-full p-6 min-h-svh md:p-1 bg-primary-50">
-      <div className="w-full max-w-md text-center">
-        <h1 className="mt-10 text-4xl font-bold">
+    <div className="flex items-center justify-center w-full p-6 min-h-[80vh] md:p-1 bg-primary-50">
+      <div className="my-6 w-full max-w-md text-center">
+        <h1 className=" text-4xl font-bold">
           <VisibilityOutlinedIcon
             sx={{
               width: "3rem",

@@ -5,6 +5,8 @@ import "./globals.css";
 import { ClientThemeProvider } from "@/components/providers/client-theme-provider";
 import Nav from "@/components/layout/nav";
 import FooterNav from "@/components/layout/footer-nav";
+import { Box } from "@mui/material";
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -29,10 +31,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body
+        className={`${geistSans.className} antialiased `}
+        style={{ backgroundColor: "#eff6ff" }}
+      >
         <ClientThemeProvider>
           <Nav />
-          {children}
+          <Box mx="2%">{children}</Box>
           <FooterNav />
         </ClientThemeProvider>
       </body>
