@@ -3,7 +3,8 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 
 import { ClientThemeProvider } from "@/components/providers/client-theme-provider";
-
+import Nav from "@/components/layout/nav";
+import FooterNav from "@/components/layout/footer-nav";
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -29,7 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
-        <ClientThemeProvider>{children}</ClientThemeProvider>
+        <ClientThemeProvider>
+          <Nav />
+          {children}
+          <FooterNav />
+        </ClientThemeProvider>
       </body>
     </html>
   );

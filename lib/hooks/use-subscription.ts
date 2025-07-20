@@ -243,7 +243,7 @@ export function useSubscription(): UseSubscriptionReturn {
       const response = await fetch("/api/subscriptions/portal", {
         method: "POST",
         body: JSON.stringify({
-          returnUrl: `${window.location.origin}/opt/account/subscriptions`,
+          returnUrl: `${window.location.origin}/account/subscriptions`,
         }),
       });
 

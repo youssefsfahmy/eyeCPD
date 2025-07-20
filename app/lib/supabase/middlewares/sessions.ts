@@ -1,15 +1,19 @@
+import { hasEnvVars } from "@/lib/utils";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { hasEnvVars } from "../../../lib/utils";
+import type { SessionMiddlewareResult } from "./types";
 
-export async function updateSession(request: NextRequest) {
+export async function sessionMiddleware(
+  request: NextRequest
+): Promise<SessionMiddlewareResult> {
+  console.log("sessionMiddleware called", request.nextUrl?.pathname);
   let supabaseResponse = NextResponse.next({
     request,
   });
 
   // If the env vars are not set, skip middleware check. You can remove this once you setup the project.
   if (!hasEnvVars) {
-    return supabaseResponse;
+    return { response: supabaseResponse, user: null };
   }
 
   const supabase = createServerClient(
@@ -59,7 +63,7 @@ export async function updateSession(request: NextRequest) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/";
-    return NextResponse.redirect(url);
+    return { response: NextResponse.redirect(url), user };
   }
 
   if (
@@ -70,7 +74,7 @@ export async function updateSession(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/opt";
-    return NextResponse.redirect(url);
+    return { response: NextResponse.redirect(url), user };
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
@@ -85,6 +89,5 @@ export async function updateSession(request: NextRequest) {
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse;
+  return { response: supabaseResponse, user };
 }

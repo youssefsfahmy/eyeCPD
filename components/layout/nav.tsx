@@ -156,7 +156,7 @@ function ResponsiveAppBar() {
                 {/* first letter of user email */}
                 <Avatar
                   alt={user?.email || "User"}
-                  src="/static/images/avatar/2.jpg"
+                  // src="/static/images/avatar/2.jpg"
                   sx={{
                     bgcolor: "white",
                     color: "primary.main",
@@ -188,7 +188,7 @@ function ResponsiveAppBar() {
             >
               <MenuItem onClick={handleCloseUserMenu}>
                 <Link
-                  href="/opt/account/profile"
+                  href="/account/profile"
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <Typography sx={{ textAlign: "center" }}>Account</Typography>

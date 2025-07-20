@@ -39,7 +39,7 @@ This subscription system provides complete functionality for managing user subsc
 
 ### 5. Frontend Components
 
-- `/app/opt/account/components/subscription/index.tsx` - Updated subscription management UI
+- `/app/account/components/subscription/index.tsx` - Updated subscription management UI
 - `/app/pricing/page.tsx` - Pricing page with plan selection
 
 ## API Endpoints

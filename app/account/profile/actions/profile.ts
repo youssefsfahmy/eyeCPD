@@ -10,7 +10,6 @@ export async function getProfileServerAction(): Promise<ActionState> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("profileData", user);
 
   //   if (!user) return null;
   const profile = await ProfileQueries.getProfileByUserId(user!.id);
@@ -23,7 +22,6 @@ export async function getProfileServerAction(): Promise<ActionState> {
     userId: profile?.userId || "",
     isTherapeuticallyEndorsed: profile?.isTherapeuticallyEndorsed || false,
   };
-  console.log("profileData", profileData);
 
   return {
     profile: profileData,
@@ -72,7 +70,7 @@ export async function createProfileServerAction(
     isTherapeuticallyEndorsed: newprofile.isTherapeuticallyEndorsed,
   };
 
-  revalidatePath("/opt/account/profile");
+  revalidatePath("/account/profile");
   return {
     profile: newProfileData,
     isPending: false,

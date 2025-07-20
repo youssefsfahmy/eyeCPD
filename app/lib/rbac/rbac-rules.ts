@@ -1,0 +1,67 @@
+import { UserRole, SubscriptionStatus } from "@/lib/db/schema";
+import { RouteAuthConfig } from "../supabase/middlewares/rbac";
+
+export const defaultRouteAuthConfig: RouteAuthConfig = {
+  // Admin routes - only admin role
+  "/api/admin/*": {
+    roles: [UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+  // Optometrist dashboard - optometrist role with active subscription
+  "/opt": {
+    roles: [UserRole.OPTOMETRIST],
+    // subscriptionStatuses: [
+    //   SubscriptionStatus.ACTIVE,
+    //   SubscriptionStatus.TRIALING,
+    // ],
+    requiresActiveSubscription: false,
+  },
+
+  "/admin": {
+    roles: [UserRole.ADMIN],
+    // subscriptionStatuses: [
+    //   SubscriptionStatus.ACTIVE,
+    //   SubscriptionStatus.TRIALING,
+    // ],
+    requiresActiveSubscription: false,
+  },
+
+  // Optometrist dashboard - optometrist role with active subscription
+  "/opt/*": {
+    roles: [UserRole.OPTOMETRIST],
+    subscriptionStatuses: [
+      SubscriptionStatus.ACTIVE,
+      SubscriptionStatus.TRIALING,
+    ],
+    requiresActiveSubscription: true,
+  },
+
+  // Profile routes - any authenticated user
+  "/account/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/account/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/subscriptions/*": {
+    roles: [UserRole.OPTOMETRIST],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/subscription": {
+    roles: [UserRole.OPTOMETRIST],
+    requiresActiveSubscription: false,
+  },
+
+  // Premium features - optometrist with specific plans
+  "/opt/premium/*": {
+    roles: [UserRole.OPTOMETRIST],
+    subscriptionTypes: ["premium", "professional"],
+    subscriptionStatuses: [SubscriptionStatus.ACTIVE],
+    requiresActiveSubscription: true,
+  },
+};

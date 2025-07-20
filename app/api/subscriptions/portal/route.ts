@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       customer: subscription.stripeCustomerId,
       return_url:
         returnUrl ||
-        `${process.env.NEXT_PUBLIC_SITE_URL}/opt/account/subscriptions`,
+        `${process.env.NEXT_PUBLIC_SITE_URL}/account/subscriptions`,
     });
 
     return NextResponse.json({

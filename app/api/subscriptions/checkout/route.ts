@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.redirect(
-      new URL("/opt/account/subscriptions", request.url)
+      new URL("/account/subscriptions", request.url)
     );
   } catch (error) {
     console.error("Error handling successful checkout:", error);

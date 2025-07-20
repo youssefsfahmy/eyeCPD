@@ -30,7 +30,7 @@ export default function AccountPageLayout({
     : 0;
 
   return (
-    <Box sx={{ p: 3, width: "80%" }}>
+    <Box sx={{ p: 3, width: "80%", margin: "0 auto" }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Account Settings
       </Typography>
@@ -61,7 +61,7 @@ export default function AccountPageLayout({
             {...a11yProps(0)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
-            href="/opt/account/profile"
+            href="/account/profile"
           />
           <Tab
             icon={<CreditCard />}
@@ -69,7 +69,7 @@ export default function AccountPageLayout({
             {...a11yProps(1)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
-            href="/opt/account/subscriptions"
+            href="/account/subscriptions"
           />
           <Tab
             icon={<Settings />}
@@ -77,7 +77,7 @@ export default function AccountPageLayout({
             {...a11yProps(2)}
             sx={{ justifyContent: "left" }}
             iconPosition="start"
-            href="/opt/account/preferences"
+            href="/account/preferences"
           />
         </Tabs>
 
