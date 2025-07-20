@@ -5,7 +5,7 @@ import { Box, Card, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import EmailVerificationStep from "@/components/auth/email-verification-step";
 import CompleteProfileStep from "@/components/auth/complete-profile-step";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 
 export default function Page() {

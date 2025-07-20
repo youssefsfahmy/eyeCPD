@@ -3,7 +3,7 @@ import { db } from "@/lib/db/drizzle";
 import { subscriptions } from "@/lib/db/schema";
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/payments/stripe";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/app/lib/supabase/server";
 import Stripe from "stripe";
 import { ProfileQueries } from "@/lib/db/queries/profile";
 

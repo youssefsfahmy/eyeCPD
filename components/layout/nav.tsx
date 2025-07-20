@@ -11,7 +11,7 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";

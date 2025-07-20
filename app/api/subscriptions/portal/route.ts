@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/payments/stripe";
 import { SubscriptionQueries } from "@/lib/queries/subscription";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/app/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {

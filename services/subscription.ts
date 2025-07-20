@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/app/lib/supabase/server";
 import { User } from "@supabase/supabase-js";
 import { SubscriptionQueries } from "@/lib/queries/subscription";
 import { stripe } from "@/lib/payments/stripe";

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ProfileQueries } from "@/lib/db/queries/profile";
 import { ProfileUpdateData } from "@/lib/types/profile";
-import { createClient } from "@/lib/supabase/server";
+
 import { User } from "@supabase/supabase-js";
+import { createClient } from "@/app/lib/supabase/server";
 
 // Helper function to get current user
 async function getCurrentUser(): Promise<User | null> {

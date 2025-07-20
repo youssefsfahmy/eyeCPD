@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/payments/stripe";
 import { SubscriptionQueries } from "@/lib/queries/subscription";
 import { ProfileQueries } from "@/lib/db/queries/profile";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/app/lib/supabase/server";
 import { UserRole } from "@/lib/db/schema";
 
 // Helper function to check if user is admin
