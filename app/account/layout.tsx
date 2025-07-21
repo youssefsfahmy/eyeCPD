@@ -21,16 +21,22 @@ export default function AccountPageLayout({
   children: React.ReactNode;
 }) {
   const path = usePathname();
-  const value = path.includes("profile")
-    ? 0
-    : path.includes("subscriptions")
-    ? 1
-    : path.includes("preferences")
-    ? 2
-    : 0;
+
+  const [value, setValue] = React.useState(
+    path.includes("profile")
+      ? 0
+      : path.includes("subscriptions")
+      ? 1
+      : path.includes("preferences")
+      ? 2
+      : 0
+  );
+
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth < 600 : false;
 
   return (
-    <Box sx={{ p: 3, width: "80%", margin: "0 auto" }}>
+    <Box sx={{ py: 3, width: { xs: "100%", md: "80%" }, margin: "0 auto" }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Account Settings
       </Typography>
@@ -39,27 +45,42 @@ export default function AccountPageLayout({
         sx={{
           flexGrow: 1,
           bgcolor: "background.paper",
-          display: "flex",
+          display: { xs: "block", md: "flex" },
           minHeight: 600,
           mt: 3,
         }}
       >
         <Tabs
-          orientation="vertical"
+          orientation={isMobile ? "horizontal" : "vertical"}
           variant="scrollable"
           value={value}
+          onChange={(event, newValue) => setValue(newValue)}
           aria-label="Account settings tabs"
           sx={{
+            display: { xs: "flex", md: "block" },
+            flexDirection: { xs: "row", md: "column" },
             borderRight: 1,
             borderColor: "divider",
-            minWidth: 200,
+            height: { sx: "20", md: "auto" },
+            ".MuiTabs-list": {
+              flexDirection: { xs: "row", md: "column" },
+              height: "100%",
+            },
           }}
         >
           <Tab
             icon={<Person />}
             label="Profile"
             {...a11yProps(0)}
-            sx={{ justifyContent: "left" }}
+            sx={{
+              justifyContent: "left",
+              fontSize: {
+                xs: "0.8rem",
+                md: "1rem",
+              },
+              py: 1,
+              minHeight: { xs: 15, md: 72 },
+            }}
             iconPosition="start"
             href="/account/profile"
           />
@@ -67,7 +88,12 @@ export default function AccountPageLayout({
             icon={<CreditCard />}
             label="Subscriptions"
             {...a11yProps(1)}
-            sx={{ justifyContent: "left" }}
+            sx={{
+              justifyContent: "left",
+              fontSize: { xs: "0.8rem", md: "1rem" },
+              minHeight: { xs: 15, md: 72 },
+              py: 1,
+            }}
             iconPosition="start"
             href="/account/subscriptions"
           />
@@ -75,7 +101,12 @@ export default function AccountPageLayout({
             icon={<Settings />}
             label="Preferences"
             {...a11yProps(2)}
-            sx={{ justifyContent: "left" }}
+            sx={{
+              justifyContent: "left",
+              fontSize: { xs: "0.8rem", md: "1rem" },
+              minHeight: { xs: 15, md: 72 },
+              py: 1,
+            }}
             iconPosition="start"
             href="/account/preferences"
           />

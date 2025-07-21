@@ -41,7 +41,7 @@ function FooterNav() {
                 variant="h6"
                 className="font-bold text-gray-900 dark:text-white"
               >
-                CPD Optometry
+                EyeCPD{" "}
               </Typography>
             </div>
             <Typography

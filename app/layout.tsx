@@ -33,11 +33,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.className} antialiased `}
-        style={{ backgroundColor: "#eff6ff" }}
+        // style={{ backgroundColor: "#eff6ff" }}
+        style={{ backgroundColor: "var(--background)" }}
       >
         <ClientThemeProvider>
           <Nav />
-          <Box mx="2%">{children}</Box>
+          <Box mx={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>{children}</Box>
           <FooterNav />
         </ClientThemeProvider>
       </body>

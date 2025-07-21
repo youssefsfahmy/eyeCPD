@@ -95,6 +95,22 @@ export const LoadingPulse: React.FC<LoadingPulseProps> = ({
   );
 };
 
+export const LoadingAnimatedLogo: React.FC<{
+  className?: string;
+}> = ({ className = "" }) => {
+  return (
+    <div
+      className={`h-full w-full min-h-[50vh] flex items-center justify-center ${className}`}
+    >
+      <div className="relative mb-8">
+        <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center animate-pulse">
+          <div className="text-white font-bold text-2xl">CPD</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 interface FullPageLoadingProps {
   title?: string;
   subtitle?: string;
@@ -162,7 +178,7 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
 
   // Default variant
   return (
-    <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+    <div className="h-full w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-6">
         {/* Animated Logo */}
         <div className="relative mb-8">

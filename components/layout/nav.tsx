@@ -6,7 +6,6 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
@@ -17,53 +16,18 @@ import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";
 import Link from "next/link";
 import { Button } from "@mui/material";
-
-const pagesObject = [
-  {
-    name: "Pricing",
-    path: "/pricing",
-    icon: <Visibility />,
-    authRequired: false,
-  },
-  { name: "Dashboard", path: "/opt", icon: <Visibility />, authRequired: true },
-  {
-    name: "Add Activity",
-    path: "/opt/add-activity",
-    icon: <Visibility />,
-    authRequired: true,
-  },
-  {
-    name: "Browse CPD",
-    path: "/opt/browse-cpd",
-    icon: <Visibility />,
-    authRequired: false,
-  },
-  {
-    name: "Profile",
-    path: "/account/profile",
-    icon: <Visibility />,
-    authRequired: true,
-  },
-];
+import SideNav from "./side-nav";
+import { navigationItems } from "./constants";
 
 function ResponsiveAppBar() {
   const router = useRouter();
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -89,12 +53,12 @@ function ResponsiveAppBar() {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: "white",
-        mx: "2%",
+        backgroundColor: "background.paper",
+        mx: { xs: 2, sm: 3, md: 4, lg: 5, xl: 6 },
         mt: 2,
         mb: 1,
         color: "text.primary",
-        width: "96%",
+        width: "auto",
         borderRadius: 1,
         boxShadow: 1,
       }}
@@ -126,42 +90,7 @@ function ResponsiveAppBar() {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
-            >
-              {pagesObject.map((page) => (
-                <Link href={page.path} key={page.path} passHref>
-                  <Typography
-                    sx={{ textAlign: "center", color: "primary.main" }}
-                  >
-                    {page.name}
-                  </Typography>
-                </Link>
-              ))}
-            </Menu>
+            <SideNav />
           </Box>
           <Visibility
             sx={{ color: "primary.main", display: { xs: "flex", md: "none" } }}
@@ -181,7 +110,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            CPD Optometry
+            EyeCPD
           </Typography>
           <Box
             sx={{
@@ -191,7 +120,7 @@ function ResponsiveAppBar() {
               mx: 2,
             }}
           >
-            {pagesObject.map((page) => {
+            {navigationItems.map((page) => {
               if (page.authRequired && !user) return null;
 
               return (
@@ -202,8 +131,8 @@ function ResponsiveAppBar() {
                       textAlign: "center",
                       my: 2,
                       color: "text.primary",
-                      display: "block",
                     }}
+                    startIcon={page.icon}
                   >
                     {page.name}
                   </Button>

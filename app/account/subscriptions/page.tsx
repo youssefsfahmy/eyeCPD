@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import { useSubscription } from "@/lib/hooks/use-subscription";
 import Link from "next/link";
+import { LoadingAnimatedLogo } from "@/components/ui/loading";
 
 // Subscriptions Tab Component
 export default function SubscriptionsTab() {
@@ -92,17 +93,7 @@ export default function SubscriptionsTab() {
   };
 
   if (isLoading && !subscription) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        p={4}
-        height="100%"
-        alignItems="center"
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingAnimatedLogo />;
   }
 
   return (

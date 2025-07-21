@@ -91,8 +91,8 @@ function RoleCard({
 
 export default function Home() {
   return (
-    <main className="relative flex flex-col items-center min-h-screen pt-10 bg-primary-50">
-      <h1 className="mt-10 text-4xl font-bold">
+    <main className="relative flex flex-col items-center min-h-screen py-10 bg-primary-50">
+      <h1 className="mt-10 text-4xl font-bold text-center">
         <VisibilityOutlinedIcon
           sx={{
             width: "3rem",
@@ -103,10 +103,10 @@ export default function Home() {
         />
         EyeCPD
       </h1>
-      <p className="mt-4 text-lg text-gray-500">
+      <p className="mt-4 text-lg text-gray-500 text-center">
         Professional Development Platform for Eye Care
       </p>
-      <div className="flex justify-center w-full gap-10 mt-10">
+      <div className="flex flex-col md:flex-row justify-center w-full gap-10 mt-10">
         <RoleCard
           title="Optometrist"
           description="Track and manage your CPD requirements"
