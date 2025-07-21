@@ -66,7 +66,7 @@ export function LoginForm() {
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
-      setIsGoogleLoading(false);
+      // setIsGoogleLoading(false);
     }
   };
 

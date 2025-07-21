@@ -50,7 +50,7 @@ function RoleCard({
         gap: 2,
         position: "relative",
         border: "1px solid #e0e0e0",
-        width: 350,
+        width: { sx: "100%", md: "350px" },
         "&:hover": {
           boxShadow: 3,
         },

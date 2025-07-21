@@ -69,7 +69,7 @@ export default function SideNav({ children }: SideNavProps) {
     <Box
       sx={{
         width: drawerWidth,
-        height: "100%",
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
         bgcolor: "background.paper",
@@ -216,7 +216,12 @@ export default function SideNav({ children }: SideNavProps) {
                 <Typography variant="subtitle1" noWrap fontWeight={600}>
                   {user?.email?.split("@")[0] || "User"}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" noWrap>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  noWrap={false}
+                  sx={{ overflowWrap: "anywhere" }}
+                >
                   {user?.email || ""}
                 </Typography>
               </Box>
