@@ -50,7 +50,7 @@ export function SignUpFormOptometrist({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/sign-up/optometrist`,
+          emailRedirectTo: `${window.location.origin}/api/auth/confirm?next=/auth/sign-up/optometrist`,
         },
       });
 
