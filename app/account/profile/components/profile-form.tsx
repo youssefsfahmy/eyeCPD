@@ -139,11 +139,14 @@ export default function ProfileForm({
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <FormControlLabel
-            defaultChecked={state?.profile.isTherapeuticallyEndorsed}
+            defaultChecked={state?.profile.isTherapeuticallyEndorsed || false}
             control={
               <Checkbox
                 name="isTherapeuticallyEndorsed"
                 id="isTherapeuticallyEndorsed"
+                defaultChecked={
+                  state?.profile.isTherapeuticallyEndorsed || false
+                }
               />
             }
             label="Therapeutically Endorsed"

@@ -44,7 +44,7 @@ export async function createProfileServerAction(
     registrationNumber: formData.get("registrationNumber") as string,
     userId: prevState.profile.userId,
     isTherapeuticallyEndorsed:
-      formData.get("isTherapeuticallyEndorsed") === "true",
+      formData.get("isTherapeuticallyEndorsed") === "on",
   };
   const newprofile = await ProfileQueries.updateProfile(
     prevState.profile.userId,

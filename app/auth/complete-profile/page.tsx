@@ -1,5 +1,5 @@
 import { getProfileServerAction } from "@/app/account/profile/actions/profile";
-import ProfileForm from "@/app/account/profile/components/ProfileForm";
+import ProfileForm from "@/app/account/profile/components/profile-form";
 import { Typography, Card, Box, Step, StepLabel, Stepper } from "@mui/material";
 const steps = ["Create Account", "Verify Email", "Complete Profile"];
 

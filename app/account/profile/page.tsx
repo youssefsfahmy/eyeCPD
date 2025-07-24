@@ -1,5 +1,5 @@
 import { Typography, Card, CardHeader, CardContent, Box } from "@mui/material";
-import ProfileForm from "./components/ProfileForm";
+import ProfileForm from "./components/profile-form";
 import { getProfileServerAction } from "./actions/profile";
 
 export default async function ProfileTab() {
