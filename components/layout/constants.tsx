@@ -4,6 +4,7 @@ import {
   AttachMoney,
   Dashboard,
   Person,
+  ListAlt,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -15,8 +16,14 @@ export const navigationItems = [
     authRequired: true,
   },
   {
+    name: "My Activities",
+    path: "/opt/activity/list",
+    icon: <ListAlt />,
+    authRequired: true,
+  },
+  {
     name: "Add Activity",
-    path: "/opt/add-activity",
+    path: "/opt/activity/create",
     icon: <Add />,
     authRequired: true,
   },
