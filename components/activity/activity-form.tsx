@@ -13,17 +13,29 @@ import {
   FormLabel,
   FormControl,
 } from "@mui/material";
+import { Save, Cancel, Add } from "@mui/icons-material";
 import { useActionState, useEffect } from "react";
-import { ActivityActionState } from "../../types/activity";
-import { createActivityServerAction } from "../../actions";
+import { ActivityActionState } from "@/app/activity/types/activity";
+import {
+  createActivityServerAction,
+  updateActivityServerAction,
+} from "@/app/activity/actions";
 import { useRouter } from "next/navigation";
+import { ActivityRecord } from "@/lib/db/schema";
 
 interface ActivityFormProps {
+  activity?: ActivityRecord;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-export default function ActivityForm({ onSuccess }: ActivityFormProps) {
+export default function ActivityForm({
+  activity,
+  onSuccess,
+  onCancel,
+}: ActivityFormProps) {
   const router = useRouter();
+  const isEditing = !!activity;
 
   const init: ActivityActionState = {
     isPending: false,
@@ -33,7 +45,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
   };
 
   const [state, action, isPending] = useActionState(
-    createActivityServerAction,
+    isEditing ? updateActivityServerAction : createActivityServerAction,
     init
   );
 
@@ -42,16 +54,27 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect to activity list after successful creation
+        // Redirect to activity list after successful creation/update
         setTimeout(() => {
-          router.push("/opt/activity/list");
+          router.push("/activity/list");
         }, 1000);
       }
     }
   }, [state.success, onSuccess, router]);
 
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.push("/activity/list");
+    }
+  };
+
   return (
     <form action={action}>
+      {/* Hidden field for edit mode */}
+      {isEditing && <input type="hidden" name="id" value={activity.id} />}
+
       {state.error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {state.error}
@@ -59,7 +82,8 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
       )}
       {state.success && (
         <Alert severity="success" sx={{ mb: 2 }}>
-          {state.message || "Activity created successfully"}
+          {state.message ||
+            `Activity ${isEditing ? "updated" : "created"} successfully`}
         </Alert>
       )}
 
@@ -73,6 +97,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
             variant="outlined"
             sx={{ flex: 2, minWidth: 300 }}
             required
+            defaultValue={activity?.name || ""}
             helperText="e.g., Clinical Workshop on Dry Eye Management"
           />
           <TextField
@@ -86,6 +111,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
               shrink: true,
             }}
             required
+            defaultValue={activity?.date || ""}
           />
         </Box>
 
@@ -102,6 +128,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
             step: 0.25,
           }}
           required
+          defaultValue={activity?.hours || ""}
           helperText="Enter hours in 0.25 increments"
         />
 
@@ -115,19 +142,39 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
           <FormGroup>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
               <FormControlLabel
-                control={<Checkbox name="clinical" />}
+                control={
+                  <Checkbox
+                    name="clinical"
+                    defaultChecked={activity?.clinical || false}
+                  />
+                }
                 label="Clinical"
               />
               <FormControlLabel
-                control={<Checkbox name="nonClinical" />}
+                control={
+                  <Checkbox
+                    name="nonClinical"
+                    defaultChecked={activity?.nonClinical || false}
+                  />
+                }
                 label="Non-Clinical"
               />
               <FormControlLabel
-                control={<Checkbox name="interactive" />}
+                control={
+                  <Checkbox
+                    name="interactive"
+                    defaultChecked={activity?.interactive || false}
+                  />
+                }
                 label="Interactive"
               />
               <FormControlLabel
-                control={<Checkbox name="therapeutic" />}
+                control={
+                  <Checkbox
+                    name="therapeutic"
+                    defaultChecked={activity?.therapeutic || false}
+                  />
+                }
                 label="Therapeutic"
               />
             </Box>
@@ -143,6 +190,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
           multiline
           rows={4}
           required
+          defaultValue={activity?.description || ""}
           helperText="Provide a detailed description of the activity, including what was covered and key learning outcomes"
         />
 
@@ -155,6 +203,7 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
           multiline
           rows={4}
           required
+          defaultValue={activity?.reflection || ""}
           helperText="Reflect on how this activity will impact your practice and what you learned"
         />
 
@@ -175,6 +224,18 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
             Upload certificates, screenshots, or other evidence to support this
             activity.
           </Typography>
+          {activity?.evidenceFileUrl && (
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Current file:{" "}
+              <a
+                href={activity.evidenceFileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View
+              </a>
+            </Typography>
+          )}
         </Box>
       </Box>
 
@@ -186,13 +247,21 @@ export default function ActivityForm({ onSuccess }: ActivityFormProps) {
           color="primary"
           type="submit"
           disabled={isPending}
+          startIcon={isEditing ? <Save /> : <Add />}
         >
-          {isPending ? "Creating..." : "Create Activity"}
+          {isPending
+            ? isEditing
+              ? "Saving..."
+              : "Creating..."
+            : isEditing
+            ? "Save Changes"
+            : "Create Activity"}
         </Button>
         <Button
           variant="outlined"
-          onClick={() => router.push("/opt/activity/list")}
+          onClick={handleCancel}
           disabled={isPending}
+          startIcon={<Cancel />}
         >
           Cancel
         </Button>

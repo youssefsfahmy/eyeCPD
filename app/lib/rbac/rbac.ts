@@ -64,7 +64,7 @@ export class RoleBasedAccessControl {
       return {
         isAuthorized: false,
         redirectUrl:
-          "error?error=Access denied. No authorization rules found for this resource.",
+          "/error?error=Access denied. No authorization rules found for this resource.",
         message:
           "Access denied. No authorization rules found for this resource.",
         reason: "no_rules",

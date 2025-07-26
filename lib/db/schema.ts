@@ -69,6 +69,7 @@ export const activityRecords = pgTable("activity_record", {
   // Activity type booleans
   clinical: boolean("clinical").notNull().default(false),
   nonClinical: boolean("non_clinical").notNull().default(false),
+
   interactive: boolean("interactive").notNull().default(false),
   therapeutic: boolean("therapeutic").notNull().default(false),
 

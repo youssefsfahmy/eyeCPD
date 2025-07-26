@@ -58,6 +58,16 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  // Optometrist dashboard - optometrist role with active subscription
+  "/activity/*": {
+    roles: [UserRole.OPTOMETRIST],
+    // subscriptionStatuses: [
+    //   SubscriptionStatus.ACTIVE,
+    //   SubscriptionStatus.TRIALING,
+    // ],
+    requiresActiveSubscription: false,
+  },
+
   // Profile routes - any authenticated user
   "/account/*": {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],

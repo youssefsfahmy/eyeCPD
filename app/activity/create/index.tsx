@@ -1,5 +1,5 @@
 import { Typography, Card, CardHeader, CardContent, Box } from "@mui/material";
-import ActivityForm from "./components/activity-form";
+import ActivityForm from "@/components/activity/activity-form";
 
 export default async function CreateActivityPage() {
   return (

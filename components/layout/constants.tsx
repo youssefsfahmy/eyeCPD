@@ -17,13 +17,13 @@ export const navigationItems = [
   },
   {
     name: "My Activities",
-    path: "/opt/activity/list",
+    path: "/activity/list",
     icon: <ListAlt />,
     authRequired: true,
   },
   {
     name: "Add Activity",
-    path: "/opt/activity/create",
+    path: "/activity/create",
     icon: <Add />,
     authRequired: true,
   },
