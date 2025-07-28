@@ -5,12 +5,12 @@ import {
   Divider,
   Button,
   Box,
-  FormControlLabel,
+  //   FormControlLabel,
   Checkbox,
   Alert,
   Typography,
-  FormGroup,
-  FormLabel,
+  //   FormGroup,
+  //   FormLabel,
   FormControl,
 } from "@mui/material";
 import {
@@ -102,18 +102,15 @@ export default function ActivityForm({
   }) => (
     <Box
       sx={{
-        transition: "background-color 0.3s, border-color 0.3s, outline 0.3s",
+        transition: "all 0.3s",
         cursor: "pointer",
         width: "100%",
         borderRadius: 1,
-        borderWidth: 1,
-        borderStyle: "solid",
+        border: 1,
         borderColor: state ? "primary.main" : "grey.300",
-        outline: state ? "2px solid primary.main" : "none",
-        outlineOffset: state ? "2px" : "0",
-        outlineStyle: "solid",
+        outline: state ? "2px solid" : "none",
         outlineColor: "primary.main",
-        outlineWidth: state ? 1 : 0,
+        outlineOffset: 2,
         p: 2,
         display: "flex",
         alignItems: "center",
@@ -137,7 +134,7 @@ export default function ActivityForm({
         </Typography>
       </Box>
       <Checkbox
-        name="clinical"
+        name={name}
         defaultChecked={state || false}
         checked={categories[name]}
       />
@@ -235,7 +232,7 @@ export default function ActivityForm({
           </Box>
 
           {/* Activity Types */}
-          <FormControl component="fieldset">
+          {/* <FormControl component="fieldset">
             <FormLabel component="legend">
               <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Activity Types (select all that apply)
@@ -281,7 +278,7 @@ export default function ActivityForm({
                 />
               </Box>
             </FormGroup>
-          </FormControl>
+          </FormControl> */}
           {/* Description */}
           <TextField
             id="description"

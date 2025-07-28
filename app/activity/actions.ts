@@ -218,6 +218,7 @@ export async function updateActivityServerAction(
   prevState: ActivityActionState,
   formData: FormData
 ): Promise<ActivityActionState> {
+  console.log("Updating activity with form data:", formData);
   const supabase = await createClient();
   const {
     data: { user },

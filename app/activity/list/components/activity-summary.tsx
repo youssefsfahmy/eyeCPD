@@ -104,11 +104,11 @@ export default function ActivitySummary({
   );
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        CPD Progress Summary
-      </Typography>
-
+    <Box
+      sx={{
+        py: 3,
+      }}
+    >
       <Box
         sx={{
           display: "grid",

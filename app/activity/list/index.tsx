@@ -32,19 +32,23 @@ export default async function ActivityListPage() {
   return (
     <Box>
       {/* Header */}
+
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          background: "linear-gradient(to right, #2562ea, #1d4ed8)",
+          color: "white",
+          p: 4,
+          borderRadius: 2,
         }}
       >
         <Box>
           <Typography variant="h5" gutterBottom>
             My CPD Activities
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="white">
             Track your continuing professional development progress
           </Typography>
         </Box>
@@ -52,27 +56,24 @@ export default async function ActivityListPage() {
         <Button
           component={Link}
           href="/activity/create"
-          variant="contained"
+          variant="outlined"
+          color="inherit"
           startIcon={<Add />}
           sx={{ minWidth: 150 }}
         >
           Add Activity
         </Button>
       </Box>
-
       {/* Summary Section */}
       <ActivitySummary
         activities={activities}
         isTherapeuticallyEndorsed={profile?.isTherapeuticallyEndorsed || false}
       />
-
       <Divider sx={{ my: 3 }} />
-
       {/* Activities List */}
       <Typography variant="h6" gutterBottom>
         Recent Activities ({activities.length})
       </Typography>
-
       {activities.length === 0 ? (
         <Box
           sx={{
