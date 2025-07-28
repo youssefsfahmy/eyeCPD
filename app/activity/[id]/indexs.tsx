@@ -5,13 +5,14 @@ import ActivityViewEdit from "./components/activity-view-edit";
 import { Alert } from "@mui/material";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ActivityViewPage({ params }: PageProps) {
-  const activityId = parseInt(params.id);
+  const { id } = await params;
+  const activityId = parseInt(id);
   const supabase = await createClient();
   const {
     data: { user },
