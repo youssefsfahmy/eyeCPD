@@ -52,14 +52,18 @@ export default function ActivityViewEdit({ activity }: ActivityViewEditProps) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
+            background: "linear-gradient(to right, #2562ea, #1d4ed8)",
+            color: "white",
+            p: 4,
+            borderTopRightRadius: 8,
+            borderTopLeftRadius: 8,
           }}
         >
           <Box>
             <Typography variant="h5" gutterBottom>
-              Edit Activity
+              Edit CPD Activity
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body1">
               Update your CPD activity details
             </Typography>
           </Box>
@@ -68,6 +72,7 @@ export default function ActivityViewEdit({ activity }: ActivityViewEditProps) {
             component={Link}
             href="/activity/list"
             variant="outlined"
+            color="inherit"
             startIcon={<ArrowBack />}
           >
             Back to Activities
@@ -75,7 +80,7 @@ export default function ActivityViewEdit({ activity }: ActivityViewEditProps) {
         </Box>
 
         {/* Edit Form */}
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: 4 }}>
           <ActivityForm
             activity={activity}
             onSuccess={handleEditSuccess}

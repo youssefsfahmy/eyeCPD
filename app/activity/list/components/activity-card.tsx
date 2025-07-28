@@ -9,10 +9,16 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { DeleteOutline, Edit, AttachFile } from "@mui/icons-material";
+import {
+  DeleteOutline,
+  Edit,
+  AttachFile,
+  Visibility,
+} from "@mui/icons-material";
 import { ActivityDataState } from "../../types/activity";
 import { deleteActivityServerAction } from "../../actions";
 import { useTransition } from "react";
+import Link from "next/link";
 
 interface ActivityCardProps {
   activity: ActivityDataState;
@@ -85,10 +91,20 @@ export default function ActivityCard({
               </Tooltip>
             )}
 
+            <Tooltip title="View activity details">
+              <Link href={`/activity/${activity.id}`}>
+                <IconButton size="small" color="primary">
+                  <Visibility fontSize="small" />
+                </IconButton>
+              </Link>
+            </Tooltip>
+
             <Tooltip title="Edit activity">
-              <IconButton size="small" color="primary">
-                <Edit fontSize="small" />
-              </IconButton>
+              <Link href={`/activity/${activity.id}?edit=true`}>
+                <IconButton size="small" color="primary">
+                  <Edit fontSize="small" />
+                </IconButton>
+              </Link>
             </Tooltip>
 
             <Tooltip title="Delete activity">
