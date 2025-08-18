@@ -1,3 +1,3 @@
-import ActivityViewPage from "./indexs";
+import ActivityViewPage from ".";
 
 export default ActivityViewPage;

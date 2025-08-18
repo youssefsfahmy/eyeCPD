@@ -71,9 +71,24 @@ export default async function ActivityListPage() {
       />
       <Divider sx={{ my: 3 }} />
       {/* Activities List */}
-      <Typography variant="h6" gutterBottom>
-        Recent Activities ({activities.length})
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h6">
+          Recent Activities ({activities.length})
+        </Typography>
+        {activities.some((activity) => activity.isDraft) && (
+          <Typography variant="caption" color="text.secondary">
+            Including {activities.filter((activity) => activity.isDraft).length}{" "}
+            draft(s)
+          </Typography>
+        )}
+      </Box>
       {activities.length === 0 ? (
         <Box
           sx={{

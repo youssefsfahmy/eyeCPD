@@ -79,6 +79,16 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  "/api/profile": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/activity/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   "/api/subscriptions/*": {
     roles: [UserRole.OPTOMETRIST],
     requiresActiveSubscription: false,

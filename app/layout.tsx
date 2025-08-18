@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 
 import { ClientThemeProvider } from "@/components/providers/client-theme-provider";
+import { ProfileProvider } from "@/lib/context/profile-context";
 import Nav from "@/components/layout/nav";
 import FooterNav from "@/components/layout/footer-nav";
 import { Box } from "@mui/material";
@@ -37,9 +38,11 @@ export default function RootLayout({
         style={{ backgroundColor: "var(--background)" }}
       >
         <ClientThemeProvider>
-          <Nav />
-          <Box mx={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>{children}</Box>
-          <FooterNav />
+          <ProfileProvider>
+            <Nav />
+            <Box mx={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>{children}</Box>
+            <FooterNav />
+          </ProfileProvider>
         </ClientThemeProvider>
       </body>
     </html>

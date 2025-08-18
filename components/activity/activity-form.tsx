@@ -5,35 +5,29 @@ import {
   Divider,
   Button,
   Box,
-  //   FormControlLabel,
-  Checkbox,
   Alert,
   Typography,
-  //   FormGroup,
-  //   FormLabel,
-  FormControl,
+  FormControlLabel,
+  Switch,
+  Card,
+  CardContent,
+  IconButton,
 } from "@mui/material";
 import {
   Save,
   Cancel,
   Add,
-  MedicalInformation,
-  MedicationLiquid,
-  PeopleAltOutlined,
-  WorkOffOutlined,
   TipsAndUpdatesOutlined,
   LightbulbCircleOutlined,
   UploadFileOutlined,
+  DeleteOutlined,
+  AttachFileOutlined,
 } from "@mui/icons-material";
-import { useActionState, useEffect, useState } from "react";
-import { ActivityActionState } from "@/app/activity/types/activity";
-import {
-  createActivityServerAction,
-  updateActivityServerAction,
-} from "@/app/activity/actions";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActivityRecord } from "@/lib/db/schema";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import ActivityCategories from "./activity-categories";
 interface ActivityFormProps {
   activity?: ActivityRecord;
   onSuccess?: () => void;
@@ -54,30 +48,102 @@ export default function ActivityForm({
     therapeutic: activity?.therapeutic || false,
   });
 
-  const init: ActivityActionState = {
-    isPending: false,
-    success: false,
-    message: "",
-    error: "",
+  const [isDraft, setIsDraft] = useState(activity?.isDraft ?? true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState<string>("");
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setFileError("");
+
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        setFileError(
+          "Invalid file type. Only PDF, JPG, PNG, DOC, and DOCX files are allowed."
+        );
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setFileError("File size must be less than 10MB.");
+        return;
+      }
+
+      setSelectedFile(file);
+    }
   };
 
-  const [state, action, isPending] = useActionState(
-    isEditing ? updateActivityServerAction : createActivityServerAction,
-    init
-  );
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFileError("");
+  };
 
-  useEffect(() => {
-    if (state.success) {
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        // Redirect to activity list after successful creation/update
-        setTimeout(() => {
-          router.push("/activity/list");
-        }, 1000);
-      }
+  // Custom form submission handler for the new API route
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsUploading(true);
+    setUploadProgress("Processing...");
+    setFormError("");
+    setFormSuccess(false);
+
+    const formData = new FormData(event.currentTarget);
+
+    // Add the selected file to form data if one exists
+    if (selectedFile) {
+      formData.set("evidenceFile", selectedFile);
     }
-  }, [state.success, onSuccess, router]);
+
+    try {
+      const endpoint = isEditing
+        ? `/api/activity/${activity.id}/update`
+        : "/api/activity/create";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFormSuccess(true);
+        setSelectedFile(null);
+        setFileError("");
+
+        if (onSuccess) {
+          onSuccess();
+        } else if (isEditing) {
+          router.push(`/activity/${activity.id}`);
+          router.refresh(); // Use the refresh method separately
+        } else {
+          router.push("/activity/list");
+        }
+      } else {
+        setFormError(result.error || "Failed to save activity");
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setFormError("An unexpected error occurred");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress("");
+    }
+  };
 
   const handleCancel = () => {
     if (onCancel) {
@@ -87,74 +153,32 @@ export default function ActivityForm({
     }
   };
 
-  const ActivityCategory = ({
-    icon,
-    label,
-    heading,
-    state,
-    name,
-  }: {
-    icon: React.ReactElement;
-    label: string;
-    heading: string;
-    state?: boolean;
-    name: "clinical" | "nonClinical" | "interactive" | "therapeutic";
-  }) => (
-    <Box
-      sx={{
-        transition: "all 0.3s",
-        cursor: "pointer",
-        width: "100%",
-        borderRadius: 1,
-        border: 1,
-        borderColor: state ? "primary.main" : "grey.300",
-        outline: state ? "2px solid" : "none",
-        outlineColor: "primary.main",
-        outlineOffset: 2,
-        p: 2,
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: state ? "#dbe9fe" : "background.paper",
-      }}
-      onClick={() => {
-        setCategories((prev) => ({
-          ...prev,
-          [name]: !prev[name],
-        }));
-      }}
-      role="button"
-    >
-      {icon}
-      <Box sx={{ flexGrow: 1, px: 2 }}>
-        <Typography variant="h6" color="text.secondary">
-          {heading}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {label}
-        </Typography>
-      </Box>
-      <Checkbox
-        name={name}
-        defaultChecked={state || false}
-        checked={categories[name]}
-      />
-    </Box>
-  );
-
   return (
-    <form action={action}>
+    <form onSubmit={handleSubmit}>
       {/* Hidden field for edit mode */}
       {isEditing && <input type="hidden" name="id" value={activity.id} />}
 
-      {state.error && (
+      {formError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {state.error}
+          {formError}
         </Alert>
       )}
-      {state.success && (
+      {formSuccess && (
         <Alert severity="success" sx={{ mb: 2 }}>
-          {state.message ||
-            `Activity ${isEditing ? "updated" : "created"} successfully`}
+          {`Activity ${isEditing ? "updated" : "created"} successfully`}
+        </Alert>
+      )}
+
+      {/* Upload progress indicator */}
+      {isUploading && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {uploadProgress}
+        </Alert>
+      )}
+
+      {fileError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {fileError}
         </Alert>
       )}
 
@@ -196,12 +220,11 @@ export default function ActivityForm({
           <TextField
             id="provider"
             label="Activity Provider"
-            name="provider"
+            name="activityProvider"
             variant="outlined"
             sx={{ flex: 2, minWidth: 300 }}
-            required
-            defaultValue={activity?.name || ""}
-            helperText="e.g., CPD Academy"
+            defaultValue={activity?.activityProvider || ""}
+            helperText="e.g., CPD Academy, Optometry Australia"
           />
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             <TextField
@@ -231,54 +254,6 @@ export default function ActivityForm({
             />
           </Box>
 
-          {/* Activity Types */}
-          {/* <FormControl component="fieldset">
-            <FormLabel component="legend">
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Activity Types (select all that apply)
-              </Typography>
-            </FormLabel>
-            <FormGroup>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="clinical"
-                      defaultChecked={activity?.clinical || false}
-                    />
-                  }
-                  label="Clinical"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="nonClinical"
-                      defaultChecked={activity?.nonClinical || false}
-                    />
-                  }
-                  label="Non-Clinical"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="interactive"
-                      defaultChecked={activity?.interactive || false}
-                    />
-                  }
-                  label="Interactive"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="therapeutic"
-                      defaultChecked={activity?.therapeutic || false}
-                    />
-                  }
-                  label="Therapeutic"
-                />
-              </Box>
-            </FormGroup>
-          </FormControl> */}
           {/* Description */}
           <TextField
             id="description"
@@ -291,16 +266,15 @@ export default function ActivityForm({
             defaultValue={activity?.description || ""}
             helperText="Provide a detailed description of the activity, including what was covered and key learning outcomes"
           />
-          {/* Description */}
+          {/* Topics/Tags */}
           <TextField
-            id="topics"
+            id="tags"
             label="Topics/Tags"
-            name="topics"
+            name="tags"
             variant="outlined"
             multiline
             rows={2}
-            required
-            defaultValue={""}
+            defaultValue={activity?.tags?.join(", ") || ""}
             helperText="Provide a comma-separated list of topics or tags related to this activity, e.g., 'Dry Eye, Patient Care, Clinical Skills'"
           />
           <Box
@@ -405,169 +379,179 @@ export default function ActivityForm({
             <UploadFileOutlined sx={{ color: "#4da16d" }} /> Evidence
           </Box>
           <Divider sx={{ mt: -1 }} />
-          <Box
-            sx={{
-              p: 2,
-              border: 1,
-              borderColor: "grey.300",
-              borderRadius: 1,
-              backgroundColor: "grey.50",
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              📎 Evidence File Upload (Coming Soon)
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Upload certificates, screenshots, or other evidence to support
-              this activity.
-            </Typography>
-            {activity?.evidenceFileUrl && (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                Current file:{" "}
-                <a
-                  href={activity.evidenceFileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View
-                </a>
-              </Typography>
+
+          {/* File Upload Area */}
+          <Box>
+            <input
+              type="file"
+              id="evidenceFile"
+              name="evidenceFile"
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+
+            {!selectedFile && !activity?.evidenceFileUrl ? (
+              <Box
+                sx={{
+                  p: 3,
+                  border: 2,
+                  borderColor: "grey.300",
+                  borderStyle: "dashed",
+                  borderRadius: 2,
+                  textAlign: "center",
+                  backgroundColor: "grey.50",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    borderColor: "primary.main",
+                    backgroundColor: "primary.light",
+                    color: "primary.contrastText",
+                  },
+                }}
+                onClick={() => document.getElementById("evidenceFile")?.click()}
+              >
+                <UploadFileOutlined
+                  sx={{ fontSize: 48, mb: 1, color: "grey.600" }}
+                />
+                <Typography variant="body1" gutterBottom>
+                  Upload Evidence File
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Click to browse or drag and drop
+                </Typography>
+                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                  Supported: PDF, JPG, PNG, DOC, DOCX (Max 10MB)
+                </Typography>
+              </Box>
+            ) : (
+              <Card sx={{ p: 2, backgroundColor: "success.light" }}>
+                <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <AttachFileOutlined sx={{ color: "success.dark" }} />
+                    <Box sx={{ flex: 1 }}>
+                      {selectedFile ? (
+                        <>
+                          <Typography variant="body2" fontWeight="medium">
+                            {selectedFile.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant="body2" fontWeight="medium">
+                            Current evidence file
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Previously uploaded
+                          </Typography>
+                        </>
+                      )}
+                    </Box>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      {activity?.evidenceFileUrl && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          href={activity.evidenceFileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View
+                        </Button>
+                      )}
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() =>
+                          document.getElementById("evidenceFile")?.click()
+                        }
+                      >
+                        {selectedFile ? "Change" : "Replace"}
+                      </Button>
+                      {selectedFile && (
+                        <IconButton
+                          size="small"
+                          onClick={removeFile}
+                          color="error"
+                        >
+                          <DeleteOutlined fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            )}
+
+            {fileError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {fileError}
+              </Alert>
             )}
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontWeight: "bold",
-            }}
-          >
-            <DescriptionOutlinedIcon sx={{ color: "primary.main" }} />{" "}
-            Categories
-          </Box>
-          <Divider />
-          <Typography variant="h5" color="text.secondary">
-            CPD Categories
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Select the categories that best describe this activity. Each
-            activity will recieve full hours.
-          </Typography>
-          {/* Activity Types */}
-          <FormControl component="fieldset" sx={{ display: "flex", gap: 2 }}>
-            <ActivityCategory
-              state={categories.clinical}
-              heading="Clinical"
-              label="Clinical activities related to patient care, diagnosis, and treatment."
-              name="clinical"
-              icon={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#dbe9fe",
-                    borderRadius: 100,
-                    p: 1.5,
-                    color: "primary.main",
-                  }}
-                >
-                  <MedicalInformation />
-                </Box>
-              }
-            />
-            <ActivityCategory
-              state={categories?.interactive}
-              heading="Interactive"
-              label="Interactive activities such as workshops, webinars, or group discussions."
-              name="interactive"
-              icon={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#f3e8ff",
-                    borderRadius: 100,
-                    p: 1.5,
-                    color: "#8730d1",
-                  }}
-                >
-                  <PeopleAltOutlined />
-                </Box>
-              }
-            />{" "}
-            <ActivityCategory
-              state={categories?.therapeutic}
-              heading="Therapeutic"
-              name="therapeutic"
-              label="Therapeutic activities related to patient care, such as counseling or therapy."
-              icon={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#dcfce5",
-                    borderRadius: 100,
-                    p: 1.5,
-                    color: "#4da16d",
-                  }}
-                >
-                  <MedicationLiquid />
-                </Box>
-              }
-            />
-            <ActivityCategory
-              state={categories?.nonClinical}
-              heading="Non-Clinical"
-              name="nonClinical"
-              label="Non-clinical activities such as administration, management, or research."
-              icon={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    backgroundColor: "#fef3c6",
-                    borderRadius: 100,
-                    p: 1.5,
-                    color: "#c5773a",
-                  }}
-                >
-                  <WorkOffOutlined />
-                </Box>
-              }
-            />
-          </FormControl>
-        </Box>
+        <ActivityCategories
+          categories={categories}
+          setCategories={setCategories}
+        />
       </Box>
 
       <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          disabled={isPending}
-          startIcon={isEditing ? <Save /> : <Add />}
-        >
-          {isPending
-            ? isEditing
-              ? "Saving..."
-              : "Creating..."
-            : isEditing
-            ? "Save Changes"
-            : "Create Activity"}
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleCancel}
-          disabled={isPending}
-          startIcon={<Cancel />}
-        >
-          Cancel
-        </Button>
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!isDraft}
+              onChange={(e) => setIsDraft(!e.target.checked)}
+              color="primary"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body2" fontWeight="medium">
+                {isDraft ? "Save as Draft" : "Publish Activity"}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {isDraft
+                  ? "Save your progress without making it visible in reports"
+                  : "Make this activity count towards your CPD requirements"}
+              </Typography>
+            </Box>
+          }
+        />
+
+        <input type="hidden" name="isDraft" value={isDraft.toString()} />
+
+        <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={isUploading}
+            startIcon={isEditing ? <Save /> : <Add />}
+          >
+            {isUploading
+              ? uploadProgress || "Processing..."
+              : isEditing
+              ? "Save Changes"
+              : isDraft
+              ? "Save Draft"
+              : "Create Activity"}
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleCancel}
+            disabled={isUploading}
+            startIcon={<Cancel />}
+          >
+            Cancel
+          </Button>
+        </Box>
       </Box>
     </form>
   );

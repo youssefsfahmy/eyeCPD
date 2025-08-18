@@ -23,11 +23,10 @@ import {
   ExitToApp,
   Visibility,
 } from "@mui/icons-material";
-import { createClient } from "@/app/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { accountItems, navigationItems } from "./constants";
+import { useProfile } from "@/lib/context/profile-context";
 
 const drawerWidth = 280;
 
@@ -39,16 +38,9 @@ export default function SideNav({ children }: SideNavProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
+  const { user, signOut } = useProfile();
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const [user, setUser] = React.useState<User | null>(null);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-  }, []);
 
   const toggleDrawer = () => {
     setIsOpen(!isOpen);
@@ -59,8 +51,7 @@ export default function SideNav({ children }: SideNavProps) {
   };
 
   const logout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await signOut();
     router.push("/");
     closeDrawer();
   };

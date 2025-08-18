@@ -69,6 +69,7 @@ export async function createProfileServerAction(
     role: newprofile.role,
     userId: newprofile.userId,
     isTherapeuticallyEndorsed: newprofile.isTherapeuticallyEndorsed,
+    email: prevState.profile.email, // Email remains unchanged
   };
 
   revalidatePath("/account/profile");

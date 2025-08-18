@@ -17,7 +17,12 @@ export default function ActivitySummary({
   isTherapeuticallyEndorsed = false,
 }: ActivitySummaryProps) {
   const calculateStats = () => {
-    return activities.reduce(
+    // Only include published activities (not drafts) in CPD calculations
+    const publishedActivities = activities.filter(
+      (activity) => !activity.isDraft
+    );
+
+    return publishedActivities.reduce(
       (acc, activity) => {
         const hours = parseFloat(activity.hours);
         acc.totalHours += hours;
@@ -175,10 +180,14 @@ export default function ActivitySummary({
           <Typography variant="subtitle2" gutterBottom>
             📋 CPD Requirements
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" gutterBottom>
             {isTherapeuticallyEndorsed
               ? "Therapeutically Endorsed: 30 hours total (including 10 therapeutic hours)"
               : "Not Therapeutically Endorsed: 20 hours total"}
+          </Typography>
+          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            Note: Only published activities count toward CPD requirements. Draft
+            activities are excluded from calculations.
           </Typography>
         </CardContent>
       </Card>

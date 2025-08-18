@@ -74,11 +74,27 @@ export default function ActivityCard({
           }}
         >
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" gutterBottom>
-              {activity.name}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <Typography variant="h6">{activity.name}</Typography>
+              {activity.isDraft && (
+                <Chip
+                  label="Draft"
+                  size="small"
+                  color="warning"
+                  variant="outlined"
+                />
+              )}
+            </Box>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               {formatDate(activity.date)} • {activity.hours} hours
+              {activity.activityProvider && (
+                <>
+                  {" • "}
+                  <span style={{ fontWeight: 500 }}>
+                    {activity.activityProvider}
+                  </span>
+                </>
+              )}
             </Typography>
           </Box>
 
@@ -100,7 +116,7 @@ export default function ActivityCard({
             </Tooltip>
 
             <Tooltip title="Edit activity">
-              <Link href={`/activity/${activity.id}?edit=true`}>
+              <Link href={`/activity/${activity.id}/edit`}>
                 <IconButton size="small" color="primary">
                   <Edit fontSize="small" />
                 </IconButton>
@@ -140,6 +156,25 @@ export default function ActivityCard({
             />
           ))}
         </Box>
+
+        {/* Tags */}
+        {activity.tags && activity.tags.length > 0 && (
+          <Box sx={{ display: "flex", gap: 0.5, mb: 2, flexWrap: "wrap" }}>
+            {activity.tags.map((tag, index) => (
+              <Chip
+                key={index}
+                label={tag}
+                size="small"
+                variant="filled"
+                sx={{
+                  backgroundColor: "grey.100",
+                  color: "text.secondary",
+                  fontSize: "0.75rem",
+                }}
+              />
+            ))}
+          </Box>
+        )}
 
         {/* Description */}
         <Typography variant="body2" paragraph>

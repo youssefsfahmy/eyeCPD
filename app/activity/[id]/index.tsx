@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
 import { ActivityQueries } from "@/lib/db/queries/activity";
-import ActivityViewEdit from "./components/activity-view-edit";
+import ActivityView from "./components/activity-view";
 import { Alert } from "@mui/material";
 
 interface PageProps {
@@ -34,7 +34,7 @@ export default async function ActivityViewPage({ params }: PageProps) {
       notFound();
     }
 
-    return <ActivityViewEdit activity={activity} />;
+    return <ActivityView activity={activity} />;
   } catch (error) {
     console.error("Error fetching activity:", error);
     return (

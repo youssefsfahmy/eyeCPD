@@ -10,17 +10,17 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { createClient } from "@/app/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 import { Visibility } from "@mui/icons-material";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import SideNav from "./side-nav";
 import { navigationItems } from "./constants";
+import { useProfile } from "@/lib/context/profile-context";
 
 function ResponsiveAppBar() {
   const router = useRouter();
+  const { user, signOut } = useProfile();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -35,19 +35,9 @@ function ResponsiveAppBar() {
   };
 
   const logout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await signOut();
     router.push("/");
   };
-
-  const [user, setUser] = React.useState<User | null>(null);
-
-  React.useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-  }, []);
 
   return (
     <AppBar

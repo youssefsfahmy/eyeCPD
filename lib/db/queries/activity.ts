@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db } from "../drizzle";
 import {
   activityRecords,
@@ -17,6 +17,26 @@ export class ActivityQueries {
       .select()
       .from(activityRecords)
       .where(eq(activityRecords.userId, userId))
+      .orderBy(desc(activityRecords.date), desc(activityRecords.createdAt));
+
+    return result;
+  }
+
+  /**
+   * Get only published (non-draft) activities for a user
+   */
+  static async getPublishedActivitiesByUserId(
+    userId: string
+  ): Promise<ActivityRecord[]> {
+    const result = await db
+      .select()
+      .from(activityRecords)
+      .where(
+        and(
+          eq(activityRecords.userId, userId),
+          eq(activityRecords.isDraft, false)
+        )
+      )
       .orderBy(desc(activityRecords.date), desc(activityRecords.createdAt));
 
     return result;
@@ -100,7 +120,7 @@ export class ActivityQueries {
   }
 
   /**
-   * Get activity statistics for a user
+   * Get activity statistics for a user (only published activities)
    */
   static async getActivityStats(userId: string): Promise<{
     totalHours: number;
@@ -110,7 +130,7 @@ export class ActivityQueries {
     therapeuticHours: number;
     totalActivities: number;
   }> {
-    const activities = await this.getActivitiesByUserId(userId);
+    const activities = await this.getPublishedActivitiesByUserId(userId);
 
     const stats = activities.reduce(
       (acc, activity) => {

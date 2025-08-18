@@ -69,7 +69,6 @@ export const activityRecords = pgTable("activity_record", {
   // Activity type booleans
   clinical: boolean("clinical").notNull().default(false),
   nonClinical: boolean("non_clinical").notNull().default(false),
-
   interactive: boolean("interactive").notNull().default(false),
   therapeutic: boolean("therapeutic").notNull().default(false),
 
@@ -79,7 +78,9 @@ export const activityRecords = pgTable("activity_record", {
   hours: decimal("hours", { precision: 4, scale: 2 }).notNull(), // Supports 0.25 intervals
   description: text("description").notNull(),
   reflection: text("reflection").notNull(),
-
+  tags: text("tags").array().default([]), // Array of tags for categorization
+  activityProvider: text("activity_provider"),
+  isDraft: boolean("is_draft").notNull().default(true), // Indicates if the activity is a draft
   // Evidence file information
   evidenceFileUrl: text("evidence_file_url"), // URL to stored file
 

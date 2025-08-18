@@ -1,87 +1,56 @@
-import { useState, useCallback } from "react";
-import { ProfileData, ProfileUpdateData } from "@/lib/types/profile";
-import { User } from "@supabase/supabase-js";
+import { useCallback } from "react";
+import { ProfileUpdateData } from "@/lib/types/profile";
+import { useProfile as useProfileContext } from "@/lib/context/profile-context";
 
 interface UseProfileReturn {
-  profile: ProfileData | null;
-  user: User | null;
+  profile: ReturnType<typeof useProfileContext>["profile"];
+  user: ReturnType<typeof useProfileContext>["user"];
   isLoading: boolean;
   error: string | null;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: ProfileUpdateData) => Promise<void>;
   createInitialProfile: () => Promise<void>;
   deleteProfile: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 export function useProfile(): UseProfileReturn {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user, profile, isLoading, error, refreshProfile, signOut } =
+    useProfileContext();
+
   const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    await refreshProfile();
+  }, [refreshProfile]);
 
-    try {
-      const response = await fetch("/api/profile");
+  const updateProfile = useCallback(
+    async (data: ProfileUpdateData) => {
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("User not authenticated");
+        if (!response.ok) {
+          throw new Error("Failed to update profile");
         }
-        throw new Error("Failed to fetch profile");
+
+        // Refresh the profile data after successful update
+        await refreshProfile();
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to update profile";
+        console.error("Error updating profile:", err);
+        throw new Error(errorMessage);
       }
-
-      const result = await response.json();
-      setUser(result.user);
-      setProfile(result.profile);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch profile";
-      setError(errorMessage);
-      console.error("Error fetching profile:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const updateProfile = useCallback(async (data: ProfileUpdateData) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("User not authenticated");
-        }
-        throw new Error("Failed to update profile");
-      }
-
-      const result = await response.json();
-      setProfile(result.profile);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to update profile";
-      setError(errorMessage);
-      console.error("Error updating profile:", err);
-      throw err; // Re-throw so calling components can handle it
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [refreshProfile]
+  );
 
   const createInitialProfile = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
     try {
       const response = await fetch("/api/profile", {
         method: "POST",
@@ -91,52 +60,38 @@ export function useProfile(): UseProfileReturn {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("User not authenticated");
-        }
-        throw new Error("Failed to create profile");
+        throw new Error("Failed to create initial profile");
       }
 
-      const result = await response.json();
-      setProfile(result.profile);
+      // Refresh the profile data after successful creation
+      await refreshProfile();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to create profile";
-      setError(errorMessage);
       console.error("Error creating profile:", err);
-      throw err;
-    } finally {
-      setIsLoading(false);
+      throw new Error(errorMessage);
     }
-  }, []);
+  }, [refreshProfile]);
 
   const deleteProfile = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
     try {
       const response = await fetch("/api/profile", {
         method: "DELETE",
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("User not authenticated");
-        }
         throw new Error("Failed to delete profile");
       }
 
-      setProfile(null);
+      // Refresh the profile data after successful deletion
+      await refreshProfile();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to delete profile";
-      setError(errorMessage);
       console.error("Error deleting profile:", err);
-      throw err;
-    } finally {
-      setIsLoading(false);
+      throw new Error(errorMessage);
     }
-  }, []);
+  }, [refreshProfile]);
 
   return {
     profile,
@@ -147,5 +102,7 @@ export function useProfile(): UseProfileReturn {
     updateProfile,
     createInitialProfile,
     deleteProfile,
+    refreshProfile,
+    signOut,
   };
 }
