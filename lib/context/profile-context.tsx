@@ -19,6 +19,7 @@ interface ProfileContextType {
   error: string | null;
   refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
+  isTherapeuticallyEndorsed: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -162,6 +163,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     error,
     refreshProfile,
     signOut,
+    isTherapeuticallyEndorsed: profile?.isTherapeuticallyEndorsed || false,
   };
 
   return (

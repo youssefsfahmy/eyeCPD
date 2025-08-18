@@ -17,6 +17,7 @@ import { useActionState, useEffect } from "react";
 import { ActionState, ProfileDataState } from "../types/profile";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/client";
+import { useProfile } from "@/lib/context/profile-context";
 
 export default function ProfileForm({
   initialState,
@@ -26,6 +27,7 @@ export default function ProfileForm({
   isCompleteProfileStep?: boolean;
 }) {
   const router = useRouter();
+  const { refreshProfile } = useProfile();
   const init: ActionState = {
     profile: initialState,
     success: false,
@@ -49,13 +51,16 @@ export default function ProfileForm({
       router.push("/account/profile");
     }
 
-    if (state.success && isCompleteProfileStep) {
-      // Redirect to the next page after successful profile update
-      const supabase = createClient();
-      supabase.auth.refreshSession();
-      setTimeout(() => {
-        router.push("/opt");
-      }, 1000);
+    if (state.success) {
+      refreshProfile();
+      if (isCompleteProfileStep) {
+        // Redirect to the next page after successful profile update
+        const supabase = createClient();
+        supabase.auth.refreshSession();
+        setTimeout(() => {
+          router.push("/opt");
+        }, 1000);
+      }
     }
   }, [
     state.success,

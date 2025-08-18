@@ -1,6 +1,13 @@
 "use client";
 
-import { Divider, Box, Checkbox, Typography, FormControl } from "@mui/material";
+import {
+  Divider,
+  Box,
+  Checkbox,
+  Typography,
+  FormControl,
+  Alert,
+} from "@mui/material";
 import {
   MedicalInformation,
   MedicationLiquid,
@@ -8,7 +15,8 @@ import {
   WorkOffOutlined,
 } from "@mui/icons-material";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { useProfile } from "@/lib/context/profile-context";
 
 interface Props {
   categories: {
@@ -25,10 +33,14 @@ interface Props {
       therapeutic: boolean;
     }>
   >;
+  hours?: string | number; // pass in hours for this activity
 }
 
 function ActivityCategories(props: Props) {
-  const { categories, setCategories } = props;
+  const { categories, setCategories, hours = 1 } = props; // default 1h per activity
+  const { isTherapeuticallyEndorsed } = useProfile();
+
+  const [warning, setWarning] = useState<string | null>(null);
 
   const ActivityCategory = ({
     icon,
@@ -42,47 +54,82 @@ function ActivityCategories(props: Props) {
     heading: string;
     state?: boolean;
     name: "clinical" | "nonClinical" | "interactive" | "therapeutic";
-  }) => (
-    <Box
-      sx={{
-        transition: "all 0.3s",
-        cursor: "pointer",
-        width: "100%",
-        borderRadius: 1,
-        border: 1,
-        borderColor: state ? "primary.main" : "grey.300",
-        outline: state ? "2px solid" : "none",
-        outlineColor: "primary.main",
-        outlineOffset: 2,
-        p: 2,
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: state ? "#dbe9fe" : "background.paper",
-      }}
-      onClick={() => {
-        setCategories((prev) => ({
-          ...prev,
-          [name]: !prev[name],
-        }));
-      }}
-      role="button"
-    >
-      {icon}
-      <Box sx={{ flexGrow: 1, px: 2 }}>
-        <Typography variant="h6" color="text.secondary">
-          {heading}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {label}
-        </Typography>
+  }) => {
+    const handleClick = () => {
+      // Unendorsed optometrists → ❌ No Therapeutic possible.
+      if (!isTherapeuticallyEndorsed && name === "therapeutic") {
+        setWarning(
+          "Therapeutic activities are not allowed for unendorsed optometrists."
+        );
+        return;
+      }
+      // Rule: Clinical and Non-Clinical are mutually exclusive
+      if (name === "clinical" && categories.nonClinical) {
+        setWarning("An activity cannot be both Clinical and Non-Clinical.");
+        return;
+      }
+      if (name === "nonClinical" && categories.clinical) {
+        setWarning("An activity cannot be both Non-Clinical and Clinical.");
+        return;
+      }
+
+      // Rule: Therapeutic must be Clinical
+      if (
+        (name === "therapeutic" && !categories.clinical) ||
+        (categories.therapeutic && categories.clinical && name === "clinical")
+      ) {
+        setWarning("Therapeutic activities must also be Clinical.");
+        return;
+      }
+
+      // Clear warning and toggle state
+      setWarning(null);
+      setCategories((prev) => ({
+        ...prev,
+        [name]: !prev[name],
+      }));
+    };
+
+    return (
+      <Box
+        sx={{
+          transition: "all 0.3s",
+          cursor: "pointer",
+          width: "100%",
+          borderRadius: 1,
+          border: 1,
+          borderColor: state ? "primary.main" : "grey.300",
+          outline: state ? "2px solid" : "none",
+          outlineColor: "primary.main",
+          outlineOffset: 2,
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: state ? "#dbe9fe" : "background.paper",
+        }}
+        onClick={handleClick}
+        role="button"
+      >
+        {icon}
+        <Box sx={{ flexGrow: 1, px: 2 }}>
+          <Typography variant="h6" color="text.secondary">
+            {heading}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {label}
+          </Typography>
+        </Box>
+        <Checkbox name={name} checked={!!categories[name]} readOnly />
       </Box>
-      <Checkbox
-        name={name}
-        defaultChecked={state || false}
-        checked={categories[name]}
-      />
-    </Box>
-  );
+    );
+  };
+
+  // --- Hours Summary Logic ---
+  const totalHours = hours; // each activity = hours
+  const clinicalHours = categories.clinical ? hours : 0;
+  const nonClinicalHours = categories.nonClinical ? hours : 0;
+  const interactiveHours = categories.interactive ? hours : 0;
+  const therapeuticHours = categories.therapeutic ? hours : 0;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
@@ -102,8 +149,12 @@ function ActivityCategories(props: Props) {
       </Typography>
       <Typography variant="body2" color="text.secondary">
         Select the categories that best describe this activity. Each activity
-        will recieve full hours.
+        will receive full hours.
       </Typography>
+
+      {/* Warning Message */}
+      {warning && <Alert severity="warning">{warning}</Alert>}
+
       {/* Activity Types */}
       <FormControl component="fieldset" sx={{ display: "flex", gap: 2 }}>
         <ActivityCategory
@@ -127,7 +178,7 @@ function ActivityCategories(props: Props) {
           }
         />
         <ActivityCategory
-          state={categories?.interactive}
+          state={categories.interactive}
           heading="Interactive"
           label="Interactive activities such as workshops, webinars, or group discussions."
           name="interactive"
@@ -145,9 +196,9 @@ function ActivityCategories(props: Props) {
               <PeopleAltOutlined />
             </Box>
           }
-        />{" "}
+        />
         <ActivityCategory
-          state={categories?.therapeutic}
+          state={categories.therapeutic}
           heading="Therapeutic"
           name="therapeutic"
           label="Therapeutic activities related to patient care, such as counseling or therapy."
@@ -167,7 +218,7 @@ function ActivityCategories(props: Props) {
           }
         />
         <ActivityCategory
-          state={categories?.nonClinical}
+          state={categories.nonClinical}
           heading="Non-Clinical"
           name="nonClinical"
           label="Non-clinical activities such as administration, management, or research."
@@ -187,6 +238,38 @@ function ActivityCategories(props: Props) {
           }
         />
       </FormControl>
+
+      {/* Summary Box */}
+      <Divider />
+      <Box
+        sx={{
+          borderRadius: 2,
+          p: 2,
+          border: "1px solid",
+          borderColor: "grey.300",
+          backgroundColor: "#fafafa",
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
+      >
+        <Typography variant="h6" color="text.primary">
+          Summary
+        </Typography>
+        <Typography variant="body2">Total Hours: {totalHours}</Typography>
+        <Typography variant="body2">Clinical Hours: {clinicalHours}</Typography>
+        <Typography variant="body2">
+          Non-Clinical Hours: {nonClinicalHours}
+        </Typography>
+        <Typography variant="body2">
+          Interactive Hours: {interactiveHours}
+        </Typography>
+        {isTherapeuticallyEndorsed && (
+          <Typography variant="body2">
+            Therapeutic Hours: {therapeuticHours}
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 }

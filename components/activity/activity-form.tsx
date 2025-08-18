@@ -497,6 +497,7 @@ export default function ActivityForm({
         <ActivityCategories
           categories={categories}
           setCategories={setCategories}
+          hours={activity?.hours || 0}
         />
       </Box>
 
