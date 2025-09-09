@@ -207,7 +207,9 @@ function ActivityCategories(props: Props) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: "#dcfce5",
+                backgroundColor: isTherapeuticallyEndorsed
+                  ? "#dcfce5"
+                  : "#f0f0f0",
                 borderRadius: 100,
                 p: 1.5,
                 color: "#4da16d",
