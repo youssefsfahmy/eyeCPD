@@ -3,7 +3,6 @@ import { cookies } from "next/headers";
 
 export async function createClient() {
   const cookieStore = await cookies();
-  console.log("creating supabase client with cookies:");
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

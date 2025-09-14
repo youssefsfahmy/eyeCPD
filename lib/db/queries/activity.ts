@@ -1,4 +1,4 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { db } from "../drizzle";
 import {
   activityRecords,
@@ -11,12 +11,29 @@ export class ActivityQueries {
    * Get all activities for a user
    */
   static async getActivitiesByUserId(
-    userId: string
+    userId: string,
+    startDate?: Date,
+    endDate?: Date
   ): Promise<ActivityRecord[]> {
+    // Build where conditions dynamically
+    const conditions = [eq(activityRecords.userId, userId)];
+
+    if (startDate) {
+      conditions.push(
+        gte(activityRecords.date, startDate.toISOString().split("T")[0])
+      );
+    }
+
+    if (endDate) {
+      conditions.push(
+        lte(activityRecords.date, endDate.toISOString().split("T")[0])
+      );
+    }
+
     const result = await db
       .select()
       .from(activityRecords)
-      .where(eq(activityRecords.userId, userId))
+      .where(and(...conditions))
       .orderBy(desc(activityRecords.date), desc(activityRecords.createdAt));
 
     return result;
@@ -26,17 +43,32 @@ export class ActivityQueries {
    * Get only published (non-draft) activities for a user
    */
   static async getPublishedActivitiesByUserId(
-    userId: string
+    userId: string,
+    startDate?: Date,
+    endDate?: Date
   ): Promise<ActivityRecord[]> {
+    // Build where conditions dynamically
+    const conditions = [
+      eq(activityRecords.userId, userId),
+      eq(activityRecords.isDraft, false),
+    ];
+
+    if (startDate) {
+      conditions.push(
+        gte(activityRecords.date, startDate.toISOString().split("T")[0])
+      );
+    }
+
+    if (endDate) {
+      conditions.push(
+        lte(activityRecords.date, endDate.toISOString().split("T")[0])
+      );
+    }
+
     const result = await db
       .select()
       .from(activityRecords)
-      .where(
-        and(
-          eq(activityRecords.userId, userId),
-          eq(activityRecords.isDraft, false)
-        )
-      )
+      .where(and(...conditions))
       .orderBy(desc(activityRecords.date), desc(activityRecords.createdAt));
 
     return result;
@@ -122,7 +154,11 @@ export class ActivityQueries {
   /**
    * Get activity statistics for a user (only published activities)
    */
-  static async getActivityStats(userId: string): Promise<{
+  static async getActivityStats(
+    userId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<{
     totalHours: number;
     clinicalHours: number;
     nonClinicalHours: number;
@@ -130,7 +166,11 @@ export class ActivityQueries {
     therapeuticHours: number;
     totalActivities: number;
   }> {
-    const activities = await this.getPublishedActivitiesByUserId(userId);
+    const activities = await this.getPublishedActivitiesByUserId(
+      userId,
+      startDate,
+      endDate
+    );
 
     const stats = activities.reduce(
       (acc, activity) => {

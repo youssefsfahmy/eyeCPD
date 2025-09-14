@@ -10,22 +10,38 @@ import MonthlyProgressChart from "./components/monthly-progress-chart";
 import RemainingHoursCard from "./components/remaining-hours-card";
 import TotalCPDHoursCard from "./components/total-cpd-hours-card";
 import RecentActivities from "./components/recent-activities";
+import PeriodSelector from "./period-selector";
 
-export default async function CPDDashboard() {
+interface CPDDashboardProps {
+  cycle?: string | null;
+}
+
+export default async function CPDDashboard({ cycle }: CPDDashboardProps) {
   // Fetch all dashboard data once
-  const dashboardData = await getDashboardData();
+  const dashboardData = await getDashboardData(cycle);
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: "100%", width: "100%" }} py={3}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          CPD Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Track your Continuing Professional Development progress and
-          compliance.
-        </Typography>
-      </Box>
+      <Grid container spacing={1} sx={{ mb: 4 }} alignItems="stretch">
+        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              CPD Dashboard
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Track your Continuing Professional Development progress and
+              compliance.
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}></Grid>
+        <Grid
+          size={{ xs: 12, sm: 6, md: 3 }}
+          sx={{ alignContent: "center", justifyItems: "flex-end" }}
+        >
+          <PeriodSelector />
+        </Grid>
+      </Grid>
 
       {/* Key Metrics Cards */}
       <Grid container spacing={1} sx={{ mb: 4 }} alignItems="stretch">

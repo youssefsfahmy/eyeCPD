@@ -5,7 +5,7 @@ export interface CPDSummary {
   totalHours: number;
   requiredHours: number;
   remainingHours: number;
-  complianceStatus: 'On Track' | 'At Risk' | 'Non-compliant';
+  complianceStatus: "On Track" | "At Risk" | "Non-compliant";
   daysLeftInCycle: number;
   cycleEndDate: Date;
 }
@@ -38,15 +38,17 @@ export interface MonthlyProgress {
 
 export async function getCPDSummary(): Promise<CPDSummary> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   try {
     const activities = await ActivityQueries.getActivitiesByUserId(user.id);
-    
+
     // Calculate total hours
     const totalHours = activities.reduce((sum, activity) => {
       if (!activity.isDraft) {
@@ -57,26 +59,31 @@ export async function getCPDSummary(): Promise<CPDSummary> {
 
     const requiredHours = 80; // Standard CPD requirement
     const remainingHours = Math.max(0, requiredHours - totalHours);
-    
+
     // Calculate compliance status
     const currentDate = new Date();
     const cycleStartDate = new Date(currentDate.getFullYear(), 0, 1); // January 1st
     const cycleEndDate = new Date(currentDate.getFullYear(), 11, 31); // December 31st
-    const totalDaysInCycle = Math.ceil((cycleEndDate.getTime() - cycleStartDate.getTime()) / (1000 * 60 * 60 * 24));
-    const daysPassed = Math.ceil((currentDate.getTime() - cycleStartDate.getTime()) / (1000 * 60 * 60 * 24));
+    const totalDaysInCycle = Math.ceil(
+      (cycleEndDate.getTime() - cycleStartDate.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+    const daysPassed = Math.ceil(
+      (currentDate.getTime() - cycleStartDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
     const daysLeftInCycle = Math.max(0, totalDaysInCycle - daysPassed);
-    
+
     const expectedHoursByNow = (daysPassed / totalDaysInCycle) * requiredHours;
-    
-    let complianceStatus: 'On Track' | 'At Risk' | 'Non-compliant';
+
+    let complianceStatus: "On Track" | "At Risk" | "Non-compliant";
     if (totalHours >= requiredHours) {
-      complianceStatus = 'On Track';
+      complianceStatus = "On Track";
     } else if (totalHours >= expectedHoursByNow * 0.8) {
-      complianceStatus = 'On Track';
+      complianceStatus = "On Track";
     } else if (totalHours >= expectedHoursByNow * 0.5) {
-      complianceStatus = 'At Risk';
+      complianceStatus = "At Risk";
     } else {
-      complianceStatus = 'Non-compliant';
+      complianceStatus = "Non-compliant";
     }
 
     return {
@@ -88,22 +95,24 @@ export async function getCPDSummary(): Promise<CPDSummary> {
       cycleEndDate,
     };
   } catch (error) {
-    console.error('Error fetching CPD summary:', error);
-    throw new Error('Failed to fetch CPD summary');
+    console.error("Error fetching CPD summary:", error);
+    throw new Error("Failed to fetch CPD summary");
   }
 }
 
 export async function getActivityCompliance(): Promise<ActivityCompliance> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   try {
     const activities = await ActivityQueries.getActivitiesByUserId(user.id);
-    
+
     let compliantCount = 0;
     let nonCompliantCount = 0;
     const nonCompliantReasons = {
@@ -113,23 +122,27 @@ export async function getActivityCompliance(): Promise<ActivityCompliance> {
       other: 0,
     };
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       if (activity.isDraft) return;
 
       let isCompliant = true;
-      
+
       // Check for missing reflection
-      if (!activity.reflection || activity.reflection.trim().length < 50) {
+      if (
+        !activity.reflection
+        // || activity.reflection.trim().length < 50
+      ) {
+        console.log("Non-compliant due to missing reflection", activity);
         nonCompliantReasons.missingReflection++;
         isCompliant = false;
       }
-      
+
       // Check for evidence (file upload)
       if (!activity.evidenceFileUrl) {
         nonCompliantReasons.noEvidence++;
         isCompliant = false;
       }
-      
+
       // Check category requirements (simplified logic)
       if (!activity.clinical && !activity.nonClinical) {
         nonCompliantReasons.wrongCategory++;
@@ -149,28 +162,30 @@ export async function getActivityCompliance(): Promise<ActivityCompliance> {
       nonCompliantReasons,
     };
   } catch (error) {
-    console.error('Error fetching activity compliance:', error);
-    throw new Error('Failed to fetch activity compliance');
+    console.error("Error fetching activity compliance:", error);
+    throw new Error("Failed to fetch activity compliance");
   }
 }
 
 export async function getCategoryBreakdown(): Promise<CategoryBreakdown> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   try {
     const activities = await ActivityQueries.getActivitiesByUserId(user.id);
-    
+
     let clinical = 0;
     let nonClinical = 0;
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       if (activity.isDraft) return;
-      
+
       const hours = Number(activity.hours || 0);
       if (activity.clinical) {
         clinical += hours;
@@ -182,28 +197,30 @@ export async function getCategoryBreakdown(): Promise<CategoryBreakdown> {
 
     return { clinical, nonClinical };
   } catch (error) {
-    console.error('Error fetching category breakdown:', error);
-    throw new Error('Failed to fetch category breakdown');
+    console.error("Error fetching category breakdown:", error);
+    throw new Error("Failed to fetch category breakdown");
   }
 }
 
 export async function getLearningFormatBreakdown(): Promise<LearningFormatBreakdown> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   try {
     const activities = await ActivityQueries.getActivitiesByUserId(user.id);
-    
+
     let interactive = 0;
     let selfPaced = 0;
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       if (activity.isDraft) return;
-      
+
       const hours = Number(activity.hours || 0);
       if (activity.interactive) {
         interactive += hours;
@@ -214,50 +231,62 @@ export async function getLearningFormatBreakdown(): Promise<LearningFormatBreakd
 
     return { interactive, selfPaced };
   } catch (error) {
-    console.error('Error fetching learning format breakdown:', error);
-    throw new Error('Failed to fetch learning format breakdown');
+    console.error("Error fetching learning format breakdown:", error);
+    throw new Error("Failed to fetch learning format breakdown");
   }
 }
 
 export async function getMonthlyProgress(): Promise<MonthlyProgress[]> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   try {
     const activities = await ActivityQueries.getActivitiesByUserId(user.id);
-    
+
     const monthlyData: { [key: string]: number } = {};
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
 
     // Initialize all months
-    months.forEach(month => {
+    months.forEach((month) => {
       monthlyData[month] = 0;
     });
 
-    activities.forEach(activity => {
+    activities.forEach((activity) => {
       if (activity.isDraft) return;
-      
+
       // Use the activity date instead of completedAt
       const activityDate = new Date(activity.date);
       const month = months[activityDate.getMonth()];
       const hours = Number(activity.hours || 0);
-      
+
       monthlyData[month] += hours;
     });
 
-    return months.map(month => ({
+    return months.map((month) => ({
       month,
       hours: monthlyData[month],
     }));
   } catch (error) {
-    console.error('Error fetching monthly progress:', error);
-    throw new Error('Failed to fetch monthly progress');
+    console.error("Error fetching monthly progress:", error);
+    throw new Error("Failed to fetch monthly progress");
   }
 }

@@ -1,6 +1,7 @@
 // app/lib/dashboard.ts
 import { createClient } from "@/app/lib/supabase/server";
 import { ActivityQueries } from "@/lib/db/queries/activity";
+import { getCycleFromUrlOrCurrent } from "@/lib/utils";
 
 export interface CPDSummary {
   totalHours: number;
@@ -57,27 +58,36 @@ export interface DashboardData {
   recentActivities: RecentActivity[];
 }
 
-export async function getDashboardData(): Promise<DashboardData> {
+export async function getDashboardData(
+  cycleParam?: string | null
+): Promise<DashboardData> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("User not authenticated");
 
-  // SINGLE query for all activities
+  // Get the selected cycle from URL parameter or use current cycle
+  const selectedCycle = getCycleFromUrlOrCurrent(cycleParam ?? null);
+
+  // Query for activities filtered by cycle dates at database level
   // ⚠️ Ensure ActivityQueries.getActivitiesByUserId selects only needed columns:
   // id, isDraft, hours, reflection, evidenceFileUrl, clinical, nonClinical, interactive, date
-  const activities = await ActivityQueries.getActivitiesByUserId(user.id);
+  const activities = await ActivityQueries.getActivitiesByUserId(
+    user.id,
+    selectedCycle.startDate,
+    selectedCycle.endDate
+  );
 
-  // Helpers
+  // Helpers - use selected cycle dates instead of calendar year
   const now = new Date();
-  const cycleStart = new Date(now.getFullYear(), 0, 1);
-  const cycleEnd = new Date(now.getFullYear(), 11, 31);
+  const cycleStart = selectedCycle.startDate;
+  const cycleEnd = selectedCycle.endDate;
   const totalDays = Math.ceil(
-    (cycleEnd.getTime() - cycleStart.getTime()) / 86400000
+    (cycleEnd.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)
   );
   const daysPassed = Math.ceil(
-    (now.getTime() - cycleStart.getTime()) / 86400000
+    (now.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)
   );
   const daysLeft = Math.max(0, totalDays - daysPassed);
   const requiredHours = 80;
@@ -137,7 +147,10 @@ export async function getDashboardData(): Promise<DashboardData> {
 
     // Compliance per-activity
     let isCompliant = true;
-    if (!a.reflection || a.reflection.trim().length < 50) {
+    if (
+      !a.reflection
+      //  || a.reflection.trim().length < 50
+    ) {
       nonCompliantReasons.missingReflection++;
       isCompliant = false;
     }
