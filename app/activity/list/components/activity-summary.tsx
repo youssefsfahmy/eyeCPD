@@ -31,7 +31,13 @@ export default function ActivitySummary({
         if (activity.clinical) acc.clinicalHours += hours;
         if (activity.nonClinical) acc.nonClinicalHours += hours;
         if (activity.interactive) acc.interactiveHours += hours;
-        if (activity.therapeutic) acc.therapeuticHours += hours;
+        if (activity.therapeutic) {
+          acc.therapeuticHours += hours;
+          // Interactive therapeutic hours are both interactive AND therapeutic
+          if (activity.interactive) {
+            acc.interactiveTherapeuticHours += hours;
+          }
+        }
 
         return acc;
       },
@@ -41,6 +47,7 @@ export default function ActivitySummary({
         nonClinicalHours: 0,
         interactiveHours: 0,
         therapeuticHours: 0,
+        interactiveTherapeuticHours: 0,
         totalActivities: 0,
       }
     );
@@ -50,16 +57,37 @@ export default function ActivitySummary({
 
   // CPD Requirements
   const requiredTotalHours = isTherapeuticallyEndorsed ? 30 : 20;
-  const requiredTherapeuticHours = isTherapeuticallyEndorsed ? 10 : 0;
+  const requiredClinicalHours = isTherapeuticallyEndorsed ? 25 : 15;
+  const requiredInteractiveHours = 5; // Same for everyone
+  const requiredTherapeuticHours = 10; // Only for therapeutically endorsed
+  const requiredInteractiveTherapeuticHours = 2; // Min 2 out of 10 therapeutic hours
+  const maxNonClinicalHours = 5; // Maximum allowed for everyone
 
+  // Progress calculations
   const totalProgress = Math.min(
     (stats.totalHours / requiredTotalHours) * 100,
     100
   );
-  const therapeuticProgress =
-    requiredTherapeuticHours > 0
-      ? Math.min((stats.therapeuticHours / requiredTherapeuticHours) * 100, 100)
-      : 100;
+  const clinicalProgress = Math.min(
+    (stats.clinicalHours / requiredClinicalHours) * 100,
+    100
+  );
+  const interactiveProgress = Math.min(
+    (stats.interactiveHours / requiredInteractiveHours) * 100,
+    100
+  );
+  const therapeuticProgress = isTherapeuticallyEndorsed
+    ? Math.min((stats.therapeuticHours / requiredTherapeuticHours) * 100, 100)
+    : 100;
+  const interactiveTherapeuticProgress = isTherapeuticallyEndorsed
+    ? Math.min(
+        (stats.interactiveTherapeuticHours /
+          requiredInteractiveTherapeuticHours) *
+          100,
+        100
+      )
+    : 100;
+  const nonClinicalUsage = (stats.nonClinicalHours / maxNonClinicalHours) * 100;
 
   const StatCard = ({
     title,
@@ -120,11 +148,13 @@ export default function ActivitySummary({
           gridTemplateColumns: {
             xs: "1fr",
             sm: "1fr 1fr",
-            md: "repeat(4, 1fr)",
+            md: "repeat(3, 1fr)",
+            lg: isTherapeuticallyEndorsed ? "repeat(6, 1fr)" : "repeat(4, 1fr)",
           },
           gap: 3,
         }}
       >
+        {/* Total Hours */}
         <StatCard
           title="Total Hours"
           value={stats.totalHours}
@@ -139,12 +169,37 @@ export default function ActivitySummary({
           }
         />
 
+        {/* Clinical Hours */}
         <StatCard
-          title="Activities"
-          value={stats.totalActivities}
-          color="primary"
+          title="Clinical Hours"
+          value={stats.clinicalHours}
+          target={requiredClinicalHours}
+          progress={clinicalProgress}
+          color={
+            clinicalProgress >= 100
+              ? "success"
+              : clinicalProgress >= 75
+              ? "warning"
+              : "primary"
+          }
         />
 
+        {/* Interactive Hours */}
+        <StatCard
+          title="Interactive Hours"
+          value={stats.interactiveHours}
+          target={requiredInteractiveHours}
+          progress={interactiveProgress}
+          color={
+            interactiveProgress >= 100
+              ? "success"
+              : interactiveProgress >= 75
+              ? "warning"
+              : "primary"
+          }
+        />
+
+        {/* Therapeutic Hours (only for therapeutically endorsed) */}
         {isTherapeuticallyEndorsed && (
           <StatCard
             title="Therapeutic Hours"
@@ -161,10 +216,36 @@ export default function ActivitySummary({
           />
         )}
 
+        {/* Interactive Therapeutic Hours (only for therapeutically endorsed) */}
+        {isTherapeuticallyEndorsed && (
+          <StatCard
+            title="Interactive Therapeutic"
+            value={stats.interactiveTherapeuticHours}
+            target={requiredInteractiveTherapeuticHours}
+            progress={interactiveTherapeuticProgress}
+            color={
+              interactiveTherapeuticProgress >= 100
+                ? "success"
+                : interactiveTherapeuticProgress >= 75
+                ? "warning"
+                : "secondary"
+            }
+          />
+        )}
+
+        {/* Non-Clinical Hours (showing usage vs max allowed) */}
         <StatCard
-          title="Interactive Hours"
-          value={stats.interactiveHours}
-          color="success"
+          title="Non-Clinical Hours"
+          value={stats.nonClinicalHours}
+          target={maxNonClinicalHours}
+          progress={nonClinicalUsage}
+          color={
+            nonClinicalUsage > 100
+              ? "error"
+              : nonClinicalUsage >= 80
+              ? "warning"
+              : "success"
+          }
         />
       </Box>
 
@@ -180,12 +261,44 @@ export default function ActivitySummary({
           <Typography variant="subtitle2" gutterBottom>
             📋 CPD Requirements
           </Typography>
-          <Typography variant="body2" gutterBottom>
-            {isTherapeuticallyEndorsed
-              ? "Therapeutically Endorsed: 30 hours total (including 10 therapeutic hours)"
-              : "Not Therapeutically Endorsed: 20 hours total"}
-          </Typography>
-          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+
+          {isTherapeuticallyEndorsed ? (
+            <Box>
+              <Typography variant="body2" gutterBottom>
+                <strong>Therapeutically Endorsed Requirements:</strong>
+              </Typography>
+              <Typography variant="body2" component="ul" sx={{ mb: 1, pl: 2 }}>
+                <li>Total Hours: 30</li>
+                <li>Clinical Hours: minimum 25</li>
+                <li>Interactive Hours: minimum 5</li>
+                <li>
+                  Therapeutic Hours: minimum 10 (counts towards clinical hours)
+                </li>
+                <li>
+                  Interactive Therapeutic Hours: minimum 2 (out of 10
+                  therapeutic hours)
+                </li>
+                <li>Non-Clinical Hours: maximum 5</li>
+              </Typography>
+            </Box>
+          ) : (
+            <Box>
+              <Typography variant="body2" gutterBottom>
+                <strong>Not Therapeutically Endorsed Requirements:</strong>
+              </Typography>
+              <Typography variant="body2" component="ul" sx={{ mb: 1, pl: 2 }}>
+                <li>Total Hours: 20</li>
+                <li>Clinical Hours: minimum 15</li>
+                <li>Interactive Hours: minimum 5</li>
+                <li>Non-Clinical Hours: maximum 5</li>
+              </Typography>
+            </Box>
+          )}
+
+          <Typography
+            variant="caption"
+            sx={{ opacity: 0.8, display: "block", mt: 1 }}
+          >
             Note: Only published activities count toward CPD requirements. Draft
             activities are excluded from calculations.
           </Typography>
