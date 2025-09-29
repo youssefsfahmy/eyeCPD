@@ -1,0 +1,96 @@
+import { StyleSheet } from "@react-pdf/renderer";
+
+export const styles = StyleSheet.create({
+  page: { padding: 32, fontSize: 11, fontFamily: "Helvetica" },
+  header: { fontSize: 18, marginBottom: 8, fontWeight: 700 },
+  subheader: { fontSize: 12, marginBottom: 16, color: "#555" },
+  cardRow: { flexDirection: "row", gap: 12, marginBottom: 16 },
+  card: {
+    flexGrow: 1,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#eee",
+    padding: 12,
+  },
+  cardLabel: { fontSize: 10, color: "#666", marginBottom: 4 },
+  cardValue: { fontSize: 16, fontWeight: 700 },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: "#f7f7f7",
+    padding: 8,
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+  },
+  th: { flex: 1, fontWeight: 700 },
+  row: {
+    flexDirection: "row",
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  td: { flex: 1 },
+  footer: { marginTop: 16, fontSize: 10, color: "#777" },
+  // New styles for detailed activity pages
+  activityHeader: {
+    fontSize: 16,
+    marginBottom: 16,
+    fontWeight: 700,
+    color: "#2c3e50",
+  },
+  activitySection: {
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 6,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 700,
+    marginBottom: 8,
+    color: "#34495e",
+  },
+  sectionContent: {
+    fontSize: 11,
+    lineHeight: 1.5,
+    color: "#2c3e50",
+  },
+  detailRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontSize: 10,
+    color: "#7f8c8d",
+    width: 80,
+    marginRight: 12,
+    fontWeight: 700,
+  },
+  detailValue: {
+    fontSize: 11,
+    color: "#2c3e50",
+    flex: 1,
+  },
+  categoryBadge: {
+    backgroundColor: "#3498db",
+    color: "white",
+    padding: 4,
+    borderRadius: 4,
+    fontSize: 9,
+    marginRight: 6,
+    marginBottom: 4,
+  },
+  tagContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 8,
+  },
+  tag: {
+    backgroundColor: "#ecf0f1",
+    color: "#2c3e50",
+    padding: 3,
+    borderRadius: 3,
+    fontSize: 9,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+});

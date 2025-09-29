@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography, Skeleton } from "@mui/material";
+import { Box, Grid, Paper, Typography, Skeleton, Button } from "@mui/material";
 import { Suspense } from "react";
 import { getDashboardData } from "./actions";
 import ActivityComplianceCard from "./components/activity-compliance-card";
@@ -34,7 +34,24 @@ export default async function CPDDashboard({ cycle }: CPDDashboardProps) {
             </Typography>
           </Box>
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}></Grid>
+        <Grid
+          size={{ xs: 12, sm: 6, md: 3 }}
+          sx={{
+            display: "flex",
+            alignContent: "center",
+            justifyItems: "flex-end",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            variant="outlined"
+            target="_blank"
+            href={`/api/report/${cycle}`}
+          >
+            Generate Report
+          </Button>
+        </Grid>
         <Grid
           size={{ xs: 12, sm: 6, md: 3 }}
           sx={{ alignContent: "center", justifyItems: "flex-end" }}
