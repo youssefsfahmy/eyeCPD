@@ -70,6 +70,7 @@ export default function ProfileForm({
     initialState.phone,
     initialState.registrationNumber,
     router,
+    refreshProfile,
   ]);
 
   return (

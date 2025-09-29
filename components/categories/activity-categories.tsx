@@ -34,10 +34,20 @@ interface Props {
     }>
   >;
   hours?: string | number; // pass in hours for this activity
+  type?: "goal" | "activity";
+  numberOfColumns?: 1 | 2;
+  disableTitles?: boolean;
 }
 
 function ActivityCategories(props: Props) {
-  const { categories, setCategories, hours = 1 } = props; // default 1h per activity
+  const {
+    categories,
+    setCategories,
+    hours = 1,
+    type = "activity",
+    numberOfColumns = 1,
+    disableTitles = false,
+  } = props; // default 1h per activity
   const { isTherapeuticallyEndorsed } = useProfile();
 
   const [warning, setWarning] = useState<string | null>(null);
@@ -59,17 +69,27 @@ function ActivityCategories(props: Props) {
       // Unendorsed optometrists → ❌ No Therapeutic possible.
       if (!isTherapeuticallyEndorsed && name === "therapeutic") {
         setWarning(
-          "Therapeutic activities are not allowed for unendorsed optometrists."
+          `Therapeutic ${
+            type === "activity" ? "activities" : "goals"
+          } are not allowed for unendorsed optometrists.`
         );
         return;
       }
       // Rule: Clinical and Non-Clinical are mutually exclusive
       if (name === "clinical" && categories.nonClinical) {
-        setWarning("An activity cannot be both Clinical and Non-Clinical.");
+        setWarning(
+          `${
+            type === "activity" ? "Activities" : "Goals"
+          } cannot be both Clinical and Non-Clinical.`
+        );
         return;
       }
       if (name === "nonClinical" && categories.clinical) {
-        setWarning("An activity cannot be both Non-Clinical and Clinical.");
+        setWarning(
+          `${
+            type === "activity" ? "Activities" : "Goals"
+          } cannot be both Non-Clinical and Clinical.`
+        );
         return;
       }
 
@@ -78,7 +98,11 @@ function ActivityCategories(props: Props) {
         (name === "therapeutic" && !categories.clinical) ||
         (categories.therapeutic && categories.clinical && name === "clinical")
       ) {
-        setWarning("Therapeutic activities must also be Clinical.");
+        setWarning(
+          `Therapeutic ${
+            type === "activity" ? "activities" : "goals"
+          } must also be Clinical.`
+        );
         return;
       }
 
@@ -95,7 +119,7 @@ function ActivityCategories(props: Props) {
         sx={{
           transition: "all 0.3s",
           cursor: "pointer",
-          width: "100%",
+          width: numberOfColumns === 2 ? "48%" : "100%",
           borderRadius: 1,
           border: 1,
           borderColor: state ? "primary.main" : "grey.300",
@@ -133,30 +157,38 @@ function ActivityCategories(props: Props) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          fontWeight: "bold",
-        }}
-      >
-        <DescriptionOutlinedIcon sx={{ color: "primary.main" }} /> Categories
-      </Box>
-      <Divider />
-      <Typography variant="h5" color="text.secondary">
-        CPD Categories
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Select the categories that best describe this activity. Each activity
-        will receive full hours.
-      </Typography>
+      {!disableTitles && (
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              fontWeight: "bold",
+            }}
+          >
+            <DescriptionOutlinedIcon sx={{ color: "primary.main" }} />{" "}
+            Categories
+          </Box>
+          <Divider />
+          <Typography variant="h5" color="text.secondary">
+            CPD Categories
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Select the categories that best describe this {type}.{" "}
+            {type === "activity" && "Each activity will receive full hours."}
+          </Typography>
+        </>
+      )}
 
       {/* Warning Message */}
       {warning && <Alert severity="warning">{warning}</Alert>}
 
       {/* Activity Types */}
-      <FormControl component="fieldset" sx={{ display: "flex", gap: 2 }}>
+      <FormControl
+        component="fieldset"
+        sx={{ display: "flex", flexWrap: "wrap", gap: 2, flexDirection: "row" }}
+      >
         <ActivityCategory
           state={categories.clinical}
           heading="Clinical"
@@ -242,36 +274,40 @@ function ActivityCategories(props: Props) {
       </FormControl>
 
       {/* Summary Box */}
-      <Divider />
-      <Box
-        sx={{
-          borderRadius: 2,
-          p: 2,
-          border: "1px solid",
-          borderColor: "grey.300",
-          backgroundColor: "#fafafa",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-        }}
-      >
-        <Typography variant="h6" color="text.primary">
-          Summary
-        </Typography>
-        <Typography variant="body2">Total Hours: {totalHours}</Typography>
-        <Typography variant="body2">Clinical Hours: {clinicalHours}</Typography>
-        <Typography variant="body2">
-          Non-Clinical Hours: {nonClinicalHours}
-        </Typography>
-        <Typography variant="body2">
-          Interactive Hours: {interactiveHours}
-        </Typography>
-        {isTherapeuticallyEndorsed && (
-          <Typography variant="body2">
-            Therapeutic Hours: {therapeuticHours}
+      {type === "activity" && <Divider />}
+      {type === "activity" && (
+        <Box
+          sx={{
+            borderRadius: 2,
+            p: 2,
+            border: "1px solid",
+            borderColor: "grey.300",
+            backgroundColor: "#fafafa",
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+          }}
+        >
+          <Typography variant="h6" color="text.primary">
+            Summary
           </Typography>
-        )}
-      </Box>
+          <Typography variant="body2">Total Hours: {totalHours}</Typography>
+          <Typography variant="body2">
+            Clinical Hours: {clinicalHours}
+          </Typography>
+          <Typography variant="body2">
+            Non-Clinical Hours: {nonClinicalHours}
+          </Typography>
+          <Typography variant="body2">
+            Interactive Hours: {interactiveHours}
+          </Typography>
+          {isTherapeuticallyEndorsed && (
+            <Typography variant="body2">
+              Therapeutic Hours: {therapeuticHours}
+            </Typography>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

@@ -68,6 +68,11 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  "/goal/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   // Profile routes - any authenticated user
   "/account/*": {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
@@ -85,6 +90,16 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
   },
 
   "/api/activity/*": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/goal": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  "/api/goal/*": {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
     requiresActiveSubscription: false,
   },

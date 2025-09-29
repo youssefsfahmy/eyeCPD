@@ -5,6 +5,7 @@ import {
   Dashboard,
   Person,
   ListAlt,
+  TrackChanges,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -13,6 +14,12 @@ export const navigationItems = [
     name: "Dashboard",
     path: "/opt",
     icon: <Dashboard />,
+    authRequired: true,
+  },
+  {
+    name: "Learning Goals",
+    path: "/goal/list",
+    icon: <TrackChanges />,
     authRequired: true,
   },
   {

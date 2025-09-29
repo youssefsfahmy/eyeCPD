@@ -88,6 +88,26 @@ export const activityRecords = pgTable("activity_record", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const goals = pgTable("goals", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  year: text("year").notNull(), // e.g., "2025"
+  description: text("description").notNull().default(""), // New description field
+  title: text("title").notNull(),
+  tags: text("tags").array().default([]), // Array of tags for categorization
+  clinical: boolean("clinical").notNull().default(false),
+  nonClinical: boolean("non_clinical").notNull().default(false),
+  interactive: boolean("interactive").notNull().default(false),
+  therapeutic: boolean("therapeutic").notNull().default(false),
+  targetHours: decimal("target_hours", { precision: 4, scale: 2 }), // nullable
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // ✅ RELATIONS
 // Note: We don't define relations to Supabase auth.users table since it's managed by Supabase
 
@@ -103,7 +123,8 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
     fields: [profiles.userId],
     references: [subscriptions.userId],
   }),
-  activityRecords: many(activityRecords), // New relation
+  activityRecords: many(activityRecords),
+  goals: many(goals), // New relation
 }));
 
 export const activityRecordRelations = relations(
@@ -115,6 +136,13 @@ export const activityRecordRelations = relations(
     }),
   })
 );
+
+export const goalsRelations = relations(goals, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [goals.userId],
+    references: [profiles.userId],
+  }),
+}));
 
 // ✅ ENUMS
 export enum SubscriptionStatus {
@@ -152,6 +180,9 @@ export type NewSubscription = typeof subscriptions.$inferInsert;
 
 export type ActivityRecord = typeof activityRecords.$inferSelect;
 export type NewActivityRecord = typeof activityRecords.$inferInsert;
+
+export type Goal = typeof goals.$inferSelect;
+export type NewGoal = typeof goals.$inferInsert;
 
 export interface EvidenceFile {
   fileName: string;

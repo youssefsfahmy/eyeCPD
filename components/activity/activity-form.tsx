@@ -27,7 +27,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActivityRecord } from "@/lib/db/schema";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import ActivityCategories from "./activity-categories";
+import ActivityCategories from "../categories/activity-categories";
 interface ActivityFormProps {
   activity?: ActivityRecord;
   onSuccess?: () => void;
