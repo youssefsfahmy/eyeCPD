@@ -13,7 +13,8 @@ export class ActivityQueries {
   static async getActivitiesByUserId(
     userId: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
+    includeDraft?: boolean
   ): Promise<ActivityRecord[]> {
     // Build where conditions dynamically
     const conditions = [eq(activityRecords.userId, userId)];
@@ -28,6 +29,9 @@ export class ActivityQueries {
       conditions.push(
         lte(activityRecords.date, endDate.toISOString().split("T")[0])
       );
+    }
+    if (!includeDraft) {
+      conditions.push(eq(activityRecords.isDraft, false));
     }
 
     const result = await db

@@ -14,11 +14,15 @@ import PeriodSelector from "./period-selector";
 
 interface CPDDashboardProps {
   cycle?: string | null;
+  draft?: boolean;
 }
 
-export default async function CPDDashboard({ cycle }: CPDDashboardProps) {
+export default async function CPDDashboard({
+  cycle,
+  draft,
+}: CPDDashboardProps) {
   // Fetch all dashboard data once
-  const dashboardData = await getDashboardData(cycle);
+  const dashboardData = await getDashboardData(cycle, draft);
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: "100%", width: "100%" }} py={3}>
@@ -41,13 +45,14 @@ export default async function CPDDashboard({ cycle }: CPDDashboardProps) {
             alignContent: "center",
             justifyItems: "flex-end",
             justifyContent: "flex-end",
-            alignItems: "center",
+            alignItems: "flex-start",
+            py: 1,
           }}
         >
           <Button
             variant="outlined"
             target="_blank"
-            href={`/api/report/${cycle}`}
+            href={`/api/report/${cycle}?draft=${draft ? "true" : "false"}`}
           >
             Generate Report
           </Button>

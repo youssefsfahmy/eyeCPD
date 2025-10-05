@@ -24,9 +24,16 @@ async function getCurrentUser(): Promise<User> {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ year?: string }> }
+  {
+    params,
+  }: {
+    params: Promise<{ year?: string }>;
+  }
 ) {
   const { year: yearParam } = await params;
+  const { searchParams } = new URL(req.url);
+  const draft = searchParams.get("draft");
+
   const selectedCycle = getCycleFromUrlOrCurrent(yearParam ?? null);
   const user = await getCurrentUser();
   const profile = await ProfileQueries.getProfileByUserId(user.id);
@@ -37,7 +44,8 @@ export async function GET(
   const activities = await ActivityQueries.getActivitiesByUserId(
     user.id,
     selectedCycle.startDate,
-    selectedCycle.endDate
+    selectedCycle.endDate,
+    draft === "true"
   );
 
   const stream = await renderToStream(

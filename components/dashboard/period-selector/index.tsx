@@ -8,6 +8,8 @@ import {
   Box,
   Typography,
   Chip,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useState, useEffect } from "react";
@@ -19,6 +21,35 @@ export default function PeriodSelector() {
   const searchParams = useSearchParams();
   const [cycles, setCycles] = useState<CPDCycle[]>([]);
   const [currentCycle, setCurrentCycle] = useState<string>("");
+  const [includeDraft, setIncludeDraft] = useState<boolean>(false);
+
+  const handleToggleDraft = (checked: boolean) => {
+    setIncludeDraft(checked);
+    // Update URL with new draft parameter
+    const params = new URLSearchParams(searchParams.toString());
+    if (checked) {
+      params.set("draft", "true");
+    } else {
+      params.delete("draft");
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleCycleChange = (event: SelectChangeEvent) => {
+    const selectedValue = event.target.value;
+    const selectedCycleData = cycles.find(
+      (cycle) => cycle.value === selectedValue
+    );
+
+    if (selectedCycleData) {
+      setCurrentCycle(selectedValue);
+
+      // Update URL with new cycle parameter
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("cycle", selectedValue);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  };
 
   // Generate CPD cycles (Dec 1 to Nov 30 of following year)
   const generateCycles = (): CPDCycle[] => {
@@ -63,6 +94,13 @@ export default function PeriodSelector() {
 
     // Get cycle from URL query parameter
     const cycleFromUrl = searchParams.get("cycle");
+    const draftFromUrl = searchParams.get("draft");
+
+    if (draftFromUrl === "true") {
+      setIncludeDraft(true);
+    } else {
+      setIncludeDraft(false);
+    }
 
     if (
       cycleFromUrl &&
@@ -82,22 +120,6 @@ export default function PeriodSelector() {
       }
     }
   }, [searchParams, router]);
-
-  const handleCycleChange = (event: SelectChangeEvent) => {
-    const selectedValue = event.target.value;
-    const selectedCycleData = cycles.find(
-      (cycle) => cycle.value === selectedValue
-    );
-
-    if (selectedCycleData) {
-      setCurrentCycle(selectedValue);
-
-      // Update URL with new cycle parameter
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("cycle", selectedValue);
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
-  };
 
   return (
     <Box sx={{ minWidth: 300, width: "max-content" }}>
@@ -146,6 +168,24 @@ export default function PeriodSelector() {
             </MenuItem>
           ))}
         </Select>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={includeDraft}
+              onChange={(e) => handleToggleDraft(e.target.checked)}
+              color="warning"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                {includeDraft
+                  ? "Draft Activities are included"
+                  : "Draft Activities are excluded"}
+              </Typography>
+            </Box>
+          }
+        />
       </FormControl>
     </Box>
   );

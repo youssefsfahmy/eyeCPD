@@ -60,7 +60,8 @@ export interface DashboardData {
 }
 
 export async function getDashboardData(
-  cycleParam?: string | null
+  cycleParam?: string | null,
+  draft?: boolean
 ): Promise<DashboardData> {
   const supabase = await createClient();
   const {
@@ -77,7 +78,8 @@ export async function getDashboardData(
   const activities = await ActivityQueries.getActivitiesByUserId(
     user.id,
     selectedCycle.startDate,
-    selectedCycle.endDate
+    selectedCycle.endDate,
+    draft
   );
 
   // Helpers - use selected cycle dates instead of calendar year
@@ -128,8 +130,6 @@ export async function getDashboardData(
     Object.fromEntries(months.map((m) => [m, 0])) as any;
 
   for (const a of activities) {
-    if (a.isDraft) continue;
-
     const hours = Number(a.hours || 0);
     totalHours += hours;
 
@@ -181,7 +181,6 @@ export async function getDashboardData(
 
   // Get recent activities (limit to 5 for dashboard)
   const recentActivities = activities
-    .filter((a) => !a.isDraft)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5)
     .map((a) => ({
