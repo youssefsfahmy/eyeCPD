@@ -92,4 +92,16 @@ export class ProfileQueries {
   static async getProfilesByRole(role: string): Promise<Profile[]> {
     return await db.select().from(profiles).where(eq(profiles.role, role));
   }
+
+  /**
+   * Get Required Hours by User ID
+   */
+  static async getRequiredHoursByUserId(userId: string): Promise<number> {
+    const profile = await this.getProfileByUserId(userId);
+    const baseHours = 20;
+    if (profile?.isTherapeuticallyEndorsed) {
+      return baseHours + 10; // 30 hours for therapeutically endorsed users
+    }
+    return baseHours;
+  }
 }

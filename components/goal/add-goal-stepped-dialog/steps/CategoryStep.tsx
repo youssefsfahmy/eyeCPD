@@ -111,12 +111,14 @@ export default function CategoryStep({
         />
       </Paper>
 
-      <Paper sx={{ p: 2, backgroundColor: "info.light" }}>
+      <Paper
+        sx={{ p: 2, backgroundColor: "info.light", color: "info.contrastText" }}
+      >
         <Button
           onClick={() => setShowInspiration(!showInspiration)}
           startIcon={<Lightbulb />}
           endIcon={showInspiration ? <ExpandLess /> : <ExpandMore />}
-          sx={{ mb: showInspiration ? 2 : 0 }}
+          sx={{ mb: showInspiration ? 2 : 0, color: "info.contrastText" }}
         >
           Need inspiration?
         </Button>

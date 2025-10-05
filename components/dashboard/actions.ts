@@ -1,6 +1,7 @@
 // app/lib/dashboard.ts
 import { createClient } from "@/app/lib/supabase/server";
 import { ActivityQueries } from "@/lib/db/queries/activity";
+import { ProfileQueries } from "@/lib/db/queries/profile";
 import { getCycleFromUrlOrCurrent } from "@/lib/utils";
 
 export interface CPDSummary {
@@ -90,7 +91,7 @@ export async function getDashboardData(
     (now.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)
   );
   const daysLeft = Math.max(0, totalDays - daysPassed);
-  const requiredHours = 80;
+  const requiredHours = await ProfileQueries.getRequiredHoursByUserId(user.id);
   const expectedByNow = (daysPassed / totalDays) * requiredHours;
 
   // Accumulators

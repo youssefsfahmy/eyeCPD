@@ -4,7 +4,7 @@ import { Page, Text, View } from "@react-pdf/renderer";
 import { styles } from "../styles";
 import { User } from "@supabase/supabase-js";
 
-function summarize(activities: ActivityRecord[]) {
+function summarize(activities: ActivityRecord[], requiredHours = 30) {
   const totalHours = activities.reduce(
     (s, a) => s + (parseFloat(a.hours) || 0),
     0
@@ -48,7 +48,6 @@ function summarize(activities: ActivityRecord[]) {
   ).size;
 
   // CPD Requirements
-  const requiredHours = 80;
   const progressPercentage = Math.min(100, (totalHours / requiredHours) * 100);
 
   return {
@@ -74,7 +73,8 @@ const SummaryPage = ({
   profile: Profile;
   user: User;
 }) => {
-  const summary = summarize(activities);
+  const requiredHours = profile.isTherapeuticallyEndorsed ? 30 : 20;
+  const summary = summarize(activities, requiredHours);
 
   return (
     <Page size="A4" style={styles.page}>

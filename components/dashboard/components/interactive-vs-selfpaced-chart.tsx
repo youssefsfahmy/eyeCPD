@@ -50,6 +50,9 @@ export default async function InteractiveVsSelfPacedChart(props: {
         ]}
         width={300}
         height={200}
+        slotProps={{
+          legend: { direction: "horizontal", sx: { mb: 2 } },
+        }}
       />
     </Box>
   );

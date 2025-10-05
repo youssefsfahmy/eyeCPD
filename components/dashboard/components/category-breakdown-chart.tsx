@@ -45,6 +45,9 @@ export default async function CategoryBreakdownChart(props: {
         ]}
         width={300}
         height={200}
+        slotProps={{
+          legend: { direction: "horizontal", sx: { mb: 2 } },
+        }}
       />
     </Box>
   );

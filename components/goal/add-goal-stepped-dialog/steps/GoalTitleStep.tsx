@@ -159,7 +159,9 @@ export default function GoalTitleStep({
         onChange={(e) => handleTitleChange(e.target.value)}
         placeholder={currentPlaceholder}
         required
-        helperText={`${formData.title.trim().length}/3 characters minimum`}
+        helperText={
+          'Min 3 characters. E.g. "Improve my contact lens fitting skills"'
+        }
         sx={{ mb: 3 }}
       />
 

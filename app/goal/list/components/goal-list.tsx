@@ -208,10 +208,15 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
         sx={{
           p: 3,
           mb: 3,
+          border: 1,
+          borderColor:
+            compliance.hasGoals && compliance.hasClinicalGoal
+              ? "success.main"
+              : "warning.main",
           backgroundColor:
             compliance.hasGoals && compliance.hasClinicalGoal
-              ? "success.light"
-              : "warning.light",
+              ? "success.50"
+              : "warning.50",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -220,7 +225,9 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
           ) : (
             <Warning sx={{ color: "warning.main", mr: 1 }} />
           )}
-          <Typography variant="h6">Compliance Status</Typography>
+          <Typography variant="h6" sx={{ color: "text.primary" }}>
+            Compliance Status
+          </Typography>
         </Box>
 
         <Typography variant="body2" color="text.secondary" paragraph>

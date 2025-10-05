@@ -136,6 +136,88 @@ export default function ActivitySummary({
     </Card>
   );
 
+  const DoubleStatCard = ({
+    title1,
+    title2,
+    value1,
+    value2,
+    target1,
+    target2,
+    progress1,
+    progress2,
+    color1 = "primary",
+    color2 = "primary",
+  }: {
+    title1: string;
+    title2: string;
+    value1: number;
+    value2: number;
+    target1?: number;
+    target2?: number;
+    progress1?: number;
+    progress2?: number;
+    color1?: "primary" | "secondary" | "success" | "warning" | "error";
+    color2?: "primary" | "secondary" | "success" | "warning" | "error";
+  }) => (
+    <Card sx={{ height: "100%" }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          {title1}
+        </Typography>
+        <Typography variant="h4" color={color1} gutterBottom>
+          {value1}
+          {target1 && (
+            <Typography component="span" variant="h6" color="text.secondary">
+              /{target1}
+            </Typography>
+          )}
+        </Typography>
+        {progress1 !== undefined && (
+          <Box sx={{ mt: 1 }}>
+            <LinearProgress
+              variant="determinate"
+              value={progress1}
+              color={color1}
+              sx={{ height: 8, borderRadius: 4 }}
+            />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.5, display: "block" }}
+            >
+              {title1}: {progress1.toFixed(1)}% complete
+            </Typography>
+          </Box>
+        )}{" "}
+        <Typography variant="h4" color={color2} gutterBottom>
+          {value2}
+          {target2 && (
+            <Typography component="span" variant="h6" color="text.secondary">
+              /{target2}
+            </Typography>
+          )}
+        </Typography>
+        {progress2 !== undefined && (
+          <Box sx={{ mt: 1 }}>
+            <LinearProgress
+              variant="determinate"
+              value={progress2}
+              color={color2}
+              sx={{ height: 8, borderRadius: 4 }}
+            />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.5, display: "block" }}
+            >
+              {title2}: {progress2.toFixed(1)}% complete
+            </Typography>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+
   return (
     <Box
       sx={{
@@ -149,7 +231,7 @@ export default function ActivitySummary({
             xs: "1fr",
             sm: "1fr 1fr",
             md: "repeat(3, 1fr)",
-            lg: isTherapeuticallyEndorsed ? "repeat(6, 1fr)" : "repeat(4, 1fr)",
+            lg: isTherapeuticallyEndorsed ? "repeat(5, 1fr)" : "repeat(4, 1fr)",
           },
           gap: 3,
         }}
@@ -184,20 +266,46 @@ export default function ActivitySummary({
           }
         />
 
-        {/* Interactive Hours */}
-        <StatCard
-          title="Interactive Hours"
-          value={stats.interactiveHours}
-          target={requiredInteractiveHours}
-          progress={interactiveProgress}
-          color={
-            interactiveProgress >= 100
-              ? "success"
-              : interactiveProgress >= 75
-              ? "warning"
-              : "primary"
-          }
-        />
+        {isTherapeuticallyEndorsed ? (
+          <DoubleStatCard
+            title1="Interactive Hours"
+            value1={stats.interactiveHours}
+            target1={requiredInteractiveHours}
+            progress1={interactiveProgress}
+            color1={
+              interactiveProgress >= 100
+                ? "success"
+                : interactiveProgress >= 75
+                ? "warning"
+                : "primary"
+            }
+            title2="Interactive Therapeutic"
+            value2={stats.interactiveTherapeuticHours}
+            target2={requiredInteractiveTherapeuticHours}
+            progress2={interactiveTherapeuticProgress}
+            color2={
+              interactiveTherapeuticProgress >= 100
+                ? "success"
+                : interactiveTherapeuticProgress >= 75
+                ? "warning"
+                : "secondary"
+            }
+          />
+        ) : (
+          <StatCard
+            title="Interactive Hours"
+            value={stats.interactiveHours}
+            target={requiredInteractiveHours}
+            progress={interactiveProgress}
+            color={
+              interactiveProgress >= 100
+                ? "success"
+                : interactiveProgress >= 75
+                ? "warning"
+                : "primary"
+            }
+          />
+        )}
 
         {/* Therapeutic Hours (only for therapeutically endorsed) */}
         {isTherapeuticallyEndorsed && (
@@ -216,7 +324,7 @@ export default function ActivitySummary({
           />
         )}
 
-        {/* Interactive Therapeutic Hours (only for therapeutically endorsed) */}
+        {/* Interactive Therapeutic Hours (only for therapeutically endorsed)
         {isTherapeuticallyEndorsed && (
           <StatCard
             title="Interactive Therapeutic"
@@ -231,7 +339,7 @@ export default function ActivitySummary({
                 : "secondary"
             }
           />
-        )}
+        )} */}
 
         {/* Non-Clinical Hours (showing usage vs max allowed) */}
         <StatCard

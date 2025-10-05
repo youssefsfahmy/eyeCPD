@@ -1,5 +1,6 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { ActivityQueries } from "@/lib/db/queries/activity";
+import { ProfileQueries } from "@/lib/db/queries/profile";
 
 export interface CPDSummary {
   totalHours: number;
@@ -57,7 +58,9 @@ export async function getCPDSummary(): Promise<CPDSummary> {
       return sum;
     }, 0);
 
-    const requiredHours = 80; // Standard CPD requirement
+    const requiredHours = await ProfileQueries.getRequiredHoursByUserId(
+      user.id
+    );
     const remainingHours = Math.max(0, requiredHours - totalHours);
 
     // Calculate compliance status

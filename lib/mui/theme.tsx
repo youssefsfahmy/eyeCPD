@@ -130,6 +130,12 @@ export const theme = createTheme({
     },
     divider: customColors.neutral[200],
     grey: customColors.neutral,
+    info: {
+      main: "#0288d1",
+      light: "#03a9f4",
+      dark: "#01579b",
+      contrastText: "#ffffff",
+    },
   },
   typography: {
     fontFamily: [

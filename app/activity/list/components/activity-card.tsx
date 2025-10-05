@@ -182,8 +182,18 @@ export default function ActivityCard({
         </Typography>
 
         {/* Reflection */}
-        <Typography variant="body2" color="text.secondary">
-          <strong>Reflection:</strong> {activity.reflection}
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
+          <strong>Reflection:</strong> {activity.reflection || 'No reflection provided'}
         </Typography>
       </CardContent>
     </Card>
