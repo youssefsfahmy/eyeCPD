@@ -22,7 +22,12 @@ export async function getActivitiesServerAction(): Promise<ActivityActionState> 
   }
 
   try {
-    const activities = await ActivityQueries.getActivitiesByUserId(user.id);
+    const activities = await ActivityQueries.getActivitiesByUserId(
+      user.id,
+      undefined,
+      undefined,
+      true
+    );
 
     const activitiesData: ActivityDataState[] = activities.map((activity) => ({
       id: activity.id,
