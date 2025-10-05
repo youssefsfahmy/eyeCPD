@@ -1,4 +1,4 @@
-import { Typography, Card, CardHeader, CardContent, Box } from "@mui/material";
+import { Card, CardHeader, CardContent, Box } from "@mui/material";
 import ProfileForm from "./components/profile-form";
 import { getProfileServerAction } from "./actions/profile";
 import ChangePassword from "./components/change-password";

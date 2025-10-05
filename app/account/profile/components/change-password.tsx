@@ -1,13 +1,5 @@
 "use client";
-import {
-  TextField,
-  Button,
-  Box,
-  IconButton,
-  Alert,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { TextField, Button, Box, IconButton, Alert } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { createClient } from "@/app/lib/supabase/client";
