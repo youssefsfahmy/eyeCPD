@@ -18,6 +18,7 @@ import { ActionState, ProfileDataState } from "../types/profile";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/client";
 import { useProfile } from "@/lib/context/profile-context";
+import ChangePassword from "./change-password";
 
 export default function ProfileForm({
   initialState,
@@ -28,6 +29,7 @@ export default function ProfileForm({
 }) {
   const router = useRouter();
   const { refreshProfile } = useProfile();
+
   const init: ActionState = {
     profile: initialState,
     success: false,
@@ -187,7 +189,10 @@ export default function ProfileForm({
         >
           Cancel
         </Button>
-      </Box>{" "}
+      </Box>
+
+      {/* Password Change Section */}
+      <Divider sx={{ my: 4 }} />
     </form>
   );
 }
