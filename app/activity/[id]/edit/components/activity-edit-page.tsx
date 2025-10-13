@@ -4,11 +4,11 @@ import { Box, Typography, Button, Paper, Chip } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ActivityRecord } from "@/lib/db/schema";
+import { ActivityWithTags } from "@/lib/db/schema";
 import ActivityForm from "@/components/activity/activity-form";
 
 interface ActivityEditPageProps {
-  activity: ActivityRecord;
+  activity: ActivityWithTags;
 }
 
 export default function ActivityEditPage({ activity }: ActivityEditPageProps) {

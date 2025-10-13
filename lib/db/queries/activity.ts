@@ -2,6 +2,7 @@ import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { db } from "../drizzle";
 import {
   activityRecords,
+  ActivityWithTags,
   type ActivityRecord,
   type NewActivityRecord,
 } from "../schema";
@@ -15,7 +16,7 @@ export class ActivityQueries {
     startDate?: Date,
     endDate?: Date,
     includeDraft?: boolean
-  ): Promise<ActivityRecord[]> {
+  ): Promise<ActivityWithTags[]> {
     // Build where conditions dynamically
     const conditions = [eq(activityRecords.userId, userId)];
 
@@ -34,11 +35,15 @@ export class ActivityQueries {
       conditions.push(eq(activityRecords.isDraft, false));
     }
 
-    const result = await db
-      .select()
-      .from(activityRecords)
-      .where(and(...conditions))
-      .orderBy(desc(activityRecords.date), desc(activityRecords.createdAt));
+    const result = await db.query.activityRecords.findMany({
+      where: and(...conditions),
+      with: {
+        activityToTags: {
+          with: { tag: true },
+        },
+      },
+      orderBy: [desc(activityRecords.date), desc(activityRecords.createdAt)],
+    });
 
     return result;
   }
@@ -84,19 +89,17 @@ export class ActivityQueries {
   static async getActivityById(
     id: number,
     userId: string
-  ): Promise<ActivityRecord | null> {
-    const result = await db
-      .select()
-      .from(activityRecords)
-      .where(eq(activityRecords.id, id))
-      .limit(1);
+  ): Promise<ActivityWithTags | null> {
+    const row = await db.query.activityRecords.findFirst({
+      where: (ar, { and, eq }) => and(eq(ar.id, id), eq(ar.userId, userId)),
+      with: {
+        activityToTags: {
+          with: { tag: true }, // <— gives you the tag row
+        },
+      },
+    });
 
-    // Verify the activity belongs to the user
-    const activity = result[0];
-    if (activity && activity.userId === userId) {
-      return activity;
-    }
-    return null;
+    return row || null;
   }
 
   /**

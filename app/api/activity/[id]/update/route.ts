@@ -5,6 +5,9 @@ import { ActivityQueries } from "@/lib/db/queries/activity";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { SupabaseStorage } from "@/lib/storage/supabase";
+import { Tag } from "@/lib/db/schema";
+
+import { addTagsToActivity } from "../../helper";
 
 export async function POST(
   request: NextRequest,
@@ -160,6 +163,17 @@ export async function POST(
       }
     }
 
+    // Step 3: Update activity tags
+
+    //add new activity tags (no id)
+    if (formData.get("activityTags")) {
+      const activityTags = JSON.parse(
+        formData.get("activityTags") as string
+      ) as Tag[];
+
+      await addTagsToActivity(activityId, activityTags);
+    }
+
     // Revalidate cache
     revalidatePath("/activity/list");
     revalidatePath(`/activity/${activityId}`);
@@ -178,7 +192,6 @@ export async function POST(
       description: updatedActivity.description,
       reflection: updatedActivity.reflection,
       evidenceFileUrl: fileUrl,
-      tags: updatedActivity.tags || [],
       activityProvider: updatedActivity.activityProvider,
       isDraft: updatedActivity.isDraft,
     };

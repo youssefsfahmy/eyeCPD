@@ -25,11 +25,12 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ActivityRecord } from "@/lib/db/schema";
+import { ActivityWithTags, Tag } from "@/lib/db/schema";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
+import TagComboBox from "../common/tag-combo-box";
 interface ActivityFormProps {
-  activity?: ActivityRecord;
+  activity?: ActivityWithTags;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -47,6 +48,11 @@ export default function ActivityForm({
     interactive: activity?.interactive || false,
     therapeutic: activity?.therapeutic || false,
   });
+
+  console.log("Initial activity:", activity);
+  const [activityTags, setActivityTags] = useState<Tag[]>(
+    activity?.activityToTags.map((at) => at.tag) || []
+  );
 
   const [isDraft, setIsDraft] = useState(activity?.isDraft ?? true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -102,6 +108,7 @@ export default function ActivityForm({
     setFormSuccess(false);
 
     const formData = new FormData(event.currentTarget);
+    formData.append("activityTags", JSON.stringify(activityTags));
 
     // Add the selected file to form data if one exists
     if (selectedFile) {
@@ -267,15 +274,10 @@ export default function ActivityForm({
             helperText="Provide a detailed description of the activity, including what was covered and key learning outcomes"
           />
           {/* Topics/Tags */}
-          <TextField
-            id="tags"
-            label="Topics/Tags"
-            name="tags"
-            variant="outlined"
-            multiline
-            rows={2}
-            defaultValue={activity?.tags?.join(", ") || ""}
-            helperText="Provide a comma-separated list of topics or tags related to this activity, e.g., 'Dry Eye, Patient Care, Clinical Skills'"
+
+          <TagComboBox
+            value={activityTags}
+            handleChange={(newTags) => setActivityTags(newTags)}
           />
           <Box
             sx={{

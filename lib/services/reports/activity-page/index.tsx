@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityRecord } from "@/lib/db/schema";
+import { ActivityRecord, ActivityWithTags } from "@/lib/db/schema";
 import { Page, Text, View } from "@react-pdf/renderer";
 import { styles } from "../styles";
 
@@ -12,13 +12,15 @@ function getActivityCategories(activity: ActivityRecord): string[] {
   return categories.length > 0 ? categories : ["Uncategorized"];
 }
 
-function formatTags(tags: string[] | null): string[] {
-  if (!tags || tags.length === 0) return [];
-  return tags;
+function formatTags(
+  activityToTags: { tag: { id: number; userId: string | null; tag: string } }[]
+): string[] {
+  if (activityToTags.length === 0) return [];
+  return activityToTags.map((activityToTags) => activityToTags.tag.tag);
 }
 
 interface Props {
-  activity: ActivityRecord;
+  activity: ActivityWithTags;
   index: number;
   totalActivities: number;
 }
@@ -27,7 +29,7 @@ function ActivityPage(props: Props) {
   const { activity, index, totalActivities } = props;
 
   const categories = getActivityCategories(activity);
-  const tags = formatTags(activity.tags);
+  const tags = formatTags(activity.activityToTags);
 
   return (
     <Page key={activity.id} size="A4" style={styles.page}>

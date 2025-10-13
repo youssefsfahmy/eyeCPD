@@ -1,6 +1,6 @@
 // app/reports/pdf/ReportDocument.tsx
 
-import { ActivityRecord, Profile } from "@/lib/db/schema";
+import { ActivityWithTags, Profile } from "@/lib/db/schema";
 import { CPDCycle } from "@/lib/types/generic";
 import { Document } from "@react-pdf/renderer";
 import SummaryPage from "./summary-page";
@@ -14,7 +14,7 @@ export default function ReportDocument({
   user,
 }: {
   selectedCycle: CPDCycle;
-  activities: ActivityRecord[];
+  activities: ActivityWithTags[];
   profile: Profile;
   user: User;
 }) {

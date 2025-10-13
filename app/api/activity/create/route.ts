@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { ActivityQueries } from "@/lib/db/queries/activity";
 import { SupabaseStorage } from "@/lib/storage/supabase";
 import { createClient } from "@/app/lib/supabase/server";
+import { addTagsToActivity } from "../helper";
+import { Tag } from "@/lib/db/schema";
 
 export async function POST(request: NextRequest) {
   try {
@@ -137,27 +139,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Step 3: Associate tags with the activity
+    if (formData.get("activityTags")) {
+      const activityTags = JSON.parse(
+        formData.get("activityTags") as string
+      ) as Tag[];
+
+      await addTagsToActivity(newActivity.id, activityTags);
+    }
     // Revalidate cache
     revalidatePath("/activity/list");
 
     // Return success response with the created activity
-    const activityResponse = {
-      id: newActivity.id,
-      userId: newActivity.userId,
-      clinical: newActivity.clinical,
-      nonClinical: newActivity.nonClinical,
-      interactive: newActivity.interactive,
-      therapeutic: newActivity.therapeutic,
-      name: newActivity.name,
-      date: newActivity.date,
-      hours: newActivity.hours,
-      description: newActivity.description,
-      reflection: newActivity.reflection,
-      evidenceFileUrl: fileUrl || newActivity.evidenceFileUrl,
-      tags: newActivity.tags || [],
-      activityProvider: newActivity.activityProvider,
-      isDraft: newActivity.isDraft,
-    };
+    const activityResponse = await ActivityQueries.getActivityById(
+      newActivity.id,
+      user.id
+    );
 
     return NextResponse.json({
       success: true,

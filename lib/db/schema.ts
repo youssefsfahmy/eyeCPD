@@ -9,6 +9,8 @@ import {
   decimal,
   date,
   pgSchema,
+  integer,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -78,12 +80,10 @@ export const activityRecords = pgTable("activity_record", {
   hours: decimal("hours", { precision: 4, scale: 2 }).notNull(), // Supports 0.25 intervals
   description: text("description").notNull(),
   reflection: text("reflection").notNull(),
-  tags: text("tags").array().default([]), // Array of tags for categorization
   activityProvider: text("activity_provider"),
   isDraft: boolean("is_draft").notNull().default(true), // Indicates if the activity is a draft
   // Evidence file information
   evidenceFileUrl: text("evidence_file_url"), // URL to stored file
-
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -108,6 +108,30 @@ export const goals = pgTable("goals", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const tags = pgTable("tags", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  tag: text("tag").notNull(),
+});
+
+// Junction table for many-to-many relationship between activity records and tags
+export const activityToTags = pgTable(
+  "activity_tag",
+  {
+    tagId: integer("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+    activityRecordId: integer("activity_record_id")
+      .notNull()
+      .references(() => activityRecords.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.activityRecordId, t.tagId] }),
+  })
+);
+
 // ✅ RELATIONS
 // Note: We don't define relations to Supabase auth.users table since it's managed by Supabase
 
@@ -129,11 +153,12 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
 
 export const activityRecordRelations = relations(
   activityRecords,
-  ({ one }) => ({
+  ({ one, many }) => ({
     profile: one(profiles, {
       fields: [activityRecords.userId],
       references: [profiles.userId],
     }),
+    activityToTags: many(activityToTags),
   })
 );
 
@@ -141,6 +166,26 @@ export const goalsRelations = relations(goals, ({ one }) => ({
   profile: one(profiles, {
     fields: [goals.userId],
     references: [profiles.userId],
+  }),
+}));
+
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+  profile: one(profiles, {
+    fields: [tags.userId],
+    references: [profiles.userId],
+  }),
+  activityToTags: many(activityToTags),
+}));
+
+// ✅ Relations for the junction
+export const activityToTagsRelations = relations(activityToTags, ({ one }) => ({
+  activity: one(activityRecords, {
+    fields: [activityToTags.activityRecordId],
+    references: [activityRecords.id],
+  }),
+  tag: one(tags, {
+    fields: [activityToTags.tagId],
+    references: [tags.id],
   }),
 }));
 
@@ -183,6 +228,16 @@ export type NewActivityRecord = typeof activityRecords.$inferInsert;
 
 export type Goal = typeof goals.$inferSelect;
 export type NewGoal = typeof goals.$inferInsert;
+
+export type Tag = typeof tags.$inferSelect;
+export type NewTag = typeof tags.$inferInsert;
+
+export type ActivityToTag = typeof activityToTags.$inferSelect;
+export type NewActivityToTag = typeof activityToTags.$inferInsert;
+
+export type ActivityWithTags = ActivityRecord & {
+  activityToTags: { tag: Tag }[];
+};
 
 export interface EvidenceFile {
   fileName: string;

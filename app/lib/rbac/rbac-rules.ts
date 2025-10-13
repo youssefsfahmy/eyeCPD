@@ -119,6 +119,11 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  "/api/tag": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   // Premium features - optometrist with specific plans
   "/opt/premium/*": {
     roles: [UserRole.OPTOMETRIST],

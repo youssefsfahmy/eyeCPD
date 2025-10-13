@@ -57,6 +57,20 @@
       "when": 1759072984705,
       "tag": "0007_ancient_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1759834677172,
+      "tag": "0008_broken_payback",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1760349984585,
+      "tag": "0009_condemned_maverick",
+      "breakpoints": true
     }
   ]
 }

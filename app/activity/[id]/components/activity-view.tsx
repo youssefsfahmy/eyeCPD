@@ -3,10 +3,10 @@
 import { Box, Typography, Button, Paper, Chip, Divider } from "@mui/material";
 import { Edit, ArrowBack, AttachFile, Visibility } from "@mui/icons-material";
 import Link from "next/link";
-import { ActivityRecord } from "@/lib/db/schema";
+import { ActivityWithTags } from "@/lib/db/schema";
 
 interface ActivityViewProps {
-  activity: ActivityRecord;
+  activity: ActivityWithTags;
 }
 
 export default function ActivityView({ activity }: ActivityViewProps) {
@@ -158,7 +158,7 @@ export default function ActivityView({ activity }: ActivityViewProps) {
               </Box>
             </Box>
 
-            {activity.tags && activity.tags.length > 0 && (
+            {activity.activityToTags && activity.activityToTags.length > 0 && (
               <Box sx={{ mb: 3 }}>
                 <Typography
                   variant="subtitle2"
@@ -168,10 +168,10 @@ export default function ActivityView({ activity }: ActivityViewProps) {
                   Topics/Tags
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {activity.tags.map((tag, index) => (
+                  {activity.activityToTags.map((activityToTag, index) => (
                     <Chip
                       key={index}
-                      label={tag}
+                      label={activityToTag.tag.tag}
                       variant="filled"
                       size="small"
                     />

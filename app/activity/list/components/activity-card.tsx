@@ -158,12 +158,12 @@ export default function ActivityCard({
         </Box>
 
         {/* Tags */}
-        {activity.tags && activity.tags.length > 0 && (
+        {activity.activityToTags && activity.activityToTags.length > 0 && (
           <Box sx={{ display: "flex", gap: 0.5, mb: 2, flexWrap: "wrap" }}>
-            {activity.tags.map((tag, index) => (
+            {activity.activityToTags.map((activityToTags, index) => (
               <Chip
                 key={index}
-                label={tag}
+                label={activityToTags.tag.tag}
                 size="small"
                 variant="filled"
                 sx={{

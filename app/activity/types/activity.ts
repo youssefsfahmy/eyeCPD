@@ -1,7 +1,7 @@
-import { ActivityRecord } from "@/lib/db/schema";
+import { ActivityWithTags, Tag } from "@/lib/db/schema";
 
 export type ActivityDataState = Omit<
-  ActivityRecord,
+  ActivityWithTags,
   "createdAt" | "updatedAt" | "id"
 > & {
   id?: number;
@@ -30,4 +30,5 @@ export interface ActivityFormData {
   tags: string[];
   activityProvider: string;
   isDraft: boolean;
+  activityTags: Tag[];
 }
