@@ -98,7 +98,6 @@ export const goals = pgTable("goals", {
   year: text("year").notNull(), // e.g., "2025"
   description: text("description").notNull().default(""), // New description field
   title: text("title").notNull(),
-  tags: text("tags").array().default([]), // Array of tags for categorization
   clinical: boolean("clinical").notNull().default(false),
   nonClinical: boolean("non_clinical").notNull().default(false),
   interactive: boolean("interactive").notNull().default(false),
@@ -132,6 +131,22 @@ export const activityToTags = pgTable(
   })
 );
 
+// Junction table for many-to-many relationship between goals and tags
+export const goalsToTags = pgTable(
+  "goal_tag",
+  {
+    tagId: integer("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+    goalId: integer("goal_id")
+      .notNull()
+      .references(() => goals.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.goalId, t.tagId] }),
+  })
+);
+
 // ✅ RELATIONS
 // Note: We don't define relations to Supabase auth.users table since it's managed by Supabase
 
@@ -162,11 +177,12 @@ export const activityRecordRelations = relations(
   })
 );
 
-export const goalsRelations = relations(goals, ({ one }) => ({
+export const goalsRelations = relations(goals, ({ one, many }) => ({
   profile: one(profiles, {
     fields: [goals.userId],
     references: [profiles.userId],
   }),
+  goalsToTags: many(goalsToTags),
 }));
 
 export const tagsRelations = relations(tags, ({ one, many }) => ({
@@ -175,9 +191,10 @@ export const tagsRelations = relations(tags, ({ one, many }) => ({
     references: [profiles.userId],
   }),
   activityToTags: many(activityToTags),
+  goalsToTags: many(goalsToTags),
 }));
 
-// ✅ Relations for the junction
+// ✅ Relations for the junctions
 export const activityToTagsRelations = relations(activityToTags, ({ one }) => ({
   activity: one(activityRecords, {
     fields: [activityToTags.activityRecordId],
@@ -185,6 +202,17 @@ export const activityToTagsRelations = relations(activityToTags, ({ one }) => ({
   }),
   tag: one(tags, {
     fields: [activityToTags.tagId],
+    references: [tags.id],
+  }),
+}));
+
+export const goalsToTagsRelations = relations(goalsToTags, ({ one }) => ({
+  goal: one(goals, {
+    fields: [goalsToTags.goalId],
+    references: [goals.id],
+  }),
+  tag: one(tags, {
+    fields: [goalsToTags.tagId],
     references: [tags.id],
   }),
 }));
@@ -235,8 +263,15 @@ export type NewTag = typeof tags.$inferInsert;
 export type ActivityToTag = typeof activityToTags.$inferSelect;
 export type NewActivityToTag = typeof activityToTags.$inferInsert;
 
+export type GoalToTag = typeof goalsToTags.$inferSelect;
+export type NewGoalToTag = typeof goalsToTags.$inferInsert;
+
 export type ActivityWithTags = ActivityRecord & {
   activityToTags: { tag: Tag }[];
+};
+
+export type GoalWithTags = Goal & {
+  goalsToTags: { tag: Tag }[];
 };
 
 export interface EvidenceFile {

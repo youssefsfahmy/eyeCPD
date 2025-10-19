@@ -1,17 +1,21 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../drizzle";
-import { goals, type Goal, type NewGoal } from "../schema";
+import { goals, type Goal, type NewGoal, type GoalWithTags } from "../schema";
 
 export class GoalQueries {
   /**
    * Get all goals for a user
    */
-  static async getGoalsByUserId(userId: string): Promise<Goal[]> {
-    const result = await db
-      .select()
-      .from(goals)
-      .where(eq(goals.userId, userId))
-      .orderBy(desc(goals.year), desc(goals.createdAt));
+  static async getGoalsByUserId(userId: string): Promise<GoalWithTags[]> {
+    const result = await db.query.goals.findMany({
+      where: (g, { eq }) => eq(g.userId, userId),
+      with: {
+        goalsToTags: {
+          with: { tag: true },
+        },
+      },
+      orderBy: (g, { desc }) => [desc(g.year), desc(g.createdAt)],
+    });
 
     return result;
   }
@@ -22,12 +26,16 @@ export class GoalQueries {
   static async getGoalsByUserIdAndYear(
     userId: string,
     year: string
-  ): Promise<Goal[]> {
-    const result = await db
-      .select()
-      .from(goals)
-      .where(and(eq(goals.userId, userId), eq(goals.year, year)))
-      .orderBy(desc(goals.createdAt));
+  ): Promise<GoalWithTags[]> {
+    const result = await db.query.goals.findMany({
+      where: (g, { and, eq }) => and(eq(g.userId, userId), eq(g.year, year)),
+      with: {
+        goalsToTags: {
+          with: { tag: true },
+        },
+      },
+      orderBy: (g, { desc }) => [desc(g.createdAt)],
+    });
 
     return result;
   }
@@ -35,19 +43,22 @@ export class GoalQueries {
   /**
    * Get goal by ID and user ID
    */
-  static async getGoalById(id: number, userId: string): Promise<Goal | null> {
-    const result = await db
-      .select()
-      .from(goals)
-      .where(eq(goals.id, id))
-      .limit(1);
+  static async getGoalById(id: number, userId: string): Promise<GoalWithTags> {
+    const row = await db.query.goals.findFirst({
+      where: (ar, { and, eq }) => and(eq(ar.id, id), eq(ar.userId, userId)),
+      with: {
+        goalsToTags: {
+          with: { tag: true }, // <— gives you the tag row
+        },
+      },
+    });
 
     // Verify the goal belongs to the user
-    const goal = result[0];
+    const goal = row;
     if (goal && goal.userId === userId) {
       return goal;
     }
-    return null;
+    throw new Error("Goal not found");
   }
 
   /**

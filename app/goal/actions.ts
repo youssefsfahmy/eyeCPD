@@ -3,8 +3,7 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { GoalQueries } from "@/lib/db/queries/goal";
-import { GoalActionState, GoalDataState } from "./types/goal";
-import { Goal } from "@/lib/db/schema";
+import { GoalActionState } from "./types/goal";
 
 export async function getGoalsServerAction(): Promise<GoalActionState> {
   const supabase = await createClient();
@@ -25,23 +24,8 @@ export async function getGoalsServerAction(): Promise<GoalActionState> {
   try {
     const goals = await GoalQueries.getGoalsByUserId(user.id);
 
-    const goalsData: GoalDataState[] = goals.map((goal: Goal) => ({
-      id: goal.id,
-      userId: goal.userId,
-      year: goal.year,
-      title: goal.title,
-      tags: goal.tags,
-      clinical: goal.clinical,
-      nonClinical: goal.nonClinical,
-      interactive: goal.interactive,
-      therapeutic: goal.therapeutic,
-      targetHours: goal.targetHours,
-      createdAt: goal.createdAt,
-      updatedAt: goal.updatedAt,
-    }));
-
     return {
-      goals: goalsData,
+      goals: goals,
       isPending: false,
       success: true,
       message: "",
@@ -147,25 +131,13 @@ export async function createGoalServerAction(
       }
     }
 
-    const newGoal = await GoalQueries.createGoal(goalData);
+    const goal = await GoalQueries.createGoal(goalData);
+    const newGoal = await GoalQueries.getGoalById(goal.id, user.id);
 
     revalidatePath("/goal");
 
     return {
-      goal: {
-        id: newGoal.id,
-        userId: newGoal.userId,
-        year: newGoal.year,
-        title: newGoal.title,
-        tags: newGoal.tags,
-        clinical: newGoal.clinical,
-        nonClinical: newGoal.nonClinical,
-        interactive: newGoal.interactive,
-        therapeutic: newGoal.therapeutic,
-        targetHours: newGoal.targetHours,
-        createdAt: newGoal.createdAt,
-        updatedAt: newGoal.updatedAt,
-      },
+      goal: newGoal,
       isPending: false,
       success: true,
       message: "Goal created successfully",
@@ -304,24 +276,12 @@ export async function updateGoalServerAction(
         error: "Goal not found or unauthorized",
       };
     }
+    const newGoal = await GoalQueries.getGoalById(updatedGoal.id, user.id);
 
     revalidatePath("/goal");
 
     return {
-      goal: {
-        id: updatedGoal.id,
-        userId: updatedGoal.userId,
-        year: updatedGoal.year,
-        title: updatedGoal.title,
-        tags: updatedGoal.tags,
-        clinical: updatedGoal.clinical,
-        nonClinical: updatedGoal.nonClinical,
-        interactive: updatedGoal.interactive,
-        therapeutic: updatedGoal.therapeutic,
-        targetHours: updatedGoal.targetHours,
-        createdAt: updatedGoal.createdAt,
-        updatedAt: updatedGoal.updatedAt,
-      },
+      goal: newGoal,
       isPending: false,
       success: true,
       message: "Goal updated successfully",

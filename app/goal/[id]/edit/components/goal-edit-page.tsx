@@ -4,11 +4,11 @@ import { Box, Typography, Button, Paper } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Goal } from "@/lib/db/schema";
+import { GoalWithTags } from "@/lib/db/schema";
 import GoalForm from "@/components/goal/goal-form";
 
 interface GoalEditPageProps {
-  goal: Goal;
+  goal: GoalWithTags;
 }
 
 export default function GoalEditPage({ goal }: GoalEditPageProps) {

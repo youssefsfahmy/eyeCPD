@@ -1,6 +1,8 @@
 import { GoalFormData } from "@/app/goal/types/goal";
+import { Tag } from "@/lib/db/schema";
 import { Box, Typography, TextField, Chip, Paper } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
+import TagComboBox from "../../../common/tag-combo-box";
 
 interface GoalTitleStepProps {
   formData: GoalFormData;
@@ -11,6 +13,8 @@ interface GoalTitleStepProps {
     interactive: boolean;
     therapeutic: boolean;
   };
+  goalTags: Tag[];
+  setGoalTags: (tags: Tag[]) => void;
 }
 
 const placeholderSuggestions = {
@@ -75,6 +79,8 @@ export default function GoalTitleStep({
   formData,
   updateFormData,
   categories,
+  goalTags,
+  setGoalTags,
 }: GoalTitleStepProps) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState("");
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -164,6 +170,10 @@ export default function GoalTitleStep({
         }
         sx={{ mb: 3 }}
       />
+
+      <Box sx={{ mb: 3 }}>
+        <TagComboBox value={goalTags} handleChange={setGoalTags} />
+      </Box>
 
       {Object.values(categories).some((isSelected) => isSelected) && (
         <Paper sx={{ p: 2, mb: 3, backgroundColor: "background.default" }}>

@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         formData.get("activityTags") as string
       ) as Tag[];
 
-      await addTagsToActivity(newActivity.id, activityTags);
+      await addTagsToActivity(newActivity.id, activityTags, user.id);
     }
     // Revalidate cache
     revalidatePath("/activity/list");

@@ -126,8 +126,6 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
-      console.log("Auth state changed:", event, session?.user?.id);
-
       if (event === "SIGNED_IN" && session?.user) {
         // Only fetch profile if it's a different user
         const isDifferentUser = currentUserId !== session.user.id;

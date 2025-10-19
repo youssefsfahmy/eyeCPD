@@ -49,7 +49,6 @@ export default function ActivityForm({
     therapeutic: activity?.therapeutic || false,
   });
 
-  console.log("Initial activity:", activity);
   const [activityTags, setActivityTags] = useState<Tag[]>(
     activity?.activityToTags.map((at) => at.tag) || []
   );

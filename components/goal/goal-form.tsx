@@ -4,11 +4,13 @@ import { TextField, Divider, Button, Box, Alert } from "@mui/material";
 import { Save, Cancel } from "@mui/icons-material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Goal } from "@/lib/db/schema";
+import { GoalWithTags, Tag } from "@/lib/db/schema";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
+import TagComboBox from "../common/tag-combo-box";
+
 interface GoalFormProps {
-  goal: Goal;
+  goal: GoalWithTags;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -21,6 +23,10 @@ export default function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
     interactive: goal?.interactive || false,
     therapeutic: goal?.therapeutic || false,
   });
+
+  const [goalTags, setGoalTags] = useState<Tag[]>(
+    goal?.goalsToTags?.map((gt) => gt.tag) || []
+  );
 
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState<string>("");
@@ -40,6 +46,9 @@ export default function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
     formData.set("nonClinical", categories.nonClinical.toString());
     formData.set("interactive", categories.interactive.toString());
     formData.set("therapeutic", categories.therapeutic.toString());
+
+    // Add tags to form data
+    formData.set("goalTags", JSON.stringify(goalTags));
 
     try {
       const endpoint = `/api/goal/${goal.id}/update`;
@@ -171,15 +180,9 @@ export default function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
           />
 
           {/* Topics/Tags */}
-          <TextField
-            id="tags"
-            label="Topics/Tags"
-            name="tags"
-            variant="outlined"
-            multiline
-            rows={2}
-            defaultValue={goal?.tags?.join(", ") || ""}
-            helperText="Provide a comma-separated list of topics or tags related to this goal, e.g., 'myopia, pediatric, technology'"
+          <TagComboBox
+            value={goalTags}
+            handleChange={(newTags) => setGoalTags(newTags)}
           />
         </Box>
 

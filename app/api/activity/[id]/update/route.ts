@@ -171,7 +171,7 @@ export async function POST(
         formData.get("activityTags") as string
       ) as Tag[];
 
-      await addTagsToActivity(activityId, activityTags);
+      await addTagsToActivity(activityId, activityTags, user.id);
     }
 
     // Revalidate cache

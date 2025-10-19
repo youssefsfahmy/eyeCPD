@@ -4,6 +4,34 @@ import { createClient } from "@/app/lib/supabase/server";
 import { GoalQueries } from "@/lib/db/queries/goal";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { Tag } from "@/lib/db/schema";
+import { TagQueries } from "@/lib/db/queries/tag";
+import { GoalTagQueries } from "@/lib/db/queries/goalTag";
+
+// Helper function to add tags to goal (similar to addTagsToActivity)
+const addTagsToGoal = async (
+  goalId: number,
+  tags: Tag[],
+  userId: string
+): Promise<void> => {
+  const tagsToBeLinked = [] as Tag[];
+
+  for (const tag of tags) {
+    if (tag.id != -1) {
+      // existing tag
+      tagsToBeLinked.push(tag);
+    } else {
+      // new tag - create it
+      const createdTag = await TagQueries.createTag({
+        userId: userId,
+        tag: tag.tag,
+      });
+      tagsToBeLinked.push(createdTag);
+    }
+  }
+  await GoalTagQueries.unlinkTagsFromGoal(goalId);
+  await GoalTagQueries.linkTagsToGoal(goalId, tagsToBeLinked);
+};
 
 export async function POST(
   request: NextRequest,
@@ -33,19 +61,10 @@ export async function POST(
 
     const formData = await request.formData();
 
-    // Extract form data
-    const tagsString = formData.get("tags") as string;
-    const tags = tagsString
-      ? tagsString
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag.length > 0)
-      : [];
-
     const goalData = {
       year: formData.get("year") as string,
       title: formData.get("title") as string,
-      tags: tags,
+      description: formData.get("description") as string,
       clinical: formData.get("clinical") === "true",
       nonClinical: formData.get("nonClinical") === "true",
       interactive: formData.get("interactive") === "true",
@@ -113,6 +132,13 @@ export async function POST(
       );
     }
 
+    // Step 2: Update goal tags (similar to activity tags)
+    if (formData.get("goalTags")) {
+      const goalTags = JSON.parse(formData.get("goalTags") as string) as Tag[];
+
+      await addTagsToGoal(goalId, goalTags, user.id);
+    }
+
     // Revalidate cache
     revalidatePath("/goal/list");
     revalidatePath(`/goal/${goalId}`);
@@ -123,7 +149,6 @@ export async function POST(
       userId: updatedGoal.userId,
       year: updatedGoal.year,
       title: updatedGoal.title,
-      tags: updatedGoal.tags || [],
       clinical: updatedGoal.clinical,
       nonClinical: updatedGoal.nonClinical,
       interactive: updatedGoal.interactive,

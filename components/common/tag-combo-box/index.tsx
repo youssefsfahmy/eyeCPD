@@ -9,13 +9,11 @@ function TagComboBox(props: {
   const { value, handleChange } = props;
   const [tagOptions, setTagOptions] = useState<Tag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
   useEffect(() => {
     setLoading(true);
     fetch("/api/tag")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched tags:", data);
         setTagOptions(data);
       })
       .catch((error) => {
@@ -33,7 +31,9 @@ function TagComboBox(props: {
       loading={loading}
       options={tagOptions.map((tag) => tag.tag)}
       freeSolo
-      value={value.map((tag) => tag.tag)}
+      value={value.map((tag) => {
+        return tag.tag;
+      })}
       onChange={(event, newValue) => {
         const uniqueTags = Array.from(new Set(newValue));
         // Convert strings to Tag objects

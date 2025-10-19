@@ -20,6 +20,7 @@ import {
 } from "./steps";
 import { Close } from "@mui/icons-material";
 import { GoalFormData } from "@/app/goal/types/goal";
+import { Tag } from "@/lib/db/schema";
 
 interface AddGoalSteppedDialogProps {
   open: boolean;
@@ -47,11 +48,11 @@ export default function AddGoalSteppedDialog({
     interactive: false,
     therapeutic: false,
   });
+  const [goalTags, setGoalTags] = useState<Tag[]>([]);
 
   const [formData, setFormData] = useState<GoalFormData>({
     year: selectedYear,
     title: "",
-    tags: [],
     clinical: false,
     nonClinical: false,
     interactive: false,
@@ -75,10 +76,10 @@ export default function AddGoalSteppedDialog({
   useEffect(() => {
     if (open) {
       setActiveStep(0);
+      setGoalTags([]);
       setFormData({
         year: selectedYear,
         title: "",
-        tags: [],
         clinical: false,
         nonClinical: false,
         interactive: false,
@@ -149,7 +150,7 @@ export default function AddGoalSteppedDialog({
       const submitFormData = new FormData();
       submitFormData.append("year", formData.year);
       submitFormData.append("title", formData.title);
-      submitFormData.append("tags", (formData.tags || []).join(", "));
+      submitFormData.append("goalTags", JSON.stringify(goalTags));
       submitFormData.append("description", formData.description || "");
       submitFormData.append("clinical", categories.clinical.toString());
       submitFormData.append("nonClinical", categories.nonClinical.toString());
@@ -196,6 +197,8 @@ export default function AddGoalSteppedDialog({
             formData={formData}
             updateFormData={updateFormData}
             categories={categories}
+            goalTags={goalTags}
+            setGoalTags={setGoalTags}
           />
         );
       case 2:
@@ -213,6 +216,7 @@ export default function AddGoalSteppedDialog({
             updateFormData={updateFormData}
             categories={categories}
             createState={createState}
+            goalTags={goalTags}
           />
         );
       default:

@@ -186,7 +186,6 @@ export default function LightPlanStep({
   };
 
   const createDescriptionFromPlanning = () => {
-    console.log(planningResponses);
     const parts = [];
 
     if (planningResponses.keyActions.trim()) {

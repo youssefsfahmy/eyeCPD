@@ -4,7 +4,8 @@ import { Tag } from "@/lib/db/schema";
 
 export const addTagsToActivity = async (
   activityId: number,
-  tags: Tag[]
+  tags: Tag[],
+  userId: string
 ): Promise<void> => {
   const tagsToBeLinked = [] as Tag[];
 
@@ -14,7 +15,10 @@ export const addTagsToActivity = async (
       tagsToBeLinked.push(tag);
     } else {
       // new tag - create it
-      const createdTag = await TagQueries.createTag(tag);
+      const createdTag = await TagQueries.createTag({
+        userId: userId,
+        tag: tag.tag,
+      });
       tagsToBeLinked.push(createdTag);
     }
   }

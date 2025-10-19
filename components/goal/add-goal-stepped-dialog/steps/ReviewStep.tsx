@@ -15,6 +15,7 @@ import {
   Description,
 } from "@mui/icons-material";
 import { GoalFormData } from "@/app/goal/types/goal";
+import { Tag } from "@/lib/db/schema";
 
 interface ReviewStepProps {
   formData: GoalFormData;
@@ -31,6 +32,7 @@ interface ReviewStepProps {
     message: string;
     error: string;
   };
+  goalTags: Tag[];
 }
 
 export default function ReviewStep({
@@ -38,6 +40,7 @@ export default function ReviewStep({
   updateFormData,
   categories,
   createState,
+  goalTags,
 }: ReviewStepProps) {
   const isYearValid =
     formData.year.length === 4 && !isNaN(Number(formData.year));
@@ -114,7 +117,7 @@ export default function ReviewStep({
           </Box>
         </Box>
 
-        {formData.tags.length > 0 && (
+        {goalTags.length > 0 && (
           <>
             <Divider sx={{ my: 2 }} />
             <Box>
@@ -122,10 +125,10 @@ export default function ReviewStep({
                 Generated Tags:
               </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, pl: 3 }}>
-                {formData.tags.slice(0, 10).map((tag, index) => (
+                {goalTags.slice(0, 10).map((tag, index) => (
                   <Chip
                     key={index}
-                    label={tag}
+                    label={tag.tag}
                     variant="outlined"
                     size="small"
                   />

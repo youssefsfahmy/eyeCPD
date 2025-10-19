@@ -1,21 +1,8 @@
-export interface GoalDataState {
-  id: number;
-  userId: string;
-  year: string;
-  title: string;
-  tags: string[] | null;
-  clinical: boolean;
-  nonClinical: boolean;
-  interactive: boolean;
-  therapeutic: boolean;
-  targetHours: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { GoalWithTags } from "@/lib/db/schema";
 
 export interface GoalActionState {
-  goal?: GoalDataState;
-  goals?: GoalDataState[];
+  goal?: GoalWithTags;
+  goals?: GoalWithTags[];
   isPending: boolean;
   success: boolean;
   message: string;
@@ -25,7 +12,6 @@ export interface GoalActionState {
 export interface GoalFormData {
   year: string;
   title: string;
-  tags: string[];
   description?: string;
   clinical: boolean;
   nonClinical: boolean;

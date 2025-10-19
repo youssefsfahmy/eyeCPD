@@ -24,16 +24,16 @@ import {
   Info,
 } from "@mui/icons-material";
 import { getGoalsServerAction, deleteGoalServerAction } from "../../actions";
-import { GoalDataState } from "../../types/goal";
 import AddGoalSteppedDialog from "../../../../components/goal/add-goal-stepped-dialog";
 import Link from "next/link";
+import { GoalWithTags } from "@/lib/db/schema";
 
 interface GoalListPageProps {
-  initialGoals?: GoalDataState[];
+  initialGoals?: GoalWithTags[];
 }
 
 export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
-  const [goals, setGoals] = useState<GoalDataState[]>(initialGoals);
+  const [goals, setGoals] = useState<GoalWithTags[]>(initialGoals);
   const [error, setError] = useState<string>("");
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [showGuidance, setShowGuidance] = useState(false);
@@ -70,7 +70,7 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
     }
   };
 
-  const getCategoryChips = (goal: GoalDataState) => {
+  const getCategoryChips = (goal: GoalWithTags) => {
     const categories = [];
     if (goal.clinical) categories.push("Clinical");
     if (goal.nonClinical) categories.push("Non-Clinical");
@@ -332,12 +332,12 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
                       )}
                     </Box>
 
-                    {goal.tags && goal.tags.length > 0 && (
+                    {goal.goalsToTags && goal.goalsToTags.length > 0 && (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {goal.tags.map((tag, index) => (
+                        {goal.goalsToTags.map((goalsToTag, index) => (
                           <Chip
                             key={index}
-                            label={tag}
+                            label={goalsToTag.tag.tag}
                             size="small"
                             variant="outlined"
                           />

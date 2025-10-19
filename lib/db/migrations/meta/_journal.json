@@ -71,6 +71,20 @@
       "when": 1760349984585,
       "tag": "0009_condemned_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760886670867,
+      "tag": "0010_superb_firelord",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1760888541824,
+      "tag": "0011_deep_the_captain",
+      "breakpoints": true
     }
   ]
 }
