@@ -5,7 +5,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Person, CreditCard, Settings } from "@mui/icons-material";
+import { Person, Settings } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 
 function a11yProps(index: number) {
@@ -84,7 +84,7 @@ export default function AccountPageLayout({
             iconPosition="start"
             href="/account/profile"
           />
-          <Tab
+          {/* <Tab
             icon={<CreditCard />}
             label="Subscriptions"
             {...a11yProps(1)}
@@ -96,7 +96,7 @@ export default function AccountPageLayout({
             }}
             iconPosition="start"
             href="/account/subscriptions"
-          />
+          /> */}
           <Tab
             icon={<Settings />}
             label="Preferences"

@@ -1,7 +1,7 @@
 import {
   AccountCircle,
   Add,
-  AttachMoney,
+  // AttachMoney,
   Dashboard,
   Person,
   ListAlt,
@@ -40,12 +40,12 @@ export const navigationItems = [
     icon: <Search />,
     authRequired: false,
   },
-  {
-    name: "Pricing",
-    path: "/pricing",
-    icon: <AttachMoney />,
-    authRequired: false,
-  },
+  // {
+  //   name: "Pricing",
+  //   path: "/pricing",
+  //   icon: <AttachMoney />,
+  //   authRequired: false,
+  // },
 ];
 
 export const accountItems = [
