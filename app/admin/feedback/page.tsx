@@ -20,7 +20,7 @@ import {
   Web,
 } from "@mui/icons-material";
 
-export async function listAllFeedback() {
+async function listAllFeedback() {
   try {
     const feedbackList = await FeedbackQueries.getAllFeedback();
     return feedbackList;
