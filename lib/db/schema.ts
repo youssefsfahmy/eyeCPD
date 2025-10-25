@@ -135,6 +135,20 @@ export const providers = pgTable("providers", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const feedback = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  page: varchar("page", { length: 255 }).notNull(),
+  isPositive: boolean("is_positive").notNull(),
+  details: text("details").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Junction table for many-to-many relationship between activity records and tags
 export const activityToTags = pgTable(
   "activity_tag",
@@ -185,6 +199,7 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
   activityRecords: many(activityRecords),
   goals: many(goals), // New relation
   providers: many(providers), // New relation
+  feedback: many(feedback), // New relation
 }));
 
 export const activityRecordRelations = relations(
@@ -225,6 +240,13 @@ export const providersRelations = relations(providers, ({ one, many }) => ({
     references: [profiles.userId],
   }),
   activityRecords: many(activityRecords),
+}));
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [feedback.userId],
+    references: [profiles.userId],
+  }),
 }));
 
 // ✅ Relations for the junctions
@@ -302,6 +324,9 @@ export type NewGoalToTag = typeof goalsToTags.$inferInsert;
 export type Provider = typeof providers.$inferSelect;
 export type NewProvider = typeof providers.$inferInsert;
 
+export type Feedback = typeof feedback.$inferSelect;
+export type NewFeedback = typeof feedback.$inferInsert;
+
 export type ActivityWithTags = ActivityRecord & {
   activityToTags: { tag: Tag }[];
   provider: Provider | null;
@@ -309,6 +334,10 @@ export type ActivityWithTags = ActivityRecord & {
 
 export type GoalWithTags = Goal & {
   goalsToTags: { tag: Tag }[];
+};
+
+export type FeedbackWithProfile = Feedback & {
+  profile: Profile;
 };
 
 export interface EvidenceFile {
