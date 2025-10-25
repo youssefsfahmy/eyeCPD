@@ -87,11 +87,11 @@ export default function ActivityCard({
             </Box>
             <Typography variant="body2" color="text.secondary" gutterBottom>
               {formatDate(activity.date)} • {activity.hours} hours
-              {activity.activityProvider && (
+              {activity.provider && (
                 <>
                   {" • "}
                   <span style={{ fontWeight: 500 }}>
-                    {activity.activityProvider}
+                    {activity.provider.name}
                   </span>
                 </>
               )}

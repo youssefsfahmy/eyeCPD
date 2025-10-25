@@ -1,0 +1,1 @@
+ALTER TABLE "activity_record" DROP COLUMN "activity_provider";

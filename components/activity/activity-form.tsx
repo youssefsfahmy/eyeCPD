@@ -25,10 +25,11 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ActivityWithTags, Tag } from "@/lib/db/schema";
+import { ActivityWithTags, Provider, Tag } from "@/lib/db/schema";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
 import TagComboBox from "../common/tag-combo-box";
+import ProviderComboBox from "../common/provider-combo-box";
 interface ActivityFormProps {
   activity?: ActivityWithTags;
   onSuccess?: () => void;
@@ -51,6 +52,9 @@ export default function ActivityForm({
 
   const [activityTags, setActivityTags] = useState<Tag[]>(
     activity?.activityToTags.map((at) => at.tag) || []
+  );
+  const [provider, setProvider] = useState<Provider | null>(
+    activity?.provider || null
   );
 
   const [isDraft, setIsDraft] = useState(activity?.isDraft ?? true);
@@ -108,6 +112,7 @@ export default function ActivityForm({
 
     const formData = new FormData(event.currentTarget);
     formData.append("activityTags", JSON.stringify(activityTags));
+    formData.append("providerId", JSON.stringify(provider?.id));
 
     // Add the selected file to form data if one exists
     if (selectedFile) {
@@ -157,6 +162,10 @@ export default function ActivityForm({
     } else {
       router.push("/activity/list");
     }
+  };
+
+  const handleProviderChange = (provider: Provider | null) => {
+    setProvider(provider);
   };
 
   return (
@@ -223,14 +232,9 @@ export default function ActivityForm({
             defaultValue={activity?.name || ""}
             helperText="e.g., Clinical Workshop on Dry Eye Management"
           />
-          <TextField
-            id="provider"
-            label="Activity Provider"
-            name="activityProvider"
-            variant="outlined"
-            sx={{ flex: 2, minWidth: 300 }}
-            defaultValue={activity?.activityProvider || ""}
-            helperText="e.g., CPD Academy, Optometry Australia"
+          <ProviderComboBox
+            handleChange={handleProviderChange}
+            value={provider || null}
           />
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             <TextField

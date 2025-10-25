@@ -27,7 +27,7 @@ export interface ActivityFormData {
   interactive: boolean;
   therapeutic: boolean;
   evidenceFile?: File;
-  activityProvider: string;
   isDraft: boolean;
   activityTags: Tag[];
+  providerId?: number | null;
 }

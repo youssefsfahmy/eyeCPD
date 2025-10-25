@@ -119,7 +119,7 @@ export default function ActivityView({ activity }: ActivityViewProps) {
                 </Typography>
                 <Typography variant="body1">{activity.hours}</Typography>
               </Paper>
-              {activity.activityProvider && (
+              {activity.provider && (
                 <Paper
                   sx={{
                     p: 2,
@@ -132,7 +132,7 @@ export default function ActivityView({ activity }: ActivityViewProps) {
                     Provider
                   </Typography>
                   <Typography variant="body1">
-                    {activity.activityProvider}
+                    {activity.provider.name}
                   </Typography>
                 </Paper>
               )}

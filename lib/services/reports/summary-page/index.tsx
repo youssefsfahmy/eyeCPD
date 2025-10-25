@@ -1,10 +1,10 @@
-import { ActivityRecord, Profile } from "@/lib/db/schema";
+import { ActivityWithTags, Profile } from "@/lib/db/schema";
 import { CPDCycle } from "@/lib/types/generic";
 import { Page, Text, View } from "@react-pdf/renderer";
 import { styles } from "../styles";
 import { User } from "@supabase/supabase-js";
 
-function summarize(activities: ActivityRecord[], requiredHours = 30) {
+function summarize(activities: ActivityWithTags[], requiredHours = 30) {
   const totalHours = activities.reduce(
     (s, a) => s + (parseFloat(a.hours) || 0),
     0
@@ -44,7 +44,7 @@ function summarize(activities: ActivityRecord[], requiredHours = 30) {
   const distinctProviders = new Set(
     activities
       .filter((a) => !a.isDraft)
-      .map((a) => a.activityProvider || "Unknown Provider")
+      .map((a) => a.providerId || "Unknown Provider")
   ).size;
 
   // CPD Requirements
@@ -69,7 +69,7 @@ const SummaryPage = ({
   user,
 }: {
   selectedCycle: CPDCycle;
-  activities: ActivityRecord[];
+  activities: ActivityWithTags[];
   profile: Profile;
   user: User;
 }) => {
@@ -226,7 +226,7 @@ const SummaryPage = ({
                 {a.name}
               </Text>
               <Text style={[styles.td, { fontSize: 9 }]}>
-                {a.activityProvider || "Unknown"}
+                {a.providerId || "Unknown"}
               </Text>
               <Text
                 style={[

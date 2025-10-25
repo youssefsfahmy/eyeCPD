@@ -42,9 +42,10 @@ export async function getActivitiesServerAction(): Promise<ActivityActionState> 
       description: activity.description,
       reflection: activity.reflection,
       evidenceFileUrl: activity.evidenceFileUrl,
-      activityProvider: activity.activityProvider,
       isDraft: activity.isDraft,
       activityToTags: activity.activityToTags,
+      providerId: activity.providerId,
+      provider: activity.provider,
     }));
 
     return {

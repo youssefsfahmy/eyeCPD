@@ -55,7 +55,7 @@ function ActivityPage(props: Props) {
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Provider:</Text>
           <Text style={styles.detailValue}>
-            {activity.activityProvider || "Not specified"}
+            {activity.provider?.name || "Not specified"}
           </Text>
         </View>
         <View style={styles.detailRow}>

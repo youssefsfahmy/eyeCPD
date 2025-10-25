@@ -45,8 +45,10 @@ export async function POST(request: NextRequest) {
       therapeutic: formData.get("therapeutic") === "on",
       evidenceFileUrl: null, // Will be set after file upload
       tags: tags,
-      activityProvider: formData.get("activityProvider") as string,
       isDraft: formData.get("isDraft") === "true",
+      providerId: formData.get("providerId")
+        ? parseInt(formData.get("providerId") as string)
+        : null,
     };
 
     // Validation

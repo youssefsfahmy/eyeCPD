@@ -80,7 +80,9 @@ export const activityRecords = pgTable("activity_record", {
   hours: decimal("hours", { precision: 4, scale: 2 }).notNull(), // Supports 0.25 intervals
   description: text("description").notNull(),
   reflection: text("reflection").notNull(),
-  activityProvider: text("activity_provider"),
+  providerId: integer("provider_id").references(() => providers.id, {
+    onDelete: "set null",
+  }),
   isDraft: boolean("is_draft").notNull().default(true), // Indicates if the activity is a draft
   // Evidence file information
   evidenceFileUrl: text("evidence_file_url"), // URL to stored file
@@ -113,6 +115,24 @@ export const tags = pgTable("tags", {
     onDelete: "cascade",
   }),
   tag: text("tag").notNull(),
+});
+
+export const providers = pgTable("providers", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, {
+    onDelete: "cascade",
+  }),
+  name: varchar("name", {
+    length: 255,
+  }).notNull(),
+  contactName: varchar("contact_name", { length: 255 }),
+  providerType: varchar("provider_type", { length: 100 }),
+  address: text("address"),
+  state: varchar("state", { length: 100 }),
+  contactNumber: varchar("contact_number", { length: 20 }),
+  contactEmail: varchar("contact_email", { length: 255 }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Junction table for many-to-many relationship between activity records and tags
@@ -164,6 +184,7 @@ export const profilesRelations = relations(profiles, ({ one, many }) => ({
   }),
   activityRecords: many(activityRecords),
   goals: many(goals), // New relation
+  providers: many(providers), // New relation
 }));
 
 export const activityRecordRelations = relations(
@@ -172,6 +193,10 @@ export const activityRecordRelations = relations(
     profile: one(profiles, {
       fields: [activityRecords.userId],
       references: [profiles.userId],
+    }),
+    provider: one(providers, {
+      fields: [activityRecords.providerId],
+      references: [providers.id],
     }),
     activityToTags: many(activityToTags),
   })
@@ -192,6 +217,14 @@ export const tagsRelations = relations(tags, ({ one, many }) => ({
   }),
   activityToTags: many(activityToTags),
   goalsToTags: many(goalsToTags),
+}));
+
+export const providersRelations = relations(providers, ({ one, many }) => ({
+  profile: one(profiles, {
+    fields: [providers.userId],
+    references: [profiles.userId],
+  }),
+  activityRecords: many(activityRecords),
 }));
 
 // ✅ Relations for the junctions
@@ -266,8 +299,12 @@ export type NewActivityToTag = typeof activityToTags.$inferInsert;
 export type GoalToTag = typeof goalsToTags.$inferSelect;
 export type NewGoalToTag = typeof goalsToTags.$inferInsert;
 
+export type Provider = typeof providers.$inferSelect;
+export type NewProvider = typeof providers.$inferInsert;
+
 export type ActivityWithTags = ActivityRecord & {
   activityToTags: { tag: Tag }[];
+  provider: Provider | null;
 };
 
 export type GoalWithTags = Goal & {

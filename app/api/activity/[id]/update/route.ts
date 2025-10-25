@@ -58,8 +58,10 @@ export async function POST(
       interactive: formData.get("interactive") === "on",
       therapeutic: formData.get("therapeutic") === "on",
       tags: tags,
-      activityProvider: formData.get("activityProvider") as string,
       isDraft: formData.get("isDraft") === "true",
+      providerId: formData.get("providerId")
+        ? parseInt(formData.get("providerId") as string)
+        : null,
     };
 
     // Validation
@@ -192,7 +194,6 @@ export async function POST(
       description: updatedActivity.description,
       reflection: updatedActivity.reflection,
       evidenceFileUrl: fileUrl,
-      activityProvider: updatedActivity.activityProvider,
       isDraft: updatedActivity.isDraft,
     };
 

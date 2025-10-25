@@ -41,6 +41,7 @@ export class ActivityQueries {
         activityToTags: {
           with: { tag: true },
         },
+        provider: true,
       },
       orderBy: [desc(activityRecords.date), desc(activityRecords.createdAt)],
     });
@@ -96,6 +97,7 @@ export class ActivityQueries {
         activityToTags: {
           with: { tag: true }, // <— gives you the tag row
         },
+        provider: true,
       },
     });
 
