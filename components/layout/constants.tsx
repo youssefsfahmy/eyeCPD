@@ -1,11 +1,11 @@
 import {
   AccountCircle,
   Add,
-  // AttachMoney,
   Dashboard,
   Person,
   ListAlt,
   TrackChanges,
+  HelpOutline,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -38,6 +38,12 @@ export const navigationItems = [
     name: "Browse CPD",
     path: "/opt/browse-cpd",
     icon: <Search />,
+    authRequired: false,
+  },
+  {
+    name: "Help",
+    path: "/help",
+    icon: <HelpOutline />,
     authRequired: false,
   },
   // {

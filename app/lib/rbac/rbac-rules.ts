@@ -143,4 +143,9 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     roles: [UserRole.ADMIN, UserRole.OPTOMETRIST],
     requiresActiveSubscription: false,
   },
+
+  "/help": {
+    roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
 };
