@@ -23,6 +23,9 @@ import {
   DeleteOutlined,
   AttachFileOutlined,
 } from "@mui/icons-material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActivityWithTags, Provider, Tag } from "@/lib/db/schema";
@@ -58,6 +61,9 @@ export default function ActivityForm({
   );
 
   const [isDraft, setIsDraft] = useState(activity?.isDraft ?? true);
+  const [dateValue, setDateValue] = useState<Date | null>(
+    activity?.date ? new Date(activity.date) : null
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -169,396 +175,418 @@ export default function ActivityForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Hidden field for edit mode */}
-      {isEditing && <input type="hidden" name="id" value={activity.id} />}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <form onSubmit={handleSubmit}>
+        {/* Hidden field for edit mode */}
+        {isEditing && <input type="hidden" name="id" value={activity.id} />}
 
-      {formError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {formError}
-        </Alert>
-      )}
-      {formSuccess && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {`Activity ${isEditing ? "updated" : "created"} successfully`}
-        </Alert>
-      )}
+        {formError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {formError}
+          </Alert>
+        )}
+        {formSuccess && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {`Activity ${isEditing ? "updated" : "created"} successfully`}
+          </Alert>
+        )}
 
-      {/* Upload progress indicator */}
-      {isUploading && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {uploadProgress}
-        </Alert>
-      )}
+        {/* Upload progress indicator */}
+        {isUploading && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {uploadProgress}
+          </Alert>
+        )}
 
-      {fileError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {fileError}
-        </Alert>
-      )}
+        {fileError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {fileError}
+          </Alert>
+        )}
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: {
-            sm: "column",
-            md: "row",
-            lg: "row",
-          },
-          gap: 8,
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3, flex: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: {
+              sm: "column",
+              md: "row",
+              lg: "row",
+            },
+            gap: 8,
+          }}
+        >
           <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontWeight: "bold",
-            }}
+            sx={{ display: "flex", flexDirection: "column", gap: 3, flex: 2 }}
           >
-            <DescriptionOutlinedIcon sx={{ color: "primary.main" }} /> Activity
-            Details
-          </Box>
-          <Divider sx={{ mt: -1 }} />
-          {/* Activity Name and Date */}
-          <TextField
-            id="name"
-            label="Activity Name"
-            name="name"
-            variant="outlined"
-            sx={{ flex: 2, minWidth: 300 }}
-            required
-            defaultValue={activity?.name || ""}
-            helperText="e.g., Clinical Workshop on Dry Eye Management"
-          />
-          <ProviderComboBox
-            handleChange={handleProviderChange}
-            value={provider || null}
-          />
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                fontWeight: "bold",
+              }}
+            >
+              <DescriptionOutlinedIcon sx={{ color: "primary.main" }} />{" "}
+              Activity Details
+            </Box>
+            <Divider sx={{ mt: -1 }} />
+            {/* Activity Name and Date */}
             <TextField
-              id="date"
-              label="Date"
-              name="date"
-              type="date"
+              id="name"
+              label="Activity Name"
+              name="name"
               variant="outlined"
-              sx={{ flex: 1 }}
+              sx={{ flex: 2, minWidth: 300 }}
               required
-              defaultValue={activity?.date || ""}
+              defaultValue={activity?.name || ""}
+              helperText="e.g., Clinical Workshop on Dry Eye Management"
             />
-            <TextField
-              id="hours"
-              label="Hours"
-              name="hours"
-              type="number"
-              variant="outlined"
-              sx={{ flex: 1 }}
-              inputProps={{
-                min: 0.25,
-                step: 0.25,
-              }}
-              required
-              defaultValue={activity?.hours || ""}
-              helperText="Enter hours in 0.25 increments"
+            <ProviderComboBox
+              handleChange={handleProviderChange}
+              value={provider || null}
             />
-          </Box>
-
-          {/* Description */}
-          <TextField
-            id="description"
-            label="Description"
-            name="description"
-            variant="outlined"
-            multiline
-            rows={4}
-            required
-            defaultValue={activity?.description || ""}
-            helperText="Provide a detailed description of the activity, including what was covered and key learning outcomes"
-          />
-          {/* Topics/Tags */}
-
-          <TagComboBox
-            value={activityTags}
-            handleChange={(newTags) => setActivityTags(newTags)}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontWeight: "bold",
-            }}
-          >
-            <LightbulbCircleOutlined sx={{ color: "#8730d1" }} /> Activity
-            Reflection
-          </Box>
-          <Divider sx={{ mt: -1 }} />
-          {/* Reflection */}
-          <TextField
-            id="reflection"
-            label="Reflection"
-            name="reflection"
-            variant="outlined"
-            multiline
-            rows={4}
-            required
-            defaultValue={activity?.reflection || ""}
-            helperText="Reflect on how this activity will impact your practice and what you learned"
-          />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              p: 2,
-              border: 1,
-              borderColor: "#f3e8ff",
-              borderRadius: 1,
-              color: "#8730d1",
-              backgroundColor: "#f3e8ff80",
-            }}
-          >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              gutterBottom
-              sx={{
-                color: "#8730d1",
-              }}
-            >
-              <TipsAndUpdatesOutlined /> Reflection guidelines
-            </Typography>
-
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              ml={3}
-              sx={{
-                color: "#8730d1",
-              }}
-            >
-              - Briefly summarize your key takeaways from this activity.
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              ml={3}
-              sx={{
-                color: "#8730d1",
-              }}
-            >
-              - Assess your progress against your learning goals.
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              ml={3}
-              sx={{
-                color: "#8730d1",
-              }}
-            >
-              - Describe how you will apply what you&apos;ve learned in your
-              practice.
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              ml={3}
-              sx={{
-                color: "#8730d1",
-              }}
-            >
-              - Describe how this activity will improve your patient care or
-              professional skills.
-            </Typography>
-          </Box>
-          {/* Evidence File - TODO: Implement file upload */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              fontWeight: "bold",
-            }}
-          >
-            <UploadFileOutlined sx={{ color: "#4da16d" }} /> Evidence
-          </Box>
-          <Divider sx={{ mt: -1 }} />
-
-          {/* File Upload Area */}
-          <Box>
-            <input
-              type="file"
-              id="evidenceFile"
-              name="evidenceFile"
-              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-
-            {!selectedFile && !activity?.evidenceFileUrl ? (
-              <Box
-                sx={{
-                  p: 3,
-                  border: 2,
-                  borderColor: "grey.300",
-                  borderStyle: "dashed",
-                  borderRadius: 2,
-                  textAlign: "center",
-                  backgroundColor: "grey.50",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                    backgroundColor: "primary.light",
-                    color: "primary.contrastText",
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <DatePicker
+                label="Date"
+                value={dateValue}
+                onChange={(newValue) => setDateValue(newValue)}
+                slotProps={{
+                  textField: {
+                    id: "date",
+                    name: "date",
+                    variant: "outlined",
+                    sx: { flex: 1 },
+                    required: true,
                   },
                 }}
-                onClick={() => document.getElementById("evidenceFile")?.click()}
+              />
+              {/* Hidden input to submit the date value with the form */}
+              <input
+                type="hidden"
+                name="date"
+                value={dateValue ? dateValue.toISOString().split("T")[0] : ""}
+              />
+              <TextField
+                id="hours"
+                label="Hours"
+                name="hours"
+                type="number"
+                variant="outlined"
+                sx={{ flex: 1 }}
+                inputProps={{
+                  min: 0.25,
+                  step: 0.25,
+                }}
+                required
+                defaultValue={activity?.hours || ""}
+                helperText="Enter hours in 0.25 increments"
+              />
+            </Box>
+
+            {/* Description */}
+            <TextField
+              id="description"
+              label="Description"
+              name="description"
+              variant="outlined"
+              multiline
+              rows={4}
+              required
+              defaultValue={activity?.description || ""}
+              helperText="Provide a detailed description of the activity, including what was covered and key learning outcomes"
+            />
+            {/* Topics/Tags */}
+
+            <TagComboBox
+              value={activityTags}
+              handleChange={(newTags) => setActivityTags(newTags)}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                fontWeight: "bold",
+              }}
+            >
+              <LightbulbCircleOutlined sx={{ color: "#8730d1" }} /> Activity
+              Reflection
+            </Box>
+            <Divider sx={{ mt: -1 }} />
+            {/* Reflection */}
+            <TextField
+              id="reflection"
+              label="Reflection"
+              name="reflection"
+              variant="outlined"
+              multiline
+              rows={4}
+              required
+              defaultValue={activity?.reflection || ""}
+              helperText="Reflect on how this activity will impact your practice and what you learned"
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                p: 2,
+                border: 1,
+                borderColor: "#f3e8ff",
+                borderRadius: 1,
+                color: "#8730d1",
+                backgroundColor: "#f3e8ff80",
+              }}
+            >
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                gutterBottom
+                sx={{
+                  color: "#8730d1",
+                }}
               >
-                <UploadFileOutlined
-                  sx={{ fontSize: 48, mb: 1, color: "grey.600" }}
-                />
-                <Typography variant="body1" gutterBottom>
-                  Upload Evidence File
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Click to browse or drag and drop
-                </Typography>
-                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                  Supported: PDF, JPG, PNG, DOC, DOCX (Max 10MB)
-                </Typography>
-              </Box>
-            ) : (
-              <Card sx={{ p: 2, backgroundColor: "success.light" }}>
-                <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <AttachFileOutlined sx={{ color: "success.dark" }} />
-                    <Box sx={{ flex: 1 }}>
-                      {selectedFile ? (
-                        <>
-                          <Typography variant="body2" fontWeight="medium">
-                            {selectedFile.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant="body2" fontWeight="medium">
-                            Current evidence file
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Previously uploaded
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      {activity?.evidenceFileUrl && (
+                <TipsAndUpdatesOutlined /> Reflection guidelines
+              </Typography>
+
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                ml={3}
+                sx={{
+                  color: "#8730d1",
+                }}
+              >
+                - Briefly summarize your key takeaways from this activity.
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                ml={3}
+                sx={{
+                  color: "#8730d1",
+                }}
+              >
+                - Assess your progress against your learning goals.
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                ml={3}
+                sx={{
+                  color: "#8730d1",
+                }}
+              >
+                - Describe how you will apply what you&apos;ve learned in your
+                practice.
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                ml={3}
+                sx={{
+                  color: "#8730d1",
+                }}
+              >
+                - Describe how this activity will improve your patient care or
+                professional skills.
+              </Typography>
+            </Box>
+            {/* Evidence File - TODO: Implement file upload */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                fontWeight: "bold",
+              }}
+            >
+              <UploadFileOutlined sx={{ color: "#4da16d" }} /> Evidence
+            </Box>
+            <Divider sx={{ mt: -1 }} />
+
+            {/* File Upload Area */}
+            <Box>
+              <input
+                type="file"
+                id="evidenceFile"
+                name="evidenceFile"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+
+              {!selectedFile && !activity?.evidenceFileUrl ? (
+                <Box
+                  sx={{
+                    p: 3,
+                    border: 2,
+                    borderColor: "grey.300",
+                    borderStyle: "dashed",
+                    borderRadius: 2,
+                    textAlign: "center",
+                    backgroundColor: "grey.50",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    "&:hover": {
+                      borderColor: "primary.main",
+                      backgroundColor: "primary.light",
+                      color: "primary.contrastText",
+                    },
+                  }}
+                  onClick={() =>
+                    document.getElementById("evidenceFile")?.click()
+                  }
+                >
+                  <UploadFileOutlined
+                    sx={{ fontSize: 48, mb: 1, color: "grey.600" }}
+                  />
+                  <Typography variant="body1" gutterBottom>
+                    Upload Evidence File
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Click to browse or drag and drop
+                  </Typography>
+                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                    Supported: PDF, JPG, PNG, DOC, DOCX (Max 10MB)
+                  </Typography>
+                </Box>
+              ) : (
+                <Card sx={{ p: 2, backgroundColor: "success.light" }}>
+                  <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <AttachFileOutlined sx={{ color: "success.dark" }} />
+                      <Box sx={{ flex: 1 }}>
+                        {selectedFile ? (
+                          <>
+                            <Typography variant="body2" fontWeight="medium">
+                              {selectedFile.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            <Typography variant="body2" fontWeight="medium">
+                              Current evidence file
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              Previously uploaded
+                            </Typography>
+                          </>
+                        )}
+                      </Box>
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {activity?.evidenceFileUrl && (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            href={activity.evidenceFileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View
+                          </Button>
+                        )}
                         <Button
                           size="small"
                           variant="outlined"
-                          href={activity.evidenceFileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          onClick={() =>
+                            document.getElementById("evidenceFile")?.click()
+                          }
                         >
-                          View
+                          {selectedFile ? "Change" : "Replace"}
                         </Button>
-                      )}
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() =>
-                          document.getElementById("evidenceFile")?.click()
-                        }
-                      >
-                        {selectedFile ? "Change" : "Replace"}
-                      </Button>
-                      {selectedFile && (
-                        <IconButton
-                          size="small"
-                          onClick={removeFile}
-                          color="error"
-                        >
-                          <DeleteOutlined fontSize="small" />
-                        </IconButton>
-                      )}
+                        {selectedFile && (
+                          <IconButton
+                            size="small"
+                            onClick={removeFile}
+                            color="error"
+                          >
+                            <DeleteOutlined fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
 
-            {fileError && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {fileError}
-              </Alert>
-            )}
+              {fileError && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {fileError}
+                </Alert>
+              )}
+            </Box>
+          </Box>
+
+          <ActivityCategories
+            categories={categories}
+            setCategories={setCategories}
+            hours={activity?.hours || 0}
+          />
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!isDraft}
+                onChange={(e) => setIsDraft(!e.target.checked)}
+                color="primary"
+              />
+            }
+            label={
+              <Box>
+                <Typography variant="body2" fontWeight="medium">
+                  {isDraft ? "Save as Draft" : "Publish Activity"}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {isDraft
+                    ? "Save your progress without making it visible in reports"
+                    : "Make this activity count towards your CPD requirements"}
+                </Typography>
+              </Box>
+            }
+          />
+
+          <input type="hidden" name="isDraft" value={isDraft.toString()} />
+
+          <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={isUploading}
+              startIcon={isEditing ? <Save /> : <Add />}
+            >
+              {isUploading
+                ? uploadProgress || "Processing..."
+                : isEditing
+                ? "Save Changes"
+                : isDraft
+                ? "Save Draft"
+                : "Create Activity"}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleCancel}
+              disabled={isUploading}
+              startIcon={<Cancel />}
+            >
+              Cancel
+            </Button>
           </Box>
         </Box>
-
-        <ActivityCategories
-          categories={categories}
-          setCategories={setCategories}
-          hours={activity?.hours || 0}
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={!isDraft}
-              onChange={(e) => setIsDraft(!e.target.checked)}
-              color="primary"
-            />
-          }
-          label={
-            <Box>
-              <Typography variant="body2" fontWeight="medium">
-                {isDraft ? "Save as Draft" : "Publish Activity"}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {isDraft
-                  ? "Save your progress without making it visible in reports"
-                  : "Make this activity count towards your CPD requirements"}
-              </Typography>
-            </Box>
-          }
-        />
-
-        <input type="hidden" name="isDraft" value={isDraft.toString()} />
-
-        <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={isUploading}
-            startIcon={isEditing ? <Save /> : <Add />}
-          >
-            {isUploading
-              ? uploadProgress || "Processing..."
-              : isEditing
-              ? "Save Changes"
-              : isDraft
-              ? "Save Draft"
-              : "Create Activity"}
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleCancel}
-            disabled={isUploading}
-            startIcon={<Cancel />}
-          >
-            Cancel
-          </Button>
-        </Box>
-      </Box>
-    </form>
+      </form>
+    </LocalizationProvider>
   );
 }
