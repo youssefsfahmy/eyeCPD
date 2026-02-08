@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../drizzle";
 import { goals, type Goal, type NewGoal, type GoalWithTags } from "../schema";
 
@@ -6,9 +6,18 @@ export class GoalQueries {
   /**
    * Get all goals for a user
    */
-  static async getGoalsByUserId(userId: string): Promise<GoalWithTags[]> {
+  static async getGoalsByUserId(
+    userId: string,
+    year?: string,
+  ): Promise<GoalWithTags[]> {
+    const conditions = [eq(goals.userId, userId)];
+
+    if (year) {
+      conditions.push(eq(goals.year, year));
+    }
+
     const result = await db.query.goals.findMany({
-      where: (g, { eq }) => eq(g.userId, userId),
+      where: and(...conditions),
       with: {
         goalsToTags: {
           with: { tag: true },
@@ -25,7 +34,7 @@ export class GoalQueries {
    */
   static async getGoalsByUserIdAndYear(
     userId: string,
-    year: string
+    year: string,
   ): Promise<GoalWithTags[]> {
     const result = await db.query.goals.findMany({
       where: (g, { and, eq }) => and(eq(g.userId, userId), eq(g.year, year)),
@@ -75,7 +84,7 @@ export class GoalQueries {
   static async updateGoal(
     id: number,
     userId: string,
-    goalData: Partial<Omit<Goal, "id" | "userId" | "createdAt">>
+    goalData: Partial<Omit<Goal, "id" | "userId" | "createdAt">>,
   ): Promise<Goal | null> {
     const result = await db
       .update(goals)
@@ -114,7 +123,7 @@ export class GoalQueries {
    */
   static async getGoalStats(
     userId: string,
-    year?: string
+    year?: string,
   ): Promise<{
     totalGoals: number;
     goalsByType: {
@@ -158,7 +167,7 @@ export class GoalQueries {
           therapeutic: 0,
         },
         totalTargetHours: 0,
-      }
+      },
     );
 
     return stats;

@@ -4,8 +4,11 @@ import { createClient } from "@/app/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { GoalQueries } from "@/lib/db/queries/goal";
 import { GoalActionState } from "./types/goal";
+import { getCycleFromUrlOrCurrent } from "@/lib/utils";
 
-export async function getGoalsServerAction(): Promise<GoalActionState> {
+export async function getGoalsServerAction(
+  cycleParam?: string | null,
+): Promise<GoalActionState> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,7 +25,12 @@ export async function getGoalsServerAction(): Promise<GoalActionState> {
   }
 
   try {
-    const goals = await GoalQueries.getGoalsByUserId(user.id);
+    const selectedCycle = getCycleFromUrlOrCurrent(cycleParam ?? null);
+
+    const goals = await GoalQueries.getGoalsByUserId(
+      user.id,
+      selectedCycle.year,
+    );
 
     return {
       goals: goals,
@@ -45,7 +53,7 @@ export async function getGoalsServerAction(): Promise<GoalActionState> {
 
 export async function createGoalServerAction(
   prevState: GoalActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<GoalActionState> {
   const supabase = await createClient();
   const {
@@ -181,7 +189,7 @@ export async function deleteGoalServerAction(goalId: number): Promise<void> {
 export async function updateGoalServerAction(
   goalId: number,
   prevState: GoalActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<GoalActionState> {
   const supabase = await createClient();
   const {

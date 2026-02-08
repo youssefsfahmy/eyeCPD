@@ -12,16 +12,40 @@ import {
   Switch,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { CPDCycle } from "@/lib/types/generic";
 
-export default function PeriodSelector() {
+export default function PeriodSelector({
+  mode,
+  draftSelector = true,
+}: {
+  mode?: "card" | "transparent";
+  draftSelector?: boolean;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [cycles, setCycles] = useState<CPDCycle[]>([]);
-  const [currentCycle, setCurrentCycle] = useState<string>("");
-  const [includeDraft, setIncludeDraft] = useState<boolean>(false);
+  const [currentCycle, setCurrentCycle] = useState<string>(
+    searchParams.get("cycle") || "",
+  );
+  const [includeDraft, setIncludeDraft] = useState<boolean>(
+    searchParams.get("draft") === "true",
+  );
+  const isDark = mode === "card";
+  const searchParamsString = searchParams.toString();
+
+  const replaceParamsIfChanged = useCallback(
+    (params: URLSearchParams) => {
+      const next = params.toString();
+      if (next === searchParamsString) return;
+      router.replace(next ? `${pathname}?${next}` : pathname, {
+        scroll: false,
+      });
+    },
+    [router, pathname, searchParamsString],
+  );
 
   const handleToggleDraft = (checked: boolean) => {
     setIncludeDraft(checked);
@@ -32,13 +56,13 @@ export default function PeriodSelector() {
     } else {
       params.delete("draft");
     }
-    router.replace(`?${params.toString()}`, { scroll: false });
+    replaceParamsIfChanged(params);
   };
 
   const handleCycleChange = (event: SelectChangeEvent) => {
     const selectedValue = event.target.value;
     const selectedCycleData = cycles.find(
-      (cycle) => cycle.value === selectedValue
+      (cycle) => cycle.value === selectedValue,
     );
 
     if (selectedCycleData) {
@@ -46,8 +70,12 @@ export default function PeriodSelector() {
 
       // Update URL with new cycle parameter
       const params = new URLSearchParams(searchParams.toString());
-      params.set("cycle", selectedValue);
-      router.replace(`?${params.toString()}`, { scroll: false });
+      if (selectedCycleData.isCurrent) {
+        params.delete("cycle");
+      } else {
+        params.set("cycle", selectedValue);
+      }
+      replaceParamsIfChanged(params);
     }
   };
 
@@ -82,6 +110,7 @@ export default function PeriodSelector() {
         label,
         value,
         isCurrent,
+        year: cycleEndYear.toString(),
       });
     }
 
@@ -113,17 +142,35 @@ export default function PeriodSelector() {
       const current = generatedCycles.find((cycle) => cycle.isCurrent);
       if (current) {
         setCurrentCycle(current.value);
-        // Update URL with current cycle
+        // Update URL without cycle for current cycle
         const params = new URLSearchParams(searchParams.toString());
-        params.set("cycle", current.value);
-        router.replace(`?${params.toString()}`, { scroll: false });
+        params.delete("cycle");
+        replaceParamsIfChanged(params);
       }
     }
-  }, [searchParams, router]);
+  }, [searchParamsString, replaceParamsIfChanged, searchParams]);
 
   return (
     <Box sx={{ minWidth: 300, width: "max-content" }}>
-      <FormControl fullWidth size="small">
+      <FormControl
+        fullWidth
+        size="small"
+        sx={
+          isDark
+            ? {
+                "& .MuiInputLabel-root": { color: "white" },
+                "& .MuiSelect-select": { color: "white" },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255, 255, 255, 0.6)",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255, 255, 255, 0.9)",
+                },
+                "& .MuiSvgIcon-root": { color: "white" },
+              }
+            : undefined
+        }
+      >
         <InputLabel id="cycle-selector-label">CPD Cycle</InputLabel>
         <Select
           labelId="cycle-selector-label"
@@ -168,24 +215,29 @@ export default function PeriodSelector() {
             </MenuItem>
           ))}
         </Select>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={includeDraft}
-              onChange={(e) => handleToggleDraft(e.target.checked)}
-              color="warning"
-            />
-          }
-          label={
-            <Box>
-              <Typography variant="caption" color="text.secondary">
-                {includeDraft
-                  ? "Draft Activities are included"
-                  : "Draft Activities are excluded"}
-              </Typography>
-            </Box>
-          }
-        />
+        {draftSelector && (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={includeDraft}
+                onChange={(e) => handleToggleDraft(e.target.checked)}
+                color="warning"
+              />
+            }
+            label={
+              <Box>
+                <Typography
+                  variant="caption"
+                  color={isDark ? "white" : "text.secondary"}
+                >
+                  {includeDraft
+                    ? "Draft Activities are included"
+                    : "Draft Activities are excluded"}
+                </Typography>
+              </Box>
+            }
+          />
+        )}
       </FormControl>
     </Box>
   );
@@ -219,6 +271,7 @@ export const generateAllCycles = (): CPDCycle[] => {
       label,
       value,
       isCurrent,
+      year: cycleEndYear.toString(),
     });
   }
 

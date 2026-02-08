@@ -6,8 +6,13 @@ import { ProfileQueries } from "@/lib/db/queries/profile";
 import { createClient } from "@/app/lib/supabase/server";
 import ActivityCard from "./components/activity-card";
 import ActivitySummary from "./components/activity-summary";
+import ActionBar from "@/components/layout/action-bar";
+import { CycleDraftProps } from "@/app/lib/types";
 
-export default async function ActivityListPage() {
+export default async function ActivityListPage({
+  cycle,
+  draft,
+}: CycleDraftProps) {
   // Get user and activities
   const supabase = await createClient();
   const {
@@ -20,7 +25,7 @@ export default async function ActivityListPage() {
     );
   }
 
-  const result = await getActivitiesServerAction();
+  const result = await getActivitiesServerAction(cycle, draft);
   const profile = await ProfileQueries.getProfileByUserId(user.id);
 
   if (result.error) {
@@ -31,40 +36,17 @@ export default async function ActivityListPage() {
 
   return (
     <Box>
-      {/* Header */}
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "linear-gradient(to right, #0d3b66, #1f6fb2)",
-          color: "white",
-          p: 4,
-          borderRadius: 2,
+      <ActionBar
+        title="My CPD Activities"
+        description="Track your continuing professional development progress"
+        button={{
+          href: "/activity/create",
+          text: "Add Activity",
+          icon: "add",
         }}
-      >
-        <Box>
-          <Typography variant="h5" gutterBottom>
-            My CPD Activities
-          </Typography>
-          <Typography variant="body1" color="white">
-            Track your continuing professional development progress
-          </Typography>
-        </Box>
-
-        <Link href="/activity/create" legacyBehavior passHref>
-          <Button
-            component="a"
-            variant="outlined"
-            color="inherit"
-            startIcon={<Add />}
-            sx={{ minWidth: 150 }}
-          >
-            Add Activity
-          </Button>
-        </Link>
-      </Box>
+        bottomRadius
+        periodSelector
+      />
       {/* Summary Section */}
       <ActivitySummary
         activities={activities}

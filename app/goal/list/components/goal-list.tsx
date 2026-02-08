@@ -27,13 +27,15 @@ import { getGoalsServerAction, deleteGoalServerAction } from "../../actions";
 import AddGoalSteppedDialog from "../../../../components/goal/add-goal-stepped-dialog";
 import Link from "next/link";
 import { GoalWithTags } from "@/lib/db/schema";
+import ActionBar from "@/components/layout/action-bar";
+import { useRouter } from "next/navigation";
 
 interface GoalListPageProps {
-  initialGoals?: GoalWithTags[];
+  fetchedGoals: GoalWithTags[];
 }
 
-export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
-  const [goals, setGoals] = useState<GoalWithTags[]>(initialGoals);
+export default function GoalListPage({ fetchedGoals }: GoalListPageProps) {
+  const router = useRouter();
   const [error, setError] = useState<string>("");
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [showGuidance, setShowGuidance] = useState(false);
@@ -43,14 +45,13 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
     setOpenAddDialog(false);
     // Reload goals
     try {
-      const result = await getGoalsServerAction();
-      if (result.success && result.goals) {
-        setGoals(result.goals);
-      }
+      await getGoalsServerAction();
+      router.refresh();
     } catch {
       setError("Failed to reload goals");
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.refresh]);
 
   const handleAddGoal = () => {
     setOpenAddDialog(true);
@@ -60,10 +61,8 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
     if (window.confirm("Are you sure you want to delete this goal?")) {
       try {
         await deleteGoalServerAction(goalId);
-        const result = await getGoalsServerAction();
-        if (result.success && result.goals) {
-          setGoals(result.goals);
-        }
+        await getGoalsServerAction();
+        router.refresh();
       } catch {
         setError("Failed to delete goal");
       }
@@ -80,8 +79,8 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
   };
 
   const getComplianceStatus = () => {
-    const totalGoals = goals.length;
-    const clinicalGoals = goals.filter((g) => g.clinical).length;
+    const totalGoals = fetchedGoals.length;
+    const clinicalGoals = fetchedGoals.filter((g) => g.clinical).length;
 
     return {
       hasGoals: totalGoals > 0,
@@ -96,38 +95,19 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
   return (
     <Box>
       {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          background: "linear-gradient(to right, #0d3b66, #124a78)",
-          color: "white",
-          p: 4,
-          borderRadius: 2,
-          mb: 3,
+      <ActionBar
+        title="Learning Goals"
+        description="Set and track your CPD learning objectives for your registration cycle"
+        button={{
+          href: "/goal/list",
+          text: "Add Goal",
+          onClick: handleAddGoal,
+          icon: "add",
         }}
-      >
-        <Box>
-          <Typography variant="h5" gutterBottom>
-            Learning Goals
-          </Typography>
-          <Typography variant="body1" color="white">
-            Set and track your CPD learning objectives for your registration
-            cycle
-          </Typography>
-        </Box>
-
-        <Button
-          onClick={handleAddGoal}
-          variant="outlined"
-          color="inherit"
-          startIcon={<Add />}
-          sx={{ minWidth: 150 }}
-        >
-          Add Goal
-        </Button>
-      </Box>
+        bottomRadius
+        periodSelector
+        draftSelector={false}
+      />
 
       {/* Error Alert */}
       {error && (
@@ -258,11 +238,11 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
       {/* Goals List */}
       <Box sx={{ mb: 2 }}>
         <Typography variant="h6" gutterBottom>
-          Your Learning Goals ({goals.length})
+          Your Learning Goals ({fetchedGoals.length})
         </Typography>
       </Box>
 
-      {goals.length === 0 ? (
+      {fetchedGoals.length === 0 ? (
         <Card sx={{ textAlign: "center", py: 8 }}>
           <CardContent>
             <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -283,7 +263,7 @@ export default function GoalListPage({ initialGoals = [] }: GoalListPageProps) {
         </Card>
       ) : (
         <Box>
-          {goals.map((goal) => (
+          {fetchedGoals.map((goal) => (
             <Card key={goal.id} sx={{ mb: 2 }}>
               <CardContent>
                 <Box

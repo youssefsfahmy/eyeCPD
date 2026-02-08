@@ -1,5 +1,4 @@
 import DashboardPage from "@/components/dashboard";
-import React from "react";
 interface PageProps {
   searchParams: Promise<{ cycle?: string; draft?: string }>;
 }

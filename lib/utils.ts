@@ -29,12 +29,13 @@ export const getCurrentCPDCycle = (): CPDCycle => {
       .slice(-2)}`,
     value: `${currentCycleStartYear}-${currentCycleEndYear}`,
     isCurrent: true,
+    year: currentCycleEndYear.toString(),
   };
 };
 
 // Utility function to get cycle from URL parameter or return current cycle
 export const getCycleFromUrlOrCurrent = (
-  cycleParam: string | null
+  cycleParam: string | null,
 ): CPDCycle => {
   if (cycleParam) {
     const [startYear, endYear] = cycleParam.split("-").map(Number);
@@ -47,6 +48,7 @@ export const getCycleFromUrlOrCurrent = (
         label: `${startYear}/${endYear.toString().slice(-2)}`,
         value: cycleParam,
         isCurrent: cycleParam === currentCycle.value,
+        year: endYear.toString(),
       };
     }
   }

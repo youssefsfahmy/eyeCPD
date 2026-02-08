@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography, Skeleton, Button } from "@mui/material";
+import { Box, Grid, Paper, Typography, Skeleton } from "@mui/material";
 import { Suspense } from "react";
 import { getDashboardData } from "./actions";
 import ActivityComplianceCard from "./components/activity-compliance-card";
@@ -10,7 +10,7 @@ import MonthlyProgressChart from "./components/monthly-progress-chart";
 import RemainingHoursCard from "./components/remaining-hours-card";
 import TotalCPDHoursCard from "./components/total-cpd-hours-card";
 import RecentActivities from "./components/recent-activities";
-import PeriodSelector from "./period-selector";
+import ActionBar from "@/components/layout/action-bar";
 
 interface CPDDashboardProps {
   cycle?: string | null;
@@ -26,44 +26,19 @@ export default async function CPDDashboard({
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: "100%", width: "100%" }} py={3}>
-      <Grid container spacing={1} sx={{ mb: 4 }} alignItems="stretch">
-        <Grid size={{ xs: 12, sm: 6, md: 6 }}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              CPD Dashboard
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Track your Continuing Professional Development progress and
-              compliance.
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid
-          size={{ xs: 12, sm: 6, md: 3 }}
-          sx={{
-            display: "flex",
-            alignContent: "center",
-            justifyItems: "flex-end",
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
-            py: 1,
+      <Box sx={{ mb: 4 }}>
+        <ActionBar
+          title="CPD Dashboard"
+          description="Track your Continuing Professional Development progress and compliance."
+          button={{
+            href: `/api/report/${cycle}?draft=${draft ? "true" : "false"}`,
+            text: "Generate Report",
           }}
-        >
-          <Button
-            variant="outlined"
-            target="_blank"
-            href={`/api/report/${cycle}?draft=${draft ? "true" : "false"}`}
-          >
-            Generate Report
-          </Button>
-        </Grid>
-        <Grid
-          size={{ xs: 12, sm: 6, md: 3 }}
-          sx={{ alignContent: "center", justifyItems: "flex-end" }}
-        >
-          <PeriodSelector />
-        </Grid>
-      </Grid>
+          periodSelector
+          mode="transparent"
+          bottomRadius
+        />
+      </Box>
 
       {/* Key Metrics Cards */}
       <Grid container spacing={1} sx={{ mb: 4 }} alignItems="stretch">

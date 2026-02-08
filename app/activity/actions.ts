@@ -4,8 +4,12 @@ import { ActivityQueries } from "@/lib/db/queries/activity";
 import { createClient } from "@/app/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { ActivityActionState, ActivityDataState } from "./types/activity";
+import { getCycleFromUrlOrCurrent } from "@/lib/utils";
 
-export async function getActivitiesServerAction(): Promise<ActivityActionState> {
+export async function getActivitiesServerAction(
+  cycleParam?: string | null,
+  draft?: boolean,
+): Promise<ActivityActionState> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,11 +26,12 @@ export async function getActivitiesServerAction(): Promise<ActivityActionState> 
   }
 
   try {
+    const selectedCycle = getCycleFromUrlOrCurrent(cycleParam ?? null);
     const activities = await ActivityQueries.getActivitiesByUserId(
       user.id,
-      undefined,
-      undefined,
-      true
+      selectedCycle.startDate,
+      selectedCycle.endDate,
+      draft,
     );
 
     const activitiesData: ActivityDataState[] = activities.map((activity) => ({
@@ -68,7 +73,7 @@ export async function getActivitiesServerAction(): Promise<ActivityActionState> 
 }
 
 export async function deleteActivityServerAction(
-  activityId: number
+  activityId: number,
 ): Promise<void> {
   const supabase = await createClient();
   const {
