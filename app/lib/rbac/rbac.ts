@@ -35,7 +35,7 @@ export class RoleBasedAccessControl {
 
   constructor(
     claims: SupabaseClaimsResult,
-    routeConfig: RouteAuthConfig = defaultRouteAuthConfig
+    routeConfig: RouteAuthConfig = defaultRouteAuthConfig,
   ) {
     this.claims = claims;
     this.routeConfig = routeConfig;
@@ -49,7 +49,7 @@ export class RoleBasedAccessControl {
    */
   isAuthorized(
     url: string,
-    customRules?: AuthorizationRule
+    customRules?: AuthorizationRule,
   ): AuthorizationResult {
     if (url.includes("/error")) {
       return {
@@ -77,19 +77,19 @@ export class RoleBasedAccessControl {
         "Access denied for user:",
         this.getUserInfo(),
         "to URL:",
-        url
+        url,
       );
 
-      const userRole = this.claims.profile?.role;
+      const userRoles = this.claims.profile?.roles || [];
       const requiredRoles = rules.roles.join(", ");
 
       return {
         isAuthorized: false,
         redirectUrl: this.getRedirectUrlForRole(
-          userRole as UserRole,
-          `Access denied. Required roles: ${requiredRoles}. Your role: ${userRole}`
+          null,
+          `Access denied. Required roles: ${requiredRoles}. Your roles: ${userRoles.join(", ")}`,
         ),
-        message: `Access denied. Required roles: ${requiredRoles}. Your role: ${userRole}`,
+        message: `Access denied. Required roles: ${requiredRoles}. Your roles: ${userRoles.join(", ")}`,
         reason: "invalid_role",
       };
     }
@@ -104,7 +104,7 @@ export class RoleBasedAccessControl {
       console.log(
         "Access denied for user:",
         this.getUserInfo(),
-        "due to incomplete profile"
+        "due to incomplete profile",
       );
 
       const missingFields = this.getMissingProfileFields();
@@ -113,7 +113,7 @@ export class RoleBasedAccessControl {
         isAuthorized: false,
         redirectUrl: "/auth/complete-profile",
         message: `Please complete your profile. Missing fields: ${missingFields.join(
-          ", "
+          ", ",
         )}`,
         reason: "incomplete_profile",
       };
@@ -124,7 +124,7 @@ export class RoleBasedAccessControl {
       console.log(
         "Access denied for user:",
         this.getUserInfo(),
-        "due to missing active subscription"
+        "due to missing active subscription",
       );
 
       return {
@@ -145,7 +145,7 @@ export class RoleBasedAccessControl {
       console.log(
         "Access denied for user:",
         this.getUserInfo(),
-        "due to invalid subscription status"
+        "due to invalid subscription status",
       );
 
       const requiredStatuses = rules.subscriptionStatuses.join(", ");
@@ -167,7 +167,7 @@ export class RoleBasedAccessControl {
       console.log(
         "Access denied for user:",
         this.getUserInfo(),
-        "due to invalid subscription type"
+        "due to invalid subscription type",
       );
 
       const requiredTypes = rules.subscriptionTypes.join(", ");
@@ -199,8 +199,8 @@ export class RoleBasedAccessControl {
    * Check if user has any of the required roles
    */
   private hasRequiredRole(requiredRoles: UserRole[]): boolean {
-    const userRole = this.claims.profile?.role as UserRole;
-    return requiredRoles.includes(userRole);
+    const userRoles = this.claims.profile?.roles || [];
+    return requiredRoles.some((role) => userRoles.includes(role));
   }
 
   /**
@@ -218,7 +218,7 @@ export class RoleBasedAccessControl {
    * Check if user's subscription status matches any of the required statuses
    */
   private hasValidSubscriptionStatus(
-    requiredStatuses: SubscriptionStatus[]
+    requiredStatuses: SubscriptionStatus[],
   ): boolean {
     const userSubscriptionStatus = this.claims.subscription
       ?.status as SubscriptionStatus;
@@ -301,7 +301,7 @@ export class RoleBasedAccessControl {
   getUserInfo() {
     return {
       userId: this.claims.sub,
-      role: this.claims.profile?.role,
+      roles: this.claims.profile?.roles || [],
       subscriptionStatus: this.claims.subscription?.status,
       planName: this.claims.subscription?.plan_name,
       firstName: this.claims.profile?.first_name,
@@ -313,7 +313,8 @@ export class RoleBasedAccessControl {
    * Check if user has a specific role
    */
   hasRole(role: UserRole): boolean {
-    return this.claims.profile?.role === role;
+    const userRoles = this.claims.profile?.roles || [];
+    return userRoles.includes(role);
   }
 
   /**
@@ -346,7 +347,7 @@ export class RoleBasedAccessControl {
       subscriptionTypes?: string[];
       subscriptionStatuses?: SubscriptionStatus[];
       requiresActiveSubscription?: boolean;
-    } = {}
+    } = {},
   ): AuthorizationRule {
     return {
       roles,
@@ -357,13 +358,34 @@ export class RoleBasedAccessControl {
   }
 
   /**
+   * Get the highest privilege role from user's roles
+   * Priority: ADMIN > OPTOMETRIST
+   */
+  private getHighestPrivilegeRole(): UserRole | null {
+    const userRoles = this.claims.profile?.roles || [];
+
+    // Check for roles in order of precedence
+    if (userRoles.includes(UserRole.ADMIN)) {
+      return UserRole.ADMIN;
+    }
+    if (userRoles.includes(UserRole.OPTOMETRIST)) {
+      return UserRole.OPTOMETRIST;
+    }
+
+    return userRoles[0] || null;
+  }
+
+  /**
    * Get appropriate redirect URL based on user role
    */
   private getRedirectUrlForRole(
-    userRole: UserRole,
-    errorMessage: string
+    userRole: UserRole | null,
+    errorMessage: string,
   ): string {
-    switch (userRole) {
+    // If no role provided, use highest privilege role
+    const roleToUse = userRole || this.getHighestPrivilegeRole();
+
+    switch (roleToUse) {
       case UserRole.ADMIN:
         return "/admin";
       case UserRole.OPTOMETRIST:

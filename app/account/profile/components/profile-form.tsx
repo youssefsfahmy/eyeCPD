@@ -38,7 +38,7 @@ export default function ProfileForm({
   };
   const [state, action, isPending] = useActionState(
     createProfileServerAction,
-    init
+    init,
   );
 
   useEffect(() => {
@@ -117,12 +117,12 @@ export default function ProfileForm({
           />
           <TextField
             label="Role"
-            name="role"
+            name="roles"
             variant="outlined"
             disabled
-            value={state?.profile.role || ""}
+            value={state?.profile.roles?.join(", ") || ""}
             sx={{ flex: 1, minWidth: 200 }}
-            helperText="Role cannot be changed from this page"
+            helperText="Roles are managed by administrators"
           />
         </Box>
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>

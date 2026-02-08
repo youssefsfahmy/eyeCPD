@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../drizzle";
 import { profiles, type Profile, type NewProfile } from "../schema";
 
@@ -30,7 +30,7 @@ export class ProfileQueries {
    */
   static async updateProfile(
     userId: string,
-    profileData: Partial<Omit<Profile, "id" | "userId" | "createdAt">>
+    profileData: Partial<Omit<Profile, "id" | "userId" | "createdAt">>,
   ): Promise<Profile | null> {
     const result = await db
       .update(profiles)
@@ -49,7 +49,7 @@ export class ProfileQueries {
    */
   static async upsertProfile(
     userId: string,
-    profileData: Omit<NewProfile, "userId">
+    profileData: Omit<NewProfile, "userId">,
   ): Promise<Profile> {
     const existingProfile = await this.getProfileByUserId(userId);
 
@@ -87,10 +87,13 @@ export class ProfileQueries {
   }
 
   /**
-   * Get profiles by role
+   * Get profiles by role (checks if role exists in roles array)
    */
   static async getProfilesByRole(role: string): Promise<Profile[]> {
-    return await db.select().from(profiles).where(eq(profiles.role, role));
+    return await db
+      .select()
+      .from(profiles)
+      .where(sql`${role} = ANY(${profiles.roles})`);
   }
 
   /**

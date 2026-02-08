@@ -15,7 +15,7 @@ const verifyProfileCreation = async (user: User, role = "optometrist") => {
       lastName: user?.user_metadata?.last_name || "",
       phone: user.phone || "",
       registrationNumber: "",
-      role,
+      roles: [role],
       isTherapeuticallyEndorsed: false,
     });
   }

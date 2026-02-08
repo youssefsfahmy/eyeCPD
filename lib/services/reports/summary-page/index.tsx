@@ -7,7 +7,7 @@ import { User } from "@supabase/supabase-js";
 function summarize(activities: ActivityWithTags[], requiredHours = 30) {
   const totalHours = activities.reduce(
     (s, a) => s + (parseFloat(a.hours) || 0),
-    0
+    0,
   );
 
   // Category breakdown
@@ -44,7 +44,7 @@ function summarize(activities: ActivityWithTags[], requiredHours = 30) {
   const distinctProviders = new Set(
     activities
       .filter((a) => !a.isDraft)
-      .map((a) => a.providerId || "Unknown Provider")
+      .map((a) => a.providerId || "Unknown Provider"),
   ).size;
 
   // CPD Requirements
@@ -110,7 +110,8 @@ const SummaryPage = ({
               {profile.registrationNumber || "N/A"}
             </Text>
             <Text style={{ fontSize: 10, marginBottom: 2 }}>
-              <Text style={{ fontWeight: 700 }}>Role:</Text> {profile.role}
+              <Text style={{ fontWeight: 700 }}>Role:</Text>{" "}
+              {profile.roles?.join(", ") || "N/A"}
             </Text>
             <Text style={{ fontSize: 10, marginBottom: 2 }}>
               <Text style={{ fontWeight: 700 }}>Phone:</Text>{" "}
@@ -215,7 +216,7 @@ const SummaryPage = ({
         </View>
         {activities
           .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
           )
           .map((a) => (
             <View key={a.id} style={styles.row}>

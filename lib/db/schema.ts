@@ -32,7 +32,7 @@ export const profiles = pgTable("profiles", {
   lastName: varchar("last_name", { length: 100 }).notNull(),
   phone: varchar("phone", { length: 20 }),
   registrationNumber: varchar("registration_number", { length: 50 }),
-  role: varchar("role", { length: 20 }).notNull().default("optometrist"),
+  roles: text("roles").array().notNull().default(["optometrist"]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   isTherapeuticallyEndorsed: boolean("is_therapeutically_endorsed")
@@ -162,7 +162,7 @@ export const activityToTags = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.activityRecordId, t.tagId] }),
-  })
+  }),
 );
 
 // Junction table for many-to-many relationship between goals and tags
@@ -178,7 +178,7 @@ export const goalsToTags = pgTable(
   },
   (t) => ({
     pk: primaryKey({ columns: [t.goalId, t.tagId] }),
-  })
+  }),
 );
 
 // ✅ RELATIONS
@@ -214,7 +214,7 @@ export const activityRecordRelations = relations(
       references: [providers.id],
     }),
     activityToTags: many(activityToTags),
-  })
+  }),
 );
 
 export const goalsRelations = relations(goals, ({ one, many }) => ({

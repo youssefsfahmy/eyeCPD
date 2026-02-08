@@ -32,7 +32,7 @@ export default function CompleteProfileStep() {
     lastName: "",
     phone: "",
     registrationNumber: "",
-    role: "optometrist",
+    roles: ["optometrist"],
     userId: "",
     isTherapeuticallyEndorsed: false,
   });
@@ -70,7 +70,7 @@ export default function CompleteProfileStep() {
 
   const handleInputChange = (
     field: keyof ProfileData,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setProfile((prev) => ({
       ...prev,

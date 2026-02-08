@@ -19,7 +19,7 @@ export async function getProfileServerAction(): Promise<ActionState> {
     phone: profile?.phone || "",
     registrationNumber: profile?.registrationNumber || "",
     email: user?.email || "",
-    role: profile?.role || "",
+    roles: profile?.roles || [],
     userId: profile?.userId || "",
     isTherapeuticallyEndorsed: profile?.isTherapeuticallyEndorsed || false,
   };
@@ -35,7 +35,7 @@ export async function getProfileServerAction(): Promise<ActionState> {
 
 export async function createProfileServerAction(
   prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionState> {
   const dataToIpdate = {
     firstName: formData.get("firstName") as string,
@@ -48,7 +48,7 @@ export async function createProfileServerAction(
   };
   const newprofile = await ProfileQueries.updateProfile(
     prevState.profile.userId,
-    dataToIpdate
+    dataToIpdate,
   );
 
   if (!newprofile) {
@@ -66,7 +66,7 @@ export async function createProfileServerAction(
     lastName: newprofile.lastName,
     phone: newprofile.phone,
     registrationNumber: newprofile.registrationNumber,
-    role: newprofile.role,
+    roles: newprofile.roles,
     userId: newprofile.userId,
     isTherapeuticallyEndorsed: newprofile.isTherapeuticallyEndorsed,
     email: prevState.profile.email, // Email remains unchanged

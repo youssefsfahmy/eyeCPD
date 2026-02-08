@@ -106,6 +106,13 @@
       "when": 1761400622431,
       "tag": "0014_acoustic_slipstream",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1770561943939,
+      "tag": "0015_wild_mauler",
+      "breakpoints": true
     }
   ]
 }

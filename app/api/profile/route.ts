@@ -21,7 +21,7 @@ export async function GET() {
     if (!user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET() {
     console.error("Profile GET error:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
       lastName: body.lastName || body.lastName,
       phone: body.phone,
       registrationNumber: body.registrationNumber || body.registrationNumber,
-      role: body.role,
+      roles: body.roles,
       isTherapeuticallyEndorsed: body.isTherapeuticallyEndorsed,
     };
 
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -69,13 +69,13 @@ export async function PUT(request: NextRequest) {
       lastName: profileData.lastName || "",
       phone: profileData.phone || "",
       registrationNumber: profileData.registrationNumber || "",
-      role: profileData.role || "optometrist",
+      roles: profileData.roles || ["optometrist"],
       isTherapeuticallyEndorsed: profileData.isTherapeuticallyEndorsed ?? false,
     };
 
     const updatedProfile = await ProfileQueries.upsertProfile(
       user.id,
-      upsertData
+      upsertData,
     );
 
     return NextResponse.json({ profile: updatedProfile });
@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest) {
     console.error("Profile PUT error:", error);
     return NextResponse.json(
       { error: "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -94,7 +94,7 @@ export async function POST() {
     if (!user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -104,7 +104,7 @@ export async function POST() {
       lastName: user.user_metadata?.lastName || "",
       phone: user.user_metadata?.phone || "",
       registrationNumber: "",
-      role: user.user_metadata?.role || "optometrist",
+      roles: user.user_metadata?.roles || ["optometrist"],
     };
 
     const profile = await ProfileQueries.createProfile({
@@ -117,7 +117,7 @@ export async function POST() {
     console.error("Profile POST error:", error);
     return NextResponse.json(
       { error: "Failed to create profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -128,7 +128,7 @@ export async function DELETE() {
     if (!user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -143,7 +143,7 @@ export async function DELETE() {
     console.error("Profile DELETE error:", error);
     return NextResponse.json(
       { error: "Failed to delete profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

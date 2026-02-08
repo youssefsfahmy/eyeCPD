@@ -17,7 +17,7 @@ export interface SupabaseClaimsResult {
     registration_number: string;
     is_therapeutically_endorsed: boolean;
     user_id: string;
-    role: UserRole;
+    roles: UserRole[];
   };
   subscription: {
     status: SubscriptionStatus;

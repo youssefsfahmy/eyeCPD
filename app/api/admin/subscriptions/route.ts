@@ -10,7 +10,7 @@ import { UserRole } from "@/lib/db/schema";
 async function isAdmin(userId: string): Promise<boolean> {
   try {
     const profile = await ProfileQueries.getProfileByUserId(userId);
-    return profile?.role === UserRole.ADMIN;
+    return profile?.roles?.includes(UserRole.ADMIN) ?? false;
   } catch {
     return false;
   }
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (!userIsAdmin) {
       return NextResponse.json(
         { error: "Insufficient permissions" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     // Combine Stripe and local data
     const combinedData = stripeSubscriptions.data.map((stripeSubscription) => {
       const localSubscription = localSubscriptions.find(
-        (local) => local.stripeSubscriptionId === stripeSubscription.id
+        (local) => local.stripeSubscriptionId === stripeSubscription.id,
       );
 
       return {
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching all subscriptions:", error);
     return NextResponse.json(
       { error: "Failed to fetch subscriptions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     if (!userIsAdmin) {
       return NextResponse.json(
         { error: "Insufficient permissions" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
       if (!subscriptionId) {
         return NextResponse.json(
           { error: "Subscription ID is required for sync" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -155,13 +155,13 @@ export async function POST(request: NextRequest) {
         subscriptionId,
         {
           expand: ["customer", "items.data.price.product"],
-        }
+        },
       );
 
       // Find customer's user ID (this would need to be implemented based on your customer mapping)
       const localSubscription =
         await SubscriptionQueries.getSubscriptionByStripeSubscriptionId(
-          subscriptionId
+          subscriptionId,
         );
 
       if (!localSubscription) {
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
             error:
               "Local subscription not found - cannot sync without user mapping",
           },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -180,15 +180,15 @@ export async function POST(request: NextRequest) {
         {
           status: stripeSubscription.status,
           currentPeriodStart: new Date(
-            (stripeSubscription as any).current_period_start * 1000
+            (stripeSubscription as any).current_period_start * 1000,
           ),
           currentPeriodEnd: new Date(
-            (stripeSubscription as any).current_period_end * 1000
+            (stripeSubscription as any).current_period_end * 1000,
           ),
           cancelAtPeriodEnd: stripeSubscription.canceled_at
             ? new Date(stripeSubscription.canceled_at * 1000)
             : null,
-        }
+        },
       );
 
       return NextResponse.json({
@@ -207,14 +207,14 @@ export async function POST(request: NextRequest) {
       const localSubscriptions =
         await SubscriptionQueries.getAllSubscriptions();
       const subscriptionsWithStripeIds = localSubscriptions.filter(
-        (sub) => sub.stripeSubscriptionId
+        (sub) => sub.stripeSubscriptionId,
       );
 
       for (const localSub of subscriptionsWithStripeIds) {
         try {
           const stripeSubscription = await stripe.subscriptions.retrieve(
             localSub.stripeSubscriptionId!,
-            { expand: ["customer"] }
+            { expand: ["customer"] },
           );
 
           await SubscriptionQueries.updateSubscriptionByStripeId(
@@ -222,26 +222,26 @@ export async function POST(request: NextRequest) {
             {
               status: stripeSubscription.status,
               currentPeriodStart: new Date(
-                (stripeSubscription as any).current_period_start * 1000
+                (stripeSubscription as any).current_period_start * 1000,
               ),
               currentPeriodEnd: new Date(
-                (stripeSubscription as any).current_period_end * 1000
+                (stripeSubscription as any).current_period_end * 1000,
               ),
               cancelAtPeriodEnd: stripeSubscription.canceled_at
                 ? new Date(stripeSubscription.canceled_at * 1000)
                 : null,
-            }
+            },
           );
 
           syncedCount++;
         } catch (error) {
           errorCount++;
           errors.push(
-            `Failed to sync ${localSub.stripeSubscriptionId}: ${error}`
+            `Failed to sync ${localSub.stripeSubscriptionId}: ${error}`,
           );
           console.error(
             `Error syncing subscription ${localSub.stripeSubscriptionId}:`,
-            error
+            error,
           );
         }
       }
@@ -256,13 +256,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { error: "Invalid action. Supported actions: sync, sync_all" },
-      { status: 400 }
+      { status: 400 },
     );
   } catch (error) {
     console.error("Error in subscription admin action:", error);
     return NextResponse.json(
       { error: "Failed to perform action" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -10,7 +10,7 @@ export interface ProfileUpdateData {
   lastName?: string;
   phone?: string;
   registrationNumber?: string;
-  role?: string;
+  roles?: string[];
   isTherapeuticallyEndorsed?: boolean;
 }
 
@@ -20,7 +20,7 @@ export interface LegacyProfileData {
   lastName: string;
   phone: string;
   registrationNumber: string;
-  role: string;
+  roles: string[];
   userId: string;
   created_at?: string;
   updated_at?: string;
@@ -32,7 +32,7 @@ export interface LegacyProfileCreateData {
   lastName: string;
   phone: string;
   registrationNumber: string;
-  role: string;
+  roles: string[];
 }
 
 export interface LegacyProfileUpdateData {
