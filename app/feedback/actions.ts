@@ -3,6 +3,7 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { FeedbackQueries } from "@/lib/db/queries/feedback";
+import { revalidatePath } from "next/cache";
 
 export async function submitFeedback(formData: FormData) {
   const supabase = await createClient();
@@ -30,6 +31,9 @@ export async function submitFeedback(formData: FormData) {
       isPositive,
       details,
     });
+
+    // invalidate cache for feedback list page to show new feedback immediately
+    revalidatePath("/feedback/list");
 
     return { success: true };
   } catch (error) {
