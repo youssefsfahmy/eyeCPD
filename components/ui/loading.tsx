@@ -100,7 +100,7 @@ export const LoadingAnimatedLogo: React.FC<{
 }> = ({ className = "" }) => {
   return (
     <div
-      className={`h-full w-full min-h-[50vh] flex items-center justify-center ${className}`}
+      className={`h-full w-full min-h-[80vh] flex items-center justify-center ${className}`}
     >
       <div className="relative mb-8">
         <div className="w-20 h-20 mx-auto bg-gradient-to-r from-[#0d3b66] to-[#124a78] rounded-2xl shadow-xl flex items-center justify-center animate-pulse">

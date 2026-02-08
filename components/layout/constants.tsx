@@ -8,6 +8,7 @@ import {
   TrackChanges,
   HelpOutline,
   ChatBubble,
+  ManageAccounts,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -57,7 +58,7 @@ export const navigationItems = [
   {
     name: "Admin",
     path: "/admin",
-    icon: <Dashboard />,
+    icon: <ManageAccounts />,
     authRequired: true,
     roles: [UserRole.ADMIN],
   },
@@ -65,7 +66,7 @@ export const navigationItems = [
     name: "Feedback",
     path: "/admin/feedback",
     icon: <ChatBubble />,
-    authRequired: false,
+    authRequired: true,
     roles: [UserRole.ADMIN],
   },
 

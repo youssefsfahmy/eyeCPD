@@ -3,7 +3,6 @@ import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Button, Card } from "@mui/material";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import { ReactNode } from "react";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import Link from "next/link";
 import LogoColor from "@/components/common/icons/logo-color";
 
@@ -94,14 +93,6 @@ export default function Home() {
   return (
     <main className="relative flex flex-col items-center min-h-screen py-10 bg-primary-50">
       <h1 className="mt-10 text-4xl font-bold text-center">
-        <VisibilityOutlinedIcon
-          sx={{
-            width: "3rem",
-            height: "3rem",
-            marginRight: "1rem",
-          }}
-          color="primary"
-        />
         <LogoColor size={150} className="mx-auto" />
       </h1>
       <p className="mt-4 text-lg text-gray-500 text-center">

@@ -200,14 +200,6 @@ export class RoleBasedAccessControl {
    */
   private hasRequiredRole(requiredRoles: UserRole[]): boolean {
     const userRoles = this.claims.profile?.roles || [];
-    console.log(
-      "Checking roles. Required:",
-      requiredRoles,
-      "User roles:",
-      userRoles,
-      "status:",
-      requiredRoles.some((role) => userRoles.includes(role)),
-    );
 
     return requiredRoles.some((role) => userRoles.includes(role));
   }

@@ -36,6 +36,7 @@ function ResponsiveAppBar() {
   };
 
   const logout = async () => {
+    handleCloseUserMenu();
     await signOut();
     router.push("/");
   };
@@ -54,10 +55,15 @@ function ResponsiveAppBar() {
         boxShadow: 1,
       }}
     >
-      <Container maxWidth="xl">
+      <Container
+        maxWidth="xl"
+        sx={{
+          justifyContent: "space-between",
+        }}
+      >
         <Toolbar disableGutters>
-          <Link href="/opt" passHref>
-            <LogoColor size={50} className="mx-auto hidden md:block" />
+          <Link href="/opt" passHref className="mx-auto hidden lg:block">
+            <LogoColor size={50} />
           </Link>
 
           <Box
@@ -66,7 +72,7 @@ function ResponsiveAppBar() {
             <SideNav />
           </Box>
 
-          <LogoColor size={50} className="mx-auto md:hidden" />
+          <LogoColor size={50} className="mx-auto lg:hidden" />
           <Box
             sx={{
               flexGrow: 1,
@@ -78,7 +84,10 @@ function ResponsiveAppBar() {
             {navigationItems.map((page) => {
               if (page.authRequired && !user) return null;
 
-              if (!page.roles.some((role) => profile?.roles.includes(role)))
+              if (
+                page.authRequired &&
+                !page.roles.some((role) => profile?.roles.includes(role))
+              )
                 return null;
               return (
                 <Link href={page.path} key={page.path} passHref>
