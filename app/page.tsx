@@ -5,6 +5,7 @@ import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import { ReactNode } from "react";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import Link from "next/link";
+import LogoColor from "@/components/common/icons/logo-color";
 
 const ShieldIcon = () => (
   <ShieldOutlinedIcon
@@ -101,7 +102,7 @@ export default function Home() {
           }}
           color="primary"
         />
-        EyeCPD
+        <LogoColor size={150} className="mx-auto" />
       </h1>
       <p className="mt-4 text-lg text-gray-500 text-center">
         Professional Development Platform for Eye Care

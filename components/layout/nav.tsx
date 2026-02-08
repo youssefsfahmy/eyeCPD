@@ -11,19 +11,19 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useRouter } from "next/navigation";
-import { Visibility } from "@mui/icons-material";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import SideNav from "./side-nav";
 import { navigationItems } from "./constants";
 import { useProfile } from "@/lib/context/profile-context";
+import LogoColor from "../common/icons/logo-color";
 
 function ResponsiveAppBar() {
   const router = useRouter();
   const { user, signOut } = useProfile();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
+    null,
   );
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,53 +55,17 @@ function ResponsiveAppBar() {
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Visibility
-            sx={{
-              color: "primary.main",
-              display: { xs: "none", md: "flex" },
-              mr: 1,
-            }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/opt"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              color: "primary.main",
-              textDecoration: "none",
-            }}
-          >
-            EyeCPD
-          </Typography>
+          <Link href="/opt" passHref>
+            <LogoColor size={50} className="mx-auto hidden md:block" />
+          </Link>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box
+            sx={{ flexGrow: { md: 1 }, display: { xs: "flex", md: "none" } }}
+          >
             <SideNav />
           </Box>
-          <Visibility
-            sx={{ color: "primary.main", display: { xs: "flex", md: "none" } }}
-          />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/opt"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            EyeCPD
-          </Typography>
+
+          <LogoColor size={50} className="mx-auto md:hidden" />
           <Box
             sx={{
               flexGrow: 1,
@@ -130,7 +94,7 @@ function ResponsiveAppBar() {
               );
             })}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, minWidth: "3rem" }}>
             <Tooltip title="Open settings">
               {user ? (
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

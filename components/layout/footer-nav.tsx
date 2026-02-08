@@ -1,14 +1,8 @@
 import React from "react";
 import { ThemeSwitcher } from "../theme-switcher";
-import {
-  Facebook,
-  Twitter,
-  LinkedIn,
-  Email,
-  Phone,
-  Visibility,
-} from "@mui/icons-material";
+import { Facebook, Twitter, LinkedIn, Email, Phone } from "@mui/icons-material";
 import { Typography, IconButton } from "@mui/material";
+import LogoColor from "../common/icons/logo-color";
 
 function FooterNav() {
   const quickLinks = [
@@ -35,14 +29,8 @@ function FooterNav() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Company Info */}
           <div>
-            <div className="flex items-center mb-4 space-x-2">
-              <Visibility className="w-6 h-6 text-blue-600" />
-              <Typography
-                variant="h6"
-                className="font-bold text-gray-900 dark:text-white"
-              >
-                EyeCPD{" "}
-              </Typography>
+            <div className="flex items-center md:items-start mb-4 space-x-2">
+              <LogoColor size={150} className="mx-auto" />
             </div>
             <Typography
               variant="body2"
