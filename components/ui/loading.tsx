@@ -21,7 +21,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const colorClasses = {
-    blue: "border-blue-500",
+    blue: "border-primary-500",
     indigo: "border-indigo-500",
     purple: "border-purple-500",
     green: "border-green-500",
@@ -49,7 +49,7 @@ export const LoadingDots: React.FC<LoadingDotsProps> = ({
   className = "",
 }) => {
   const colorClasses = {
-    blue: "bg-blue-500",
+    blue: "bg-primary-500",
     indigo: "bg-indigo-500",
     purple: "bg-purple-500",
     green: "bg-green-500",
@@ -82,7 +82,7 @@ export const LoadingPulse: React.FC<LoadingPulseProps> = ({
 }) => {
   return (
     <div className={`flex space-x-2 ${className}`}>
-      <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full animate-pulse"></div>
+      <div className="w-3 h-3 bg-gradient-to-r from-primary-400 to-primary-600 rounded-full animate-pulse"></div>
       <div
         className="w-3 h-3 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full animate-pulse"
         style={{ animationDelay: "0.2s" }}
@@ -103,7 +103,7 @@ export const LoadingAnimatedLogo: React.FC<{
       className={`h-full w-full min-h-[50vh] flex items-center justify-center ${className}`}
     >
       <div className="relative mb-8">
-        <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center animate-pulse">
+        <div className="w-20 h-20 mx-auto bg-gradient-to-r from-[#0d3b66] to-[#124a78] rounded-2xl shadow-xl flex items-center justify-center animate-pulse">
           <div className="text-white font-bold text-2xl">CPD</div>
         </div>
       </div>
@@ -137,7 +137,7 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
 
   if (variant === "medical") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-primary-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
           {/* Medical Cross Icon */}
           <div className="relative mb-8">
@@ -167,7 +167,7 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
           {showProgress && (
             <div className="max-w-xs mx-auto">
               <div className="bg-gray-200 rounded-full h-1">
-                <div className="bg-gradient-to-r from-green-400 to-blue-500 h-1 rounded-full animate-pulse"></div>
+                <div className="bg-gradient-to-r from-green-400 to-primary-500 h-1 rounded-full animate-pulse"></div>
               </div>
             </div>
           )}
@@ -178,11 +178,11 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
 
   // Default variant
   return (
-    <div className="h-full w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+    <div className="h-full w-full bg-gradient-to-br from-primary-50 via-white to-indigo-50 flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-6">
         {/* Animated Logo */}
         <div className="relative mb-8">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center animate-pulse">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-primary-600 to-indigo-600 rounded-2xl shadow-xl flex items-center justify-center animate-pulse">
             <div className="text-white font-bold text-2xl">CPD</div>
           </div>
         </div>
@@ -198,7 +198,7 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
           <div className="max-w-xs mx-auto mb-6">
             <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full animate-pulse"
+                className="bg-gradient-to-r from-primary-500 to-indigo-500 h-2 rounded-full animate-pulse"
                 style={{
                   animation: "loading-progress 2s infinite",
                 }}

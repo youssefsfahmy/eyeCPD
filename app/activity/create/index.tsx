@@ -18,7 +18,7 @@ export default async function CreateActivityPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "linear-gradient(to right, #2562ea, #1d4ed8)",
+          background: "linear-gradient(to right, #0d3b66, #124a78)",
           color: "white",
           p: 4,
           borderTopRightRadius: 8,
@@ -35,15 +35,16 @@ export default async function CreateActivityPage() {
           </Typography>
         </Box>
 
-        <Button
-          component={Link}
-          href="/activity/list"
-          variant="outlined"
-          color="inherit"
-          startIcon={<ArrowBack />}
-        >
-          Back to Activities
-        </Button>
+        <Link href="/activity/list" legacyBehavior passHref>
+          <Button
+            component="a"
+            variant="outlined"
+            color="inherit"
+            startIcon={<ArrowBack />}
+          >
+            Back to Activities
+          </Button>
+        </Link>
       </Box>
 
       <Card sx={{ mb: 3 }}>

@@ -38,7 +38,7 @@ export default async function ActivityListPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "linear-gradient(to right, #2562ea, #1d4ed8)",
+          background: "linear-gradient(to right, #0d3b66, #1f6fb2)",
           color: "white",
           p: 4,
           borderRadius: 2,
@@ -53,16 +53,17 @@ export default async function ActivityListPage() {
           </Typography>
         </Box>
 
-        <Button
-          component={Link}
-          href="/activity/create"
-          variant="outlined"
-          color="inherit"
-          startIcon={<Add />}
-          sx={{ minWidth: 150 }}
-        >
-          Add Activity
-        </Button>
+        <Link href="/activity/create" legacyBehavior passHref>
+          <Button
+            component="a"
+            variant="outlined"
+            color="inherit"
+            startIcon={<Add />}
+            sx={{ minWidth: 150 }}
+          >
+            Add Activity
+          </Button>
+        </Link>
       </Box>
       {/* Summary Section */}
       <ActivitySummary
@@ -104,14 +105,11 @@ export default async function ActivityListPage() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Start tracking your CPD by adding your first activity
           </Typography>
-          <Button
-            component={Link}
-            href="/activity/create"
-            variant="contained"
-            startIcon={<Add />}
-          >
-            Add Your First Activity
-          </Button>
+          <Link href="/activity/create" legacyBehavior passHref>
+            <Button component="a" variant="contained" startIcon={<Add />}>
+              Add Your First Activity
+            </Button>
+          </Link>
         </Box>
       ) : (
         <Box>

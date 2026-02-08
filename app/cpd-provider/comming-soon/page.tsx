@@ -211,21 +211,22 @@ export default function Page() {
                     Get Notified
                   </Button>
 
-                  <Button
-                    component={Link}
-                    href="/"
-                    variant="outlined"
-                    startIcon={<ArrowBack />}
-                    sx={{
-                      px: 4,
-                      py: 1.5,
-                      borderRadius: 2,
-                      textTransform: "none",
-                      fontSize: "1rem",
-                    }}
-                  >
-                    Back to Home
-                  </Button>
+                  <Link href="/" legacyBehavior passHref>
+                    <Button
+                      component="a"
+                      variant="outlined"
+                      startIcon={<ArrowBack />}
+                      sx={{
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 2,
+                        textTransform: "none",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      Back to Home
+                    </Button>
+                  </Link>
                 </Stack>
               </Stack>
             </CardContent>

@@ -25,7 +25,7 @@ const helpSections = [
   {
     title: "Getting Started",
     icon: RocketLaunchIcon,
-    color: "#2562ea", // primary.500
+    color: "#0d3b66", // primary.500
     faqs: [
       {
         question: "How do I create my first CPD activity?",
@@ -157,8 +157,8 @@ function Page() {
                 faq.question
                   .toLowerCase()
                   .includes(searchQuery.toLowerCase()) ||
-                faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-            )
+                faq.answer.toLowerCase().includes(searchQuery.toLowerCase()),
+            ),
         )
       : [];
 
@@ -176,7 +176,7 @@ function Page() {
     // Scroll to the accordion item
     setTimeout(() => {
       const element = document.getElementById(
-        `faq-${result.sectionIndex}-${result.faqIndex}`
+        `faq-${result.sectionIndex}-${result.faqIndex}`,
       );
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -189,7 +189,7 @@ function Page() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: "linear-gradient(to right, #2562ea, #1d4ed8)",
+          background: "linear-gradient(to right, #0d3b66, #1d4ed8)",
           color: "white",
           p: 4,
           borderTopRightRadius: 8,
@@ -393,7 +393,7 @@ function Page() {
               }}
               onClick={() => {
                 const element = document.getElementById(
-                  `section-${sectionIndex}`
+                  `section-${sectionIndex}`,
                 );
                 element?.scrollIntoView({ behavior: "smooth" });
               }}
@@ -469,7 +469,7 @@ function Page() {
                   }
                   onChange={handleSectionChange(
                     section.title,
-                    `panel-${sectionIndex}-${faqIndex}`
+                    `panel-${sectionIndex}-${faqIndex}`,
                   )}
                   sx={{
                     margin: "0 !important",

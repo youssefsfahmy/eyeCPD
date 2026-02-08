@@ -3,15 +3,13 @@ import { ThemeSwitcher } from "../theme-switcher";
 import { Facebook, Twitter, LinkedIn, Email, Phone } from "@mui/icons-material";
 import { Typography, IconButton } from "@mui/material";
 import LogoColor from "../common/icons/logo-color";
+import { navigationItems } from "./constants";
 
 function FooterNav() {
   const quickLinks = [
-    { name: "Services", href: "/services" },
-    { name: "Education", href: "/education" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
-    { name: "Privacy", href: "/privacy" },
-    { name: "Terms", href: "/terms" },
+    ...navigationItems,
+    { name: "Privacy", path: "/privacy" },
+    { name: "Terms", path: "/terms" },
   ];
 
   const socialLinks = [
@@ -56,7 +54,7 @@ function FooterNav() {
           <div>
             <Typography
               variant="h6"
-              className="mb-4 font-semibold text-gray-900 dark:text-white"
+              className="!mb-4 font-semibold text-gray-900 dark:text-white"
             >
               Quick Links
             </Typography>
@@ -64,8 +62,9 @@ function FooterNav() {
               {quickLinks.map((link, index) => (
                 <Typography
                   key={index}
-                  // href={link.href}
-                  className="text-sm text-gray-600 transition-colors duration-200 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  component="a"
+                  href={link.path}
+                  className="text-sm text-gray-600 transition-colors duration-200 dark:text-gray-300 hover:text-primary dark:hover:text-primary-400"
                 >
                   {link.name}
                 </Typography>
@@ -77,7 +76,7 @@ function FooterNav() {
           <div>
             <Typography
               variant="h6"
-              className="mb-4 font-semibold text-gray-900 dark:text-white"
+              className="!mb-4 font-semibold text-gray-900 dark:text-white"
             >
               Connect
             </Typography>
@@ -88,7 +87,7 @@ function FooterNav() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
                   size="small"
                 >
                   {social.icon}
@@ -113,7 +112,7 @@ function FooterNav() {
               <a
                 href="https://theblink.tech"
                 target="_blank"
-                className="font-medium hover:text-blue-600 dark:hover:text-blue-400"
+                className="font-medium hover:text-primary-600 dark:hover:text-primary-400"
                 rel="noreferrer"
               >
                 The Blink ;{`)`}

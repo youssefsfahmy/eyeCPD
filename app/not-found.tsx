@@ -124,25 +124,25 @@ export default function NotFoundPage() {
           >
             <Link
               href="/opt"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
             >
               Dashboard
             </Link>
             <Link
               href="/education"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
             >
               Education
             </Link>
             <Link
               href="/about"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
             >
               About Us
             </Link>
             <Link
               href="/contact"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
             >
               Contact
             </Link>
