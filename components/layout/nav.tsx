@@ -17,10 +17,11 @@ import SideNav from "./side-nav";
 import { navigationItems } from "./constants";
 import { useProfile } from "@/lib/context/profile-context";
 import LogoColor from "../common/icons/logo-color";
+import { UserRole } from "@/lib/db/schema";
 
 function ResponsiveAppBar() {
   const router = useRouter();
-  const { user, signOut } = useProfile();
+  const { user, signOut, profile } = useProfile();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -77,6 +78,8 @@ function ResponsiveAppBar() {
             {navigationItems.map((page) => {
               if (page.authRequired && !user) return null;
 
+              if (!page.roles.some((role) => profile?.roles.includes(role)))
+                return null;
               return (
                 <Link href={page.path} key={page.path} passHref>
                   <Button
@@ -84,7 +87,9 @@ function ResponsiveAppBar() {
                     sx={{
                       textAlign: "center",
                       my: 2,
-                      color: "text.primary",
+                      color: page.roles.includes(UserRole.ADMIN)
+                        ? "darkolivegreen"
+                        : "text.secondary",
                     }}
                     startIcon={page.icon}
                   >

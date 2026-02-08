@@ -140,7 +140,7 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
 
   // Admin Feedback Management
   "/admin/feedback": {
-    roles: [UserRole.ADMIN, UserRole.OPTOMETRIST],
+    roles: [UserRole.ADMIN],
     requiresActiveSubscription: false,
   },
 
