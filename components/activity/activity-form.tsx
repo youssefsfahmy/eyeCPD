@@ -33,6 +33,7 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
 import TagComboBox from "../common/tag-combo-box";
 import ProviderComboBox from "../common/provider-combo-box";
+import { customColors } from "@/lib/mui/theme";
 interface ActivityFormProps {
   activity?: ActivityWithTags;
   onSuccess?: () => void;
@@ -54,15 +55,15 @@ export default function ActivityForm({
   });
 
   const [activityTags, setActivityTags] = useState<Tag[]>(
-    activity?.activityToTags.map((at) => at.tag) || []
+    activity?.activityToTags.map((at) => at.tag) || [],
   );
   const [provider, setProvider] = useState<Provider | null>(
-    activity?.provider || null
+    activity?.provider || null,
   );
 
   const [isDraft, setIsDraft] = useState(activity?.isDraft ?? true);
   const [dateValue, setDateValue] = useState<Date | null>(
-    activity?.date ? new Date(activity.date) : null
+    activity?.date ? new Date(activity.date) : null,
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string>("");
@@ -88,7 +89,7 @@ export default function ActivityForm({
 
       if (!allowedTypes.includes(file.type)) {
         setFileError(
-          "Invalid file type. Only PDF, JPG, PNG, DOC, and DOCX files are allowed."
+          "Invalid file type. Only PDF, JPG, PNG, DOC, and DOCX files are allowed.",
         );
         return;
       }
@@ -309,8 +310,10 @@ export default function ActivityForm({
                 fontWeight: "bold",
               }}
             >
-              <LightbulbCircleOutlined sx={{ color: "#8730d1" }} /> Activity
-              Reflection
+              <LightbulbCircleOutlined
+                sx={{ color: customColors.interactive.main }}
+              />{" "}
+              Activity Reflection
             </Box>
             <Divider sx={{ mt: -1 }} />
             {/* Reflection */}
@@ -331,10 +334,10 @@ export default function ActivityForm({
                 flexDirection: "column",
                 p: 2,
                 border: 1,
-                borderColor: "#f3e8ff",
+                borderColor: customColors.interactive.light,
                 borderRadius: 1,
-                color: "#8730d1",
-                backgroundColor: "#f3e8ff80",
+                color: customColors.interactive.main,
+                backgroundColor: `${customColors.interactive.light}80`,
               }}
             >
               <Typography
@@ -342,7 +345,7 @@ export default function ActivityForm({
                 color="text.secondary"
                 gutterBottom
                 sx={{
-                  color: "#8730d1",
+                  color: customColors.interactive.main,
                 }}
               >
                 <TipsAndUpdatesOutlined /> Reflection guidelines
@@ -353,7 +356,7 @@ export default function ActivityForm({
                 color="text.secondary"
                 ml={3}
                 sx={{
-                  color: "#8730d1",
+                  color: customColors.interactive.main,
                 }}
               >
                 - Briefly summarize your key takeaways from this activity.
@@ -363,7 +366,7 @@ export default function ActivityForm({
                 color="text.secondary"
                 ml={3}
                 sx={{
-                  color: "#8730d1",
+                  color: customColors.interactive.main,
                 }}
               >
                 - Assess your progress against your learning goals.
@@ -373,7 +376,7 @@ export default function ActivityForm({
                 color="text.secondary"
                 ml={3}
                 sx={{
-                  color: "#8730d1",
+                  color: customColors.interactive.main,
                 }}
               >
                 - Describe how you will apply what you&apos;ve learned in your
@@ -384,7 +387,7 @@ export default function ActivityForm({
                 color="text.secondary"
                 ml={3}
                 sx={{
-                  color: "#8730d1",
+                  color: customColors.interactive.main,
                 }}
               >
                 - Describe how this activity will improve your patient care or
@@ -400,7 +403,10 @@ export default function ActivityForm({
                 fontWeight: "bold",
               }}
             >
-              <UploadFileOutlined sx={{ color: "#4da16d" }} /> Evidence
+              <UploadFileOutlined
+                sx={{ color: customColors.therapeutic.main }}
+              />{" "}
+              Evidence
             </Box>
             <Divider sx={{ mt: -1 }} />
 
@@ -571,10 +577,10 @@ export default function ActivityForm({
               {isUploading
                 ? uploadProgress || "Processing..."
                 : isEditing
-                ? "Save Changes"
-                : isDraft
-                ? "Save Draft"
-                : "Create Activity"}
+                  ? "Save Changes"
+                  : isDraft
+                    ? "Save Draft"
+                    : "Create Activity"}
             </Button>
             <Button
               variant="outlined"

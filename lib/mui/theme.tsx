@@ -32,6 +32,24 @@ const customColors = {
     900: "#064e3b",
     950: "#022c22",
   },
+  // CPD activity category colors
+  clinical: {
+    main: "#0d3b66", // same as primary
+    light: "#dbe9fe",
+  },
+  interactive: {
+    main: "#8730d1",
+    light: "#f3e8ff",
+  },
+  therapeutic: {
+    main: "#4da16d",
+    light: "#dcfce5",
+    disabled: "#f0f0f0",
+  },
+  nonClinical: {
+    main: "#c5773a",
+    light: "#fef3c6",
+  },
   success: {
     50: "#f0fdf4",
     100: "#dcfce7",

@@ -17,6 +17,7 @@ import {
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useProfile } from "@/lib/context/profile-context";
+import { customColors } from "@/lib/mui/theme";
 
 interface Props {
   categories: {
@@ -71,7 +72,7 @@ function ActivityCategories(props: Props) {
         setWarning(
           `Therapeutic ${
             type === "activity" ? "activities" : "goals"
-          } are not allowed for unendorsed optometrists.`
+          } are not allowed for unendorsed optometrists.`,
         );
         return;
       }
@@ -80,7 +81,7 @@ function ActivityCategories(props: Props) {
         setWarning(
           `${
             type === "activity" ? "Activities" : "Goals"
-          } cannot be both Clinical and Non-Clinical.`
+          } cannot be both Clinical and Non-Clinical.`,
         );
         return;
       }
@@ -88,7 +89,7 @@ function ActivityCategories(props: Props) {
         setWarning(
           `${
             type === "activity" ? "Activities" : "Goals"
-          } cannot be both Non-Clinical and Clinical.`
+          } cannot be both Non-Clinical and Clinical.`,
         );
         return;
       }
@@ -101,7 +102,7 @@ function ActivityCategories(props: Props) {
         setWarning(
           `Therapeutic ${
             type === "activity" ? "activities" : "goals"
-          } must also be Clinical.`
+          } must also be Clinical.`,
         );
         return;
       }
@@ -129,7 +130,9 @@ function ActivityCategories(props: Props) {
           p: 2,
           display: "flex",
           alignItems: "center",
-          backgroundColor: state ? "#dbe9fe" : "background.paper",
+          backgroundColor: state
+            ? customColors.clinical.light
+            : "background.paper",
         }}
         onClick={handleClick}
         role="button"
@@ -199,7 +202,7 @@ function ActivityCategories(props: Props) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: "#dbe9fe",
+                backgroundColor: customColors.clinical.light,
                 borderRadius: 100,
                 p: 1.5,
                 color: "primary.main",
@@ -219,10 +222,10 @@ function ActivityCategories(props: Props) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: "#f3e8ff",
+                backgroundColor: customColors.interactive.light,
                 borderRadius: 100,
                 p: 1.5,
-                color: "#8730d1",
+                color: customColors.interactive.main,
               }}
             >
               <PeopleAltOutlined />
@@ -240,11 +243,11 @@ function ActivityCategories(props: Props) {
                 display: "flex",
                 alignItems: "center",
                 backgroundColor: isTherapeuticallyEndorsed
-                  ? "#dcfce5"
-                  : "#f0f0f0",
+                  ? customColors.therapeutic.light
+                  : customColors.therapeutic.disabled,
                 borderRadius: 100,
                 p: 1.5,
-                color: "#4da16d",
+                color: customColors.therapeutic.main,
               }}
             >
               <MedicationLiquid />
@@ -261,10 +264,10 @@ function ActivityCategories(props: Props) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: "#fef3c6",
+                backgroundColor: customColors.nonClinical.light,
                 borderRadius: 100,
                 p: 1.5,
-                color: "#c5773a",
+                color: customColors.nonClinical.main,
               }}
             >
               <WorkOffOutlined />
