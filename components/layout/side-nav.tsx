@@ -25,8 +25,14 @@ import {
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { accountItems, navigationItems } from "./constants";
+import {
+  accountItems,
+  navigationItems,
+  adminNavigationItems,
+} from "./constants";
 import { useProfile } from "@/lib/context/profile-context";
+import { UserRole } from "@/lib/db/schema";
+import { usePathname } from "next/navigation";
 
 const drawerWidth = 280;
 
@@ -38,7 +44,12 @@ export default function SideNav({ children }: SideNavProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
-  const { user, signOut } = useProfile();
+  const { user, signOut, profile } = useProfile();
+  const pathname = usePathname();
+  const isAdminMode = pathname.startsWith("/admin");
+  const isAdmin = user && profile?.roles?.includes(UserRole.ADMIN);
+  const activeNavItems =
+    isAdminMode && isAdmin ? adminNavigationItems : navigationItems;
 
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -102,7 +113,7 @@ export default function SideNav({ children }: SideNavProps) {
       {/* Main Navigation */}
       <Box sx={{ flexGrow: 1, p: 2 }}>
         <List sx={{ p: 0 }}>
-          {navigationItems.map((item) => {
+          {activeNavItems.map((item) => {
             if (item.authRequired && !user) return null;
 
             return (
@@ -133,6 +144,23 @@ export default function SideNav({ children }: SideNavProps) {
             );
           })}
         </List>
+
+        {/* Mode Switch */}
+        {isAdmin && (
+          <Box sx={{ mt: 2 }}>
+            <Button
+              component={Link}
+              href={isAdminMode ? "/opt" : "/admin"}
+              variant="outlined"
+              color={isAdminMode ? "primary" : "success"}
+              fullWidth
+              onClick={closeDrawer}
+              sx={{ textTransform: "none" }}
+            >
+              {isAdminMode ? "Switch to Opt" : "Switch to Admin"}
+            </Button>
+          </Box>
+        )}
 
         {/* Account Section */}
         {user && (

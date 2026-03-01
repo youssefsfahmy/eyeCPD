@@ -14,14 +14,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@mui/material";
 import SideNav from "./side-nav";
-import { navigationItems } from "./constants";
+import { navigationItems, adminNavigationItems } from "./constants";
 import { useProfile } from "@/lib/context/profile-context";
 import LogoColor from "../common/icons/logo-color";
 import { UserRole } from "@/lib/db/schema";
+import { usePathname } from "next/navigation";
 
 function ResponsiveAppBar() {
   const router = useRouter();
   const { user, signOut, profile } = useProfile();
+  const pathname = usePathname();
+  const isAdminMode = pathname.startsWith("/admin");
+  const isAdmin = user && profile?.roles?.includes(UserRole.ADMIN);
+  const activeNavItems =
+    isAdminMode && isAdmin ? adminNavigationItems : navigationItems;
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -52,7 +58,8 @@ function ResponsiveAppBar() {
         color: "text.primary",
         width: "auto",
         borderRadius: 1,
-        boxShadow: 1,
+        boxShadow: isAdminMode ? "0px 2px 8px #16a34a79" : 1,
+        border: isAdminMode ? "1px solid #16a34a79" : "none",
       }}
     >
       <Container
@@ -81,7 +88,7 @@ function ResponsiveAppBar() {
               mx: 2,
             }}
           >
-            {navigationItems.map((page) => {
+            {activeNavItems.map((page) => {
               if (page.authRequired && !user) return null;
 
               if (
@@ -96,9 +103,7 @@ function ResponsiveAppBar() {
                     sx={{
                       textAlign: "center",
                       my: 2,
-                      color: page.roles.includes(UserRole.ADMIN)
-                        ? "darkolivegreen"
-                        : "text.secondary",
+                      color: "text.secondary",
                     }}
                     startIcon={page.icon}
                   >
@@ -107,6 +112,20 @@ function ResponsiveAppBar() {
                 </Link>
               );
             })}
+            {isAdmin && (
+              <Link href={isAdminMode ? "/opt" : "/admin"} passHref>
+                <Button
+                  variant="outlined"
+                  color={isAdminMode ? "primary" : "success"}
+                  sx={{
+                    textAlign: "center",
+                    my: 2,
+                  }}
+                >
+                  {isAdminMode ? "Opt" : "Admin"}
+                </Button>
+              </Link>
+            )}
           </Box>
           <Box sx={{ flexGrow: 0, minWidth: "3rem" }}>
             <Tooltip title="Open settings">
@@ -117,7 +136,7 @@ function ResponsiveAppBar() {
                     alt={user?.email || "User"}
                     // src="/static/images/avatar/2.jpg"
                     sx={{
-                      bgcolor: "primary.main",
+                      bgcolor: isAdminMode ? "success.main" : "primary.main",
                       color: "white",
                       width: 32,
                       height: 32,

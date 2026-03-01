@@ -1,6 +1,23 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "../drizzle";
-import { profiles, type Profile, type NewProfile } from "../schema";
+import {
+  profiles,
+  type Profile,
+  type NewProfile,
+  type Subscription,
+  type ActivityWithTags,
+  type GoalWithTags,
+} from "../schema";
+
+export type ProfileWithSubscription = Profile & {
+  subscription: Subscription | null;
+};
+
+export type AdminUserDetail = Profile & {
+  subscription: Subscription | null;
+  activityRecords: ActivityWithTags[];
+  goals: GoalWithTags[];
+};
 
 export class ProfileQueries {
   /**
@@ -84,6 +101,55 @@ export class ProfileQueries {
    */
   static async getAllProfiles(): Promise<Profile[]> {
     return await db.select().from(profiles);
+  }
+
+  /**
+   * Get all profiles with subscription info (admin function)
+   */
+  static async getAllProfilesWithSubscriptions(): Promise<
+    ProfileWithSubscription[]
+  > {
+    const result = await db.query.profiles.findMany({
+      with: {
+        subscription: true,
+      },
+      orderBy: (p, { desc }) => [desc(p.createdAt)],
+    });
+
+    return result;
+  }
+
+  /**
+   * Get full user detail by userId for admin view
+   */
+  static async getAdminUserDetail(
+    userId: string,
+  ): Promise<AdminUserDetail | null> {
+    const result = await db.query.profiles.findFirst({
+      where: eq(profiles.userId, userId),
+      with: {
+        subscription: true,
+        activityRecords: {
+          with: {
+            activityToTags: {
+              with: { tag: true },
+            },
+            provider: true,
+          },
+          orderBy: (a, { desc }) => [desc(a.date), desc(a.createdAt)],
+        },
+        goals: {
+          with: {
+            goalsToTags: {
+              with: { tag: true },
+            },
+          },
+          orderBy: (g, { desc }) => [desc(g.year), desc(g.createdAt)],
+        },
+      },
+    });
+
+    return result || null;
   }
 
   /**

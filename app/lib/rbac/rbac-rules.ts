@@ -144,6 +144,12 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  // Admin User Management
+  "/admin/users/*": {
+    roles: [UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   "/help": {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
     requiresActiveSubscription: false,

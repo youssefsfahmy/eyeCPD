@@ -7,8 +7,9 @@ import {
   ListAlt,
   TrackChanges,
   HelpOutline,
+  People,
   ChatBubble,
-  ManageAccounts,
+  AdminPanelSettings,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -55,10 +56,20 @@ export const navigationItems = [
     authRequired: false,
     roles: [UserRole.OPTOMETRIST],
   },
+];
+
+export const adminNavigationItems = [
   {
-    name: "Admin",
+    name: "Admin Home",
     path: "/admin",
-    icon: <ManageAccounts />,
+    icon: <AdminPanelSettings />,
+    authRequired: true,
+    roles: [UserRole.ADMIN],
+  },
+  {
+    name: "Users",
+    path: "/admin/users/list",
+    icon: <People />,
     authRequired: true,
     roles: [UserRole.ADMIN],
   },
@@ -69,13 +80,6 @@ export const navigationItems = [
     authRequired: true,
     roles: [UserRole.ADMIN],
   },
-
-  // {
-  //   name: "Pricing",
-  //   path: "/pricing",
-  //   icon: <AttachMoney />,
-  //   authRequired: false,
-  // },
 ];
 
 export const accountItems = [
