@@ -10,6 +10,8 @@ import {
   People,
   Feedback as FeedbackIcon,
   AdminPanelSettings,
+  Business,
+  Label,
 } from "@mui/icons-material";
 import Link from "next/link";
 
@@ -22,7 +24,7 @@ export default async function Page() {
           Admin Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Manage users, monitor subscriptions, and review feedback.
+          Manage users, providers, tags, and review feedback.
         </Typography>
       </Box>
 
@@ -58,6 +60,44 @@ export default async function Page() {
                   <Typography variant="body2" color="text.secondary">
                     Review and manage user feedback submitted from across the
                     platform.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Link>
+
+        <Link href="/admin/providers" style={{ textDecoration: "none" }}>
+          <Card>
+            <CardActionArea>
+              <CardContent
+                sx={{ display: "flex", alignItems: "center", gap: 3, p: 3 }}
+              >
+                <Business sx={{ fontSize: 48, color: "primary.main" }} />
+                <Box>
+                  <Typography variant="h6">Providers</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Create and manage global CPD providers available to all
+                    users.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Link>
+
+        <Link href="/admin/tags" style={{ textDecoration: "none" }}>
+          <Card>
+            <CardActionArea>
+              <CardContent
+                sx={{ display: "flex", alignItems: "center", gap: 3, p: 3 }}
+              >
+                <Label sx={{ fontSize: 48, color: "primary.main" }} />
+                <Box>
+                  <Typography variant="h6">Tags</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Create and manage global tags for categorising activities
+                    and learning goals.
                   </Typography>
                 </Box>
               </CardContent>

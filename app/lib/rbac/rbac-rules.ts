@@ -150,6 +150,18 @@ export const defaultRouteAuthConfig: RouteAuthConfig = {
     requiresActiveSubscription: false,
   },
 
+  // Admin Provider Management
+  "/admin/providers": {
+    roles: [UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
+  // Admin Tag Management
+  "/admin/tags": {
+    roles: [UserRole.ADMIN],
+    requiresActiveSubscription: false,
+  },
+
   "/help": {
     roles: [UserRole.OPTOMETRIST, UserRole.ADMIN],
     requiresActiveSubscription: false,

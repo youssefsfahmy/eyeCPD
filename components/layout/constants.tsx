@@ -10,6 +10,8 @@ import {
   People,
   ChatBubble,
   AdminPanelSettings,
+  Business,
+  Label,
 } from "@mui/icons-material";
 import { Search } from "lucide-react";
 
@@ -77,6 +79,20 @@ export const adminNavigationItems = [
     name: "Feedback",
     path: "/admin/feedback",
     icon: <ChatBubble />,
+    authRequired: true,
+    roles: [UserRole.ADMIN],
+  },
+  {
+    name: "Providers",
+    path: "/admin/providers",
+    icon: <Business />,
+    authRequired: true,
+    roles: [UserRole.ADMIN],
+  },
+  {
+    name: "Tags",
+    path: "/admin/tags",
+    icon: <Label />,
     authRequired: true,
     roles: [UserRole.ADMIN],
   },

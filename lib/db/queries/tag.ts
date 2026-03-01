@@ -25,4 +25,18 @@ export class TagQueries {
     const result = await db.insert(tags).values(tagData).returning();
     return result[0];
   }
+
+  /**
+   * Get all global tags (where userId is null) - admin function
+   */
+  static async getGlobalTags(): Promise<Tag[]> {
+    return await db.select().from(tags).where(isNull(tags.userId));
+  }
+
+  /**
+   * Get all tags (admin function)
+   */
+  static async getAllTags(): Promise<Tag[]> {
+    return await db.select().from(tags);
+  }
 }
