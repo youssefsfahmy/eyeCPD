@@ -3,10 +3,14 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { ProfileQueries } from "@/lib/db/queries/profile";
 import { User, type EmailOtpType } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { type NextRequest } from "next/server";
 
-const verifyProfileCreation = async (user: User, role = "optometrist") => {
+const verifyProfileCreation = async (
+  user: User,
+  role = "optometrist",
+): Promise<boolean> => {
   const profile = await ProfileQueries.getProfileByUserId(user.id);
   if (!profile) {
     await ProfileQueries.createProfile({
@@ -18,7 +22,9 @@ const verifyProfileCreation = async (user: User, role = "optometrist") => {
       roles: [role],
       isTherapeuticallyEndorsed: false,
     });
+    return true;
   }
+  return false;
 };
 
 export async function GET(request: NextRequest) {
@@ -38,7 +44,8 @@ export async function GET(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      await verifyProfileCreation(user!);
+      const isNewUser = await verifyProfileCreation(user!);
+      if (isNewUser) revalidatePath("/admin/users/list");
 
       // redirect user to protected area after successful OAuth
       redirect(next);
@@ -59,7 +66,8 @@ export async function GET(request: NextRequest) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      await verifyProfileCreation(user!);
+      const isNewUser = await verifyProfileCreation(user!);
+      if (isNewUser) revalidatePath("/admin/users/list");
       redirect(next);
     } else {
       // redirect the user to an error page with some instructions

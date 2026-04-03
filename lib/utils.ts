@@ -1,6 +1,46 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { CPDCycle } from "./types/generic";
+import { Profile, UserRole } from "./db/schema";
+import { User } from "@supabase/supabase-js";
+
+export interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ReactNode;
+  authRequired: boolean;
+  roles: string[];
+}
+
+export function getVisibleNavItems(
+  items: NavItem[],
+  user: User | null | undefined,
+  profile: Profile | null | undefined,
+): NavItem[] {
+  return items.filter((item) => {
+    if (item.authRequired && !user) return false;
+    if (
+      item.authRequired &&
+      !item.roles.some((role) => profile?.roles.includes(role))
+    )
+      return false;
+    return true;
+  });
+}
+
+export function getActiveNavItems(
+  pathname: string,
+  user: User | null | undefined,
+  profile: Profile | null | undefined,
+  navigationItems: NavItem[],
+  adminNavigationItems: NavItem[],
+): NavItem[] {
+  const isAdminMode = pathname.startsWith("/admin");
+  const isAdmin = !!user && !!profile?.roles?.includes(UserRole.ADMIN);
+  const rawItems =
+    isAdminMode && isAdmin ? adminNavigationItems : navigationItems;
+  return getVisibleNavItems(rawItems, user, profile);
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

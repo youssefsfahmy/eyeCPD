@@ -19,6 +19,7 @@ import { useProfile } from "@/lib/context/profile-context";
 import LogoColor from "../common/icons/logo-color";
 import { UserRole } from "@/lib/db/schema";
 import { usePathname } from "next/navigation";
+import { getActiveNavItems } from "@/lib/utils";
 
 function ResponsiveAppBar() {
   const router = useRouter();
@@ -26,8 +27,13 @@ function ResponsiveAppBar() {
   const pathname = usePathname();
   const isAdminMode = pathname.startsWith("/admin");
   const isAdmin = user && profile?.roles?.includes(UserRole.ADMIN);
-  const activeNavItems =
-    isAdminMode && isAdmin ? adminNavigationItems : navigationItems;
+  const activeNavItems = getActiveNavItems(
+    pathname,
+    user,
+    profile,
+    navigationItems,
+    adminNavigationItems,
+  );
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
@@ -89,13 +95,6 @@ function ResponsiveAppBar() {
             }}
           >
             {activeNavItems.map((page) => {
-              if (page.authRequired && !user) return null;
-
-              if (
-                page.authRequired &&
-                !page.roles.some((role) => profile?.roles.includes(role))
-              )
-                return null;
               return (
                 <Link href={page.path} key={page.path} passHref>
                   <Button

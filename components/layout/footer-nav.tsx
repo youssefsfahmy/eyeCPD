@@ -1,13 +1,26 @@
+"use client";
 import React from "react";
 import { ThemeSwitcher } from "../theme-switcher";
-import { Facebook, Twitter, LinkedIn, Email, Phone } from "@mui/icons-material";
+import { Facebook, Twitter, LinkedIn, Email } from "@mui/icons-material";
 import { Typography, IconButton } from "@mui/material";
 import LogoColor from "../common/icons/logo-color";
-import { navigationItems } from "./constants";
+import { navigationItems, adminNavigationItems } from "./constants";
+import { useProfile } from "@/lib/context/profile-context";
+import { getActiveNavItems } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 function FooterNav() {
+  const { user, profile } = useProfile();
+  const pathname = usePathname();
+  const visibleNavItems = getActiveNavItems(
+    pathname,
+    user,
+    profile,
+    navigationItems,
+    adminNavigationItems,
+  );
   const quickLinks = [
-    ...navigationItems,
+    ...visibleNavItems,
     { name: "Privacy", path: "/privacy" },
     { name: "Terms", path: "/terms" },
   ];
@@ -39,14 +52,17 @@ function FooterNav() {
 
             {/* Contact */}
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+              <a
+                href="mailto:support@eyecpd.com.au"
+                className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
+              >
                 <Email className="w-4 h-4" />
-                <span>info@cpdoptometry.com</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+                <span>support@eyecpd.com.au</span>
+              </a>
+              {/* <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                 <Phone className="w-4 h-4" />
                 <span>+1 (555) 123-4567</span>
-              </div>
+              </div> */}
             </div>
           </div>
 
