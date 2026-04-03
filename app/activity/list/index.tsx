@@ -1,11 +1,9 @@
-import { Typography, Box, Button, Alert, Divider } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import Link from "next/link";
+import { Box, Alert, Divider } from "@mui/material";
 import { getActivitiesServerAction } from "../actions";
 import { ProfileQueries } from "@/lib/db/queries/profile";
 import { createClient } from "@/app/lib/supabase/server";
-import ActivityCard from "./components/activity-card";
 import ActivitySummary from "./components/activity-summary";
+import ActivityListClient from "./components/activity-list-client";
 import ActionBar from "@/components/layout/action-bar";
 import { CycleDraftProps } from "@/app/lib/types";
 
@@ -53,53 +51,8 @@ export default async function ActivityListPage({
         isTherapeuticallyEndorsed={profile?.isTherapeuticallyEndorsed || false}
       />
       <Divider sx={{ my: 3 }} />
-      {/* Activities List */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6">
-          Recent Activities ({activities.length})
-        </Typography>
-        {activities.some((activity) => activity.isDraft) && (
-          <Typography variant="caption" color="text.secondary">
-            Including {activities.filter((activity) => activity.isDraft).length}{" "}
-            draft(s)
-          </Typography>
-        )}
-      </Box>
-      {activities.length === 0 ? (
-        <Box
-          sx={{
-            textAlign: "center",
-            py: 8,
-            backgroundColor: "grey.50",
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No activities recorded yet
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Start tracking your CPD by adding your first activity
-          </Typography>
-          <Link href="/activity/create" legacyBehavior passHref>
-            <Button component="a" variant="contained" startIcon={<Add />}>
-              Add Your First Activity
-            </Button>
-          </Link>
-        </Box>
-      ) : (
-        <Box>
-          {activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
-        </Box>
-      )}
+      {/* Activities List with filtering and sorting */}
+      <ActivityListClient activities={activities} />
     </Box>
   );
 }

@@ -1,16 +1,8 @@
-import {
-  Box,
-  Typography,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  Collapse,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Paper, Collapse, Button } from "@mui/material";
 import { ExpandMore, ExpandLess, Lightbulb } from "@mui/icons-material";
 import { Dispatch, SetStateAction, useState } from "react";
 import ActivityCategories from "@/components/categories/activity-categories";
+import InspirationCarousel from "./InspirationCarousel";
 
 interface CategoryStepProps {
   categories: {
@@ -112,36 +104,52 @@ export default function CategoryStep({
       </Paper>
 
       <Paper
-        sx={{ p: 2, backgroundColor: "info.light", color: "info.contrastText" }}
+        elevation={0}
+        sx={{
+          p: 2.5,
+          backgroundColor: "info.main",
+          borderRadius: 2,
+        }}
       >
         <Button
           onClick={() => setShowInspiration(!showInspiration)}
           startIcon={<Lightbulb />}
           endIcon={showInspiration ? <ExpandLess /> : <ExpandMore />}
-          sx={{ mb: showInspiration ? 2 : 0, color: "info.contrastText" }}
+          sx={{
+            mb: showInspiration ? 1.5 : 0,
+            color: "white",
+            fontWeight: 600,
+            textTransform: "none",
+            fontSize: "0.95rem",
+            px: 0,
+            "&:hover": { backgroundColor: "transparent", opacity: 0.85 },
+          }}
         >
           Need inspiration?
         </Button>
 
         <Collapse in={showInspiration}>
-          <Typography variant="subtitle2" gutterBottom>
-            {getSelectedCategories().length > 0
-              ? `Ideas for ${getSelectedCategories().join(", ")} goals:`
-              : "Goal ideas across all categories:"}
-          </Typography>
-
-          <List dense>
-            {getFilteredInspiration()
-              .slice(0, 8)
-              .map((idea, index) => (
-                <ListItem key={index} sx={{ py: 0.5 }}>
-                  <ListItemText
-                    primary={idea}
-                    primaryTypographyProps={{ variant: "body2" }}
-                  />
-                </ListItem>
-              ))}
-          </List>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                color: "rgba(255,255,255,0.75)",
+                display: "block",
+                mb: 1,
+                width: "30%",
+              }}
+            >
+              {getSelectedCategories().length > 0
+                ? `Ideas for ${getSelectedCategories().join(", ")} goals:`
+                : "Goal ideas across all categories:"}
+            </Typography>
+            <InspirationCarousel ideas={getFilteredInspiration()} />
+          </div>
         </Collapse>
       </Paper>
     </Box>
