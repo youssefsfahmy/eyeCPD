@@ -13,13 +13,14 @@ export default function EmailVerificationStep({ email }: { email?: string }) {
         We&apos;ve sent a verification email to <strong>{email}</strong>
       </Typography>
 
-      <Alert severity="info" className="mb-4">
-        <Typography variant="body2">
-          <strong>
-            Please check your email and click the verification link.
-          </strong>
-          <br />
-          If you don&apos;t see the email, check your spam folder.
+      <Alert severity="info" icon={false} className="mb-4">
+        <Typography variant="body2" fontWeight={600} gutterBottom>
+          Please check your email and click the verification link.
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Don&apos;t see it? Check your spam folder. If you still can&apos;t
+          find it, the email may already be in use — try signing in or using a
+          different address.
         </Typography>
       </Alert>
 
