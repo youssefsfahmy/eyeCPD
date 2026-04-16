@@ -66,7 +66,7 @@ export default function NotFoundPage() {
             lineHeight: 1.6,
           }}
         >
-          Sorry, we couldnt find the page you`&apos;`re looking for. The page
+          Sorry, we couldnt find the page you&apos;re looking for. The page
           might have been moved, deleted, or you may have entered the wrong URL.
         </Typography>
 

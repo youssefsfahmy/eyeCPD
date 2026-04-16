@@ -13,6 +13,7 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -27,6 +28,7 @@ import {
   CheckCircle,
   Cancel,
   AdminPanelSettings,
+  FileDownload,
 } from "@mui/icons-material";
 import Link from "next/link";
 import type { ProfileWithSubscription } from "@/lib/db/queries/profile";
@@ -41,10 +43,14 @@ export default function UserListView({ users }: UserListViewProps) {
   const filteredUsers = users.filter((user) => {
     const query = searchQuery.toLowerCase();
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-    const email = user.registrationNumber?.toLowerCase() || "";
+    const email = user.email?.toLowerCase() || "";
+    const regNum = user.registrationNumber?.toLowerCase() || "";
     const roles = user.roles?.join(" ").toLowerCase() || "";
     return (
-      fullName.includes(query) || email.includes(query) || roles.includes(query)
+      fullName.includes(query) ||
+      email.includes(query) ||
+      regNum.includes(query) ||
+      roles.includes(query)
     );
   });
 
@@ -112,6 +118,41 @@ export default function UserListView({ users }: UserListViewProps) {
     });
   };
 
+  const handleExport = () => {
+    const headers = [
+      "Name",
+      "Email",
+      "Registration #",
+      "Roles",
+      "Subscription",
+      "Plan",
+      "Therapeutically Endorsed",
+      "Joined",
+    ];
+    const rows = filteredUsers.map((user) => [
+      `${user.firstName} ${user.lastName}`,
+      user.email || "",
+      user.registrationNumber || "",
+      user.roles?.join(", ") || "",
+      user.subscription?.status || "No Subscription",
+      user.subscription?.planName || "",
+      user.isTherapeuticallyEndorsed ? "Yes" : "No",
+      formatDate(user.createdAt),
+    ]);
+    const csvContent = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `users-export-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Box>
       {/* Header */}
@@ -171,12 +212,14 @@ export default function UserListView({ users }: UserListViewProps) {
         </Paper>
       </Stack>
 
-      {/* Search */}
+      {/* Search & Export */}
       <Card sx={{ mb: 3 }}>
-        <CardContent sx={{ py: 2 }}>
+        <CardContent
+          sx={{ py: 2, display: "flex", gap: 2, alignItems: "center" }}
+        >
           <TextField
             fullWidth
-            placeholder="Search by name, registration number, or role..."
+            placeholder="Search by name, email, registration number, or role..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             size="small"
@@ -188,6 +231,14 @@ export default function UserListView({ users }: UserListViewProps) {
               ),
             }}
           />
+          <Button
+            variant="outlined"
+            startIcon={<FileDownload />}
+            onClick={handleExport}
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            Export CSV
+          </Button>
         </CardContent>
       </Card>
 
@@ -197,6 +248,7 @@ export default function UserListView({ users }: UserListViewProps) {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
               <TableCell>Registration #</TableCell>
               <TableCell>Roles</TableCell>
               <TableCell>Subscription</TableCell>
@@ -209,7 +261,7 @@ export default function UserListView({ users }: UserListViewProps) {
           <TableBody>
             {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
                   <Typography variant="body1" color="text.secondary">
                     {searchQuery
                       ? "No users match your search"
@@ -227,6 +279,11 @@ export default function UserListView({ users }: UserListViewProps) {
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
                       {user.firstName} {user.lastName}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {user.email || "—"}
                     </Typography>
                   </TableCell>
                   <TableCell>

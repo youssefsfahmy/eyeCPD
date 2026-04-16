@@ -31,6 +31,7 @@ export const profiles = pgTable("profiles", {
   firstName: varchar("first_name", { length: 100 }).notNull(),
   lastName: varchar("last_name", { length: 100 }).notNull(),
   phone: varchar("phone", { length: 20 }),
+  email: varchar("email", { length: 255 }),
   registrationNumber: varchar("registration_number", { length: 50 }),
   roles: text("roles").array().notNull().default(["optometrist"]),
   createdAt: timestamp("created_at").notNull().defaultNow(),

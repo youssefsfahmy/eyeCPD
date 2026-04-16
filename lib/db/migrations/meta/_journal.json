@@ -113,6 +113,13 @@
       "when": 1770561943939,
       "tag": "0015_wild_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1776337227748,
+      "tag": "0016_clammy_ikaris",
+      "breakpoints": true
     }
   ]
 }
