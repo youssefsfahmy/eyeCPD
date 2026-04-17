@@ -13,8 +13,8 @@ import {
   MedicationLiquid,
   PeopleAltOutlined,
   WorkOffOutlined,
+  DescriptionOutlined as DescriptionOutlinedIcon,
 } from "@mui/icons-material";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useProfile } from "@/lib/context/profile-context";
 import { customColors } from "@/lib/mui/theme";

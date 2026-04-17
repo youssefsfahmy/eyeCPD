@@ -6,8 +6,7 @@ import { ClientThemeProvider } from "@/components/providers/client-theme-provide
 import { ProfileProvider } from "@/lib/context/profile-context";
 import Nav from "@/components/layout/nav";
 import FooterNav from "@/components/layout/footer-nav";
-import FeedbackButton from "@/components/feedback/feedback-button";
-import { Box } from "@mui/material";
+import LazyFeedbackButton from "@/components/feedback/lazy-feedback-button";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -33,6 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+        )}
+      </head>
       <body
         className={`${geistSans.className} antialiased `}
         // style={{ backgroundColor: "#eff6ff" }}
@@ -41,9 +45,11 @@ export default function RootLayout({
         <ClientThemeProvider>
           <ProfileProvider>
             <Nav />
-            <Box mx={{ xs: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>{children}</Box>
+            <div className="mx-2 sm:mx-3 md:mx-4 lg:mx-5 xl:mx-6">
+              {children}
+            </div>
             <FooterNav />
-            <FeedbackButton />
+            <LazyFeedbackButton />
           </ProfileProvider>
         </ClientThemeProvider>
       </body>

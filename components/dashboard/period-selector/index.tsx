@@ -10,8 +10,8 @@ import {
   Chip,
   FormControlLabel,
   Switch,
+  SelectChangeEvent,
 } from "@mui/material";
-import { SelectChangeEvent } from "@mui/material/Select";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { CPDCycle } from "@/lib/types/generic";

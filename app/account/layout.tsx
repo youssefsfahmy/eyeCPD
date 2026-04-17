@@ -1,10 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Tabs, Tab, Typography, Box } from "@mui/material";
 import { Person, Settings } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 
@@ -26,10 +23,10 @@ export default function AccountPageLayout({
     path.includes("profile")
       ? 0
       : path.includes("subscriptions")
-      ? 1
-      : path.includes("preferences")
-      ? 2
-      : 0
+        ? 1
+        : path.includes("preferences")
+          ? 2
+          : 0,
   );
 
   const isMobile =

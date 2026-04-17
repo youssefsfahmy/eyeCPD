@@ -1,7 +1,9 @@
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
-import PostAddIcon from "@mui/icons-material/PostAdd";
+import {
+  PeopleOutline as PeopleOutlineIcon,
+  PostAdd as PostAddIcon,
+  ShieldOutlined as ShieldOutlinedIcon,
+} from "@mui/icons-material";
 import { Button, Card } from "@mui/material";
-import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import { ReactNode } from "react";
 import Link from "next/link";
 import LogoColor from "@/components/common/icons/logo-color";

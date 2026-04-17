@@ -1,11 +1,14 @@
 "use client";
 
 import { TextField, Divider, Button, Box, Alert } from "@mui/material";
-import { Save, Cancel } from "@mui/icons-material";
+import {
+  Save,
+  Cancel,
+  DescriptionOutlined as DescriptionOutlinedIcon,
+} from "@mui/icons-material";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { GoalWithTags, Tag } from "@/lib/db/schema";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
 import TagComboBox from "../common/tag-combo-box";
 
@@ -25,7 +28,7 @@ export default function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
   });
 
   const [goalTags, setGoalTags] = useState<Tag[]>(
-    goal?.goalsToTags?.map((gt) => gt.tag) || []
+    goal?.goalsToTags?.map((gt) => gt.tag) || [],
   );
 
   const [formSuccess, setFormSuccess] = useState(false);

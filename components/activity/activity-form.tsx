@@ -22,6 +22,7 @@ import {
   UploadFileOutlined,
   DeleteOutlined,
   AttachFileOutlined,
+  DescriptionOutlined as DescriptionOutlinedIcon,
 } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -29,7 +30,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ActivityWithTags, Provider, Tag } from "@/lib/db/schema";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ActivityCategories from "../categories/activity-categories";
 import TagComboBox from "../common/tag-combo-box";
 import ProviderComboBox from "../common/provider-combo-box";
