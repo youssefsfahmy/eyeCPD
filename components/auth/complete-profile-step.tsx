@@ -34,6 +34,7 @@ export default function CompleteProfileStep() {
     registrationNumber: "",
     roles: ["optometrist"],
     userId: "",
+    email: "",
     isTherapeuticallyEndorsed: false,
   });
   const [isLoading, setIsLoading] = useState(false);
