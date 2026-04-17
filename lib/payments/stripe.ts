@@ -6,7 +6,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2026-03-25.dahlia",
   typescript: true,
 });
 
@@ -20,18 +20,18 @@ export interface StripeSubscriptionWithPeriods extends Stripe.Subscription {
  * Handle subscription changes from Stripe webhooks
  */
 export async function handleSubscriptionChange(
-  subscription: Stripe.Subscription
+  subscription: Stripe.Subscription,
 ) {
   try {
     // Find existing subscription by Stripe subscription ID
     const existingSubscription =
       await SubscriptionQueries.getSubscriptionByStripeSubscriptionId(
-        subscription.id
+        subscription.id,
       );
 
     if (!existingSubscription) {
       console.error(
-        `No subscription found for Stripe subscription ID: ${subscription.id}`
+        `No subscription found for Stripe subscription ID: ${subscription.id}`,
       );
       return;
     }
@@ -44,10 +44,10 @@ export async function handleSubscriptionChange(
       await SubscriptionQueries.updateSubscriptionByStripeId(subscription.id, {
         status: subscription.status,
         currentPeriodStart: new Date(
-          subscriptionWithPeriods.current_period_start * 1000
+          subscriptionWithPeriods.current_period_start * 1000,
         ),
         currentPeriodEnd: new Date(
-          subscriptionWithPeriods.current_period_end * 1000
+          subscriptionWithPeriods.current_period_end * 1000,
         ),
         cancelAtPeriodEnd: subscription.cancel_at
           ? new Date(subscription.cancel_at * 1000)
@@ -56,7 +56,7 @@ export async function handleSubscriptionChange(
 
     console.log(
       `Updated subscription for user: ${existingSubscription.userId}`,
-      updatedSubscription
+      updatedSubscription,
     );
   } catch (error) {
     console.error("Error handling subscription change:", error);
