@@ -127,7 +127,10 @@ export default function GoalListPage({ fetchedGoals }: GoalListPageProps) {
             }}
           >
             <Typography variant="h6">Goal Setting Guidance</Typography>
-            <IconButton onClick={() => setShowGuidance(!showGuidance)}>
+            <IconButton
+              onClick={() => setShowGuidance(!showGuidance)}
+              aria-label={showGuidance ? "Hide guidance" : "Show guidance"}
+            >
               {showGuidance ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Box>
@@ -331,6 +334,7 @@ export default function GoalListPage({ fetchedGoals }: GoalListPageProps) {
                       component={Link}
                       href={`/goal/${goal.id}/edit`}
                       size="small"
+                      aria-label="Edit goal"
                     >
                       <Edit />
                     </IconButton>
@@ -338,6 +342,7 @@ export default function GoalListPage({ fetchedGoals }: GoalListPageProps) {
                       onClick={() => handleDeleteGoal(goal.id)}
                       size="small"
                       color="error"
+                      aria-label="Delete goal"
                     >
                       <Delete />
                     </IconButton>

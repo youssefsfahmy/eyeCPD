@@ -218,7 +218,7 @@ export default function RecentActivities({
                         <IconButton
                           component="a"
                           size="small"
-                          //   onClick={(e) => e.stopPropagation()}
+                          aria-label="View activity details"
                           sx={{ color: "text.secondary" }}
                         >
                           <Visibility fontSize="small" />
@@ -234,7 +234,7 @@ export default function RecentActivities({
                         <IconButton
                           component="a"
                           size="small"
-                          //   onClick={(e) => e.stopPropagation()}
+                          aria-label="Edit activity"
                           sx={{ color: "text.secondary" }}
                         >
                           <Edit fontSize="small" />

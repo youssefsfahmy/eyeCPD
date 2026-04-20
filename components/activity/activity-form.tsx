@@ -514,6 +514,7 @@ export default function ActivityForm({
                             size="small"
                             onClick={removeFile}
                             color="error"
+                            aria-label="Delete file"
                           >
                             <DeleteOutlined fontSize="small" />
                           </IconButton>

@@ -240,7 +240,11 @@ export default function AdminTagsClient({
               Created by individual users for their own use
             </Typography>
           </Box>
-          <IconButton>
+          <IconButton
+            aria-label={
+              showUserTags ? "Hide user-created tags" : "Show user-created tags"
+            }
+          >
             {showUserTags ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </Box>

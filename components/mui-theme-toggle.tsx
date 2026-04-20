@@ -9,7 +9,7 @@ export function MuiThemeToggle() {
 
   if (!mounted) {
     return (
-      <IconButton size="small" disabled>
+      <IconButton size="small" disabled aria-label="Toggle theme">
         <Brightness7 />
       </IconButton>
     );
@@ -17,7 +17,12 @@ export function MuiThemeToggle() {
 
   return (
     <Tooltip title={`Switch to ${isDark ? "light" : "dark"} mode`}>
-      <IconButton onClick={toggleTheme} color="inherit" size="small">
+      <IconButton
+        onClick={toggleTheme}
+        color="inherit"
+        size="small"
+        aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      >
         {isDark ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
     </Tooltip>

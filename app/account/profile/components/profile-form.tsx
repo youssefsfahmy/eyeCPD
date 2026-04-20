@@ -163,7 +163,10 @@ export default function ProfileForm({
             arrow
             placement="right"
           >
-            <IconButton size="small">
+            <IconButton
+              size="small"
+              aria-label="More information about therapeutic endorsement"
+            >
               <InfoOutlined fontSize="small" />
             </IconButton>
           </Tooltip>

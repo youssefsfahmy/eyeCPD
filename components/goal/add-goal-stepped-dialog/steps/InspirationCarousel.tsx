@@ -80,6 +80,7 @@ export default function InspirationCarousel({
         onClick={handlePrev}
         size="small"
         sx={{ color: "white", p: 0.5 }}
+        aria-label="Previous inspiration"
       >
         <KeyboardArrowUp />
       </IconButton>
@@ -117,6 +118,7 @@ export default function InspirationCarousel({
 
       <IconButton
         onClick={handleNext}
+        aria-label="Next inspiration"
         size="small"
         sx={{ color: "white", p: 0.5 }}
       >

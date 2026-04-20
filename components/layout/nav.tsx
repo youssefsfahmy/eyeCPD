@@ -129,9 +129,14 @@ function ResponsiveAppBar() {
             )}
           </Box>
           <Box sx={{ flexGrow: 0, minWidth: "3rem" }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Open account menu">
               {user ? (
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  sx={{ p: 0 }}
+                  aria-label="Open account menu"
+                  aria-haspopup="menu"
+                >
                   {/* first letter of user email */}
                   <Avatar
                     alt={user?.email || "User"}

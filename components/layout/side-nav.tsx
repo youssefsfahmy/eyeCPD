@@ -105,6 +105,7 @@ export default function SideNav({ children }: SideNavProps) {
           onClick={closeDrawer}
           size="small"
           sx={{ color: "text.primary" }}
+          aria-label="Close navigation menu"
         >
           <CloseIcon />
         </IconButton>

@@ -97,18 +97,26 @@ function FooterNav() {
               Connect
             </Typography>
             <div className="flex items-center mb-4 space-x-3">
-              {socialLinks.map((social, index) => (
-                <IconButton
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-                  size="small"
-                >
-                  {social.icon}
-                </IconButton>
-              ))}
+              {socialLinks.map((social, index) => {
+                const labels = [
+                  "Visit us on Facebook",
+                  "Visit us on Twitter",
+                  "Visit us on LinkedIn",
+                ];
+                return (
+                  <IconButton
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
+                    size="small"
+                    aria-label={labels[index]}
+                  >
+                    {social.icon}
+                  </IconButton>
+                );
+              })}
             </div>
             <ThemeSwitcher />
           </div>

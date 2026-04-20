@@ -505,6 +505,7 @@ export default function AdminUserDetailView({
                             href={activity.evidenceFileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label="View evidence file"
                           >
                             <AttachFile fontSize="small" color="primary" />
                           </IconButton>

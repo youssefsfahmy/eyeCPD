@@ -298,6 +298,7 @@ export default function AdminProvidersClient({
                           setDialogOpen(true);
                           setError(null);
                         }}
+                        aria-label="Edit provider"
                       >
                         <Edit fontSize="small" />
                       </IconButton>
@@ -330,7 +331,13 @@ export default function AdminProvidersClient({
               Created by individual users for their own use
             </Typography>
           </Box>
-          <IconButton>
+          <IconButton
+            aria-label={
+              showUserProviders
+                ? "Hide user-created providers"
+                : "Show user-created providers"
+            }
+          >
             {showUserProviders ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </Box>

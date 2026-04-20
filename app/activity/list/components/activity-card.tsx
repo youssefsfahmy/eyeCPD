@@ -101,7 +101,11 @@ export default function ActivityCard({
           <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
             {activity.evidenceFileUrl && (
               <Tooltip title="Has evidence file">
-                <IconButton size="small" color="primary">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  aria-label="Has evidence file attached"
+                >
                   <AttachFile fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -109,7 +113,11 @@ export default function ActivityCard({
 
             <Tooltip title="View activity details">
               <Link href={`/activity/${activity.id}`}>
-                <IconButton size="small" color="primary">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  aria-label="View activity details"
+                >
                   <Visibility fontSize="small" />
                 </IconButton>
               </Link>
@@ -117,7 +125,11 @@ export default function ActivityCard({
 
             <Tooltip title="Edit activity">
               <Link href={`/activity/${activity.id}/edit`}>
-                <IconButton size="small" color="primary">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  aria-label="Edit activity"
+                >
                   <Edit fontSize="small" />
                 </IconButton>
               </Link>
@@ -129,6 +141,7 @@ export default function ActivityCard({
                 color="error"
                 onClick={handleDelete}
                 disabled={isPending}
+                aria-label="Delete activity"
               >
                 <DeleteOutline fontSize="small" />
               </IconButton>
@@ -148,10 +161,10 @@ export default function ActivityCard({
                 type === "Clinical"
                   ? "primary"
                   : type === "Therapeutic"
-                  ? "secondary"
-                  : type === "Interactive"
-                  ? "success"
-                  : "default"
+                    ? "secondary"
+                    : type === "Interactive"
+                      ? "success"
+                      : "default"
               }
             />
           ))}

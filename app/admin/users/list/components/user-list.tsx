@@ -313,7 +313,11 @@ export default function UserListView({ users }: UserListViewProps) {
                   <TableCell align="right">
                     <Tooltip title="View user details">
                       <Link href={`/admin/users/${user.userId}`}>
-                        <IconButton size="small" color="primary">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          aria-label="View user details"
+                        >
                           <Visibility fontSize="small" />
                         </IconButton>
                       </Link>
