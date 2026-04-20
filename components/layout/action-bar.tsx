@@ -1,3 +1,5 @@
+"use client";
+
 import { Add, ArrowBack } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
@@ -83,24 +85,23 @@ export default function ActionBar(props: Props) {
               {secondaryButton.text}
             </Button>
           ) : (
-            <Link href={secondaryButton.href} legacyBehavior passHref>
-              <Button
-                component="a"
-                variant="outlined"
-                color="inherit"
-                startIcon={
-                  secondaryButton.icon
-                    ? iconMap[secondaryButton.icon]
-                    : undefined
-                }
-                sx={{
-                  minWidth: "9rem",
-                  marginTop: "2px",
-                }}
-              >
-                {secondaryButton.text}
-              </Button>
-            </Link>
+            <Button
+              component={Link}
+              href={secondaryButton.href}
+              variant="outlined"
+              color="inherit"
+              startIcon={
+                secondaryButton.icon
+                  ? iconMap[secondaryButton.icon]
+                  : undefined
+              }
+              sx={{
+                minWidth: "9rem",
+                marginTop: "2px",
+              }}
+            >
+              {secondaryButton.text}
+            </Button>
           ))}
         {button.onClick ? (
           <Button
@@ -116,20 +117,19 @@ export default function ActionBar(props: Props) {
             {button.text}
           </Button>
         ) : (
-          <Link href={button.href} legacyBehavior passHref>
-            <Button
-              component="a"
-              variant="outlined"
-              color="inherit"
-              startIcon={button.icon ? iconMap[button.icon] : undefined}
-              sx={{
-                minWidth: "9rem",
-                marginTop: "2px",
-              }}
-            >
-              {button.text}
-            </Button>
-          </Link>
+          <Button
+            component={Link}
+            href={button.href}
+            variant="outlined"
+            color="inherit"
+            startIcon={button.icon ? iconMap[button.icon] : undefined}
+            sx={{
+              minWidth: "9rem",
+              marginTop: "2px",
+            }}
+          >
+            {button.text}
+          </Button>
         )}
         {periodSelector && (
           <PeriodSelector mode={mode} draftSelector={draftSelector} />

@@ -7,7 +7,7 @@ export default function Page() {
       <div className="my-6 w-full max-w-md text-center ">
         <LogoColor size={150} className="mx-auto" />
 
-        <p className="mt-4 text-lg text-gray-500 mb-10">
+        <p className="mt-4 text-lg text-gray-700 mb-10">
           Login to your account to access all EyeCPD features
         </p>
 

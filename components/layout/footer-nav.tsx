@@ -109,7 +109,7 @@ function FooterNav() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
+                    className="text-gray-600 hover:text-primary-700 dark:text-gray-300 dark:hover:text-primary-300"
                     size="small"
                     aria-label={labels[index]}
                   >
@@ -127,16 +127,16 @@ function FooterNav() {
           <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
             <Typography
               variant="body2"
-              className="text-gray-500 dark:text-gray-400"
+              className="text-gray-600 dark:text-gray-300"
             >
               © {currentYear} CPD Optometry. All rights reserved.
             </Typography>
-            <Typography variant="body2" className="text-xs text-gray-400">
+            <Typography variant="body2" className="text-xs text-gray-600">
               Powered by{" "}
               <a
                 href="https://theblink.tech"
                 target="_blank"
-                className="font-medium hover:text-primary-600 dark:hover:text-primary-400"
+                className="font-semibold text-gray-800 underline decoration-2 underline-offset-2 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 dark:text-gray-200 dark:hover:text-primary-300"
                 rel="noreferrer"
               >
                 The Blink ;{`)`}

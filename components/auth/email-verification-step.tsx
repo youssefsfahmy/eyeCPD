@@ -26,7 +26,7 @@ export default function EmailVerificationStep({ email }: { email?: string }) {
 
       <Typography
         variant="caption"
-        className="block mt-4 text-center text-gray-500"
+        className="block mt-4 text-center text-gray-600"
       >
         After clicking the verification link in your email, you can proceed to
         the next step.

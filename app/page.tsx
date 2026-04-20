@@ -97,7 +97,7 @@ export default function Home() {
       <h1 className="mt-10 text-4xl font-bold text-center">
         <LogoColor size={150} className="mx-auto" />
       </h1>
-      <p className="mt-4 text-lg text-gray-500 text-center">
+      <p className="mt-4 text-lg text-gray-700 text-center">
         Professional Development Platform for Eye Care
       </p>
       <div className="flex flex-col md:flex-row justify-center w-full gap-10 mt-10">
@@ -134,15 +134,21 @@ export default function Home() {
           secondaryHref="/cpd-provider/comming-soon"
         />
       </div>
-      <div className="mt-10 text-sm text-gray-500">
+      <div className="mt-10 text-sm text-gray-700">
         By continuing, you agree to our{" "}
-        <a href="/terms" className="text-primary-600 hover:underline">
+        <Link
+          href="/terms"
+          className="font-medium text-primary-800 underline decoration-2 underline-offset-2 hover:text-primary-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
+        >
           Terms of Service
-        </a>{" "}
+        </Link>{" "}
         and{" "}
-        <a href="/privacy" className="text-primary-600 hover:underline">
+        <Link
+          href="/privacy"
+          className="font-medium text-primary-800 underline decoration-2 underline-offset-2 hover:text-primary-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
+        >
           Privacy Policy
-        </a>
+        </Link>
         .
       </div>
     </main>
