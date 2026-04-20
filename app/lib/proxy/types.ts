@@ -5,6 +5,8 @@ import { SubscriptionStatus, UserRole } from "@/lib/db/schema";
 export interface SessionMiddlewareResult {
   response: NextResponse;
   user: User | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabaseClient: any | null;
 }
 export interface SupabaseClaimsResult {
   sub: string;

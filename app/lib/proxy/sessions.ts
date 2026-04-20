@@ -12,7 +12,7 @@ export async function sessionMiddleware(
 
   // If the env vars are not set, skip middleware check. You can remove this once you setup the project.
   if (!hasEnvVars) {
-    return { response: supabaseResponse, user: null };
+    return { response: supabaseResponse, user: null, supabaseClient: null };
   }
 
   const supabase = createServerClient(
@@ -66,7 +66,7 @@ export async function sessionMiddleware(
     );
     const url = request.nextUrl.clone();
     url.pathname = "/";
-    return { response: NextResponse.redirect(url), user };
+    return { response: NextResponse.redirect(url), user, supabaseClient: supabase };
   }
 
   if (
@@ -83,7 +83,7 @@ export async function sessionMiddleware(
     );
 
     url.pathname = "/opt";
-    return { response: NextResponse.redirect(url), user };
+    return { response: NextResponse.redirect(url), user, supabaseClient: supabase };
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
@@ -98,5 +98,5 @@ export async function sessionMiddleware(
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
-  return { response: supabaseResponse, user };
+  return { response: supabaseResponse, user, supabaseClient: supabase };
 }

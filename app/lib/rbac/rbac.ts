@@ -1,5 +1,5 @@
 import { defaultRouteAuthConfig } from "./rbac-rules";
-import { SupabaseClaimsResult } from "../supabase/middlewares/types";
+import { SupabaseClaimsResult } from "../proxy/types";
 import { UserRole, SubscriptionStatus } from "@/lib/db/schema";
 
 // Define the structure for authorization rules

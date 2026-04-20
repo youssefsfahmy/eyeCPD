@@ -1,14 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "../server";
 import type { User } from "@supabase/supabase-js";
 import { SupabaseClaimsResult } from "./types";
-import { RoleBasedAccessControl } from "../../rbac/rbac";
+import { RoleBasedAccessControl } from "../rbac/rbac";
 
 // specify which endpints are authorized to which roles and which subscription types
 
 export async function authorizeMiddleware(
   request: NextRequest,
-  user: User | null
+  user: User | null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabaseClient: any,
 ) {
   const supabaseResponse = NextResponse.next({
     request,
@@ -19,9 +20,7 @@ export async function authorizeMiddleware(
     return supabaseResponse;
   }
 
-  const supabase = await createClient();
-
-  const res = await supabase.auth.getClaims();
+  const res = await supabaseClient.auth.getClaims();
   const claims: SupabaseClaimsResult | undefined = res.data
     ?.claims as unknown as SupabaseClaimsResult;
 
@@ -41,13 +40,13 @@ export async function authorizeMiddleware(
       "to URL:",
       request.nextUrl.pathname,
       "Reason:",
-      authResult.reason
+      authResult.reason,
     );
 
     // If there's a redirect URL, return a redirect response
     if (authResult.redirectUrl) {
       return NextResponse.redirect(
-        new URL(authResult.redirectUrl, request.url)
+        new URL(authResult.redirectUrl, request.url),
       );
     }
 
@@ -61,7 +60,7 @@ export async function authorizeMiddleware(
         reason: authResult.reason,
         redirectUrl: authResult.redirectUrl,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 

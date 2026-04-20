@@ -4,10 +4,9 @@ import { NextRequest } from "next/server";
 import type { SessionMiddlewareResult } from "./types";
 
 export async function combinedMiddleware(request: NextRequest) {
-  const sessionResult: SessionMiddlewareResult = await sessionMiddleware(
-    request
-  );
-  const { response, user } = sessionResult;
+  const sessionResult: SessionMiddlewareResult =
+    await sessionMiddleware(request);
+  const { response, user, supabaseClient } = sessionResult;
 
   // check if the response is of type redirect or error or unauthorized
   if (
@@ -21,6 +20,10 @@ export async function combinedMiddleware(request: NextRequest) {
     return response;
   }
 
-  const authorizeResponse = await authorizeMiddleware(request, user);
+  const authorizeResponse = await authorizeMiddleware(
+    request,
+    user,
+    supabaseClient,
+  );
   return authorizeResponse;
 }
