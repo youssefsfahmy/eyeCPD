@@ -117,6 +117,11 @@ export default function ActivityForm({
     setFormError("");
     setFormSuccess(false);
 
+    // Scroll to top after state updates so the progress alert is visible
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
+
     const formData = new FormData(event.currentTarget);
     formData.append("activityTags", JSON.stringify(activityTags));
     formData.append("providerId", JSON.stringify(provider?.id));
