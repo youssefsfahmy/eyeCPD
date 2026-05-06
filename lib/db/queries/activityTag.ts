@@ -10,15 +10,16 @@ export class ActivityTagQueries {
 
   static async linkTagsToActivity(
     activityId: number,
-    tags: Tag[]
+    tags: Tag[],
   ): Promise<void> {
+    if (tags.length === 0) return;
     await db
       .insert(activityToTags)
       .values(
         tags.map((tag) => ({
           activityRecordId: activityId,
           tagId: tag.id!,
-        }))
+        })),
       )
       .onConflictDoNothing() // Avoid duplicate entries
       .execute();
