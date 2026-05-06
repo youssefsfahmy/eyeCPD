@@ -1,4 +1,6 @@
 import { FeedbackQueries } from "@/lib/db/queries/feedback";
+
+export const dynamic = "force-dynamic";
 import {
   Box,
   Container,
@@ -138,7 +140,7 @@ export default async function Page() {
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
-                        }
+                        },
                       )}
                     </Typography>
                   </Box>
