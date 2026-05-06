@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -46,23 +46,25 @@ export async function POST(request: NextRequest) {
       evidenceFileUrl: null, // Will be set after file upload
       tags: tags,
       isDraft: formData.get("isDraft") === "true",
-      providerId: formData.get("providerId")
-        ? parseInt(formData.get("providerId") as string)
-        : null,
+      providerId:
+        formData.get("providerId") &&
+        !isNaN(parseInt(formData.get("providerId") as string))
+          ? parseInt(formData.get("providerId") as string)
+          : null,
     };
 
     // Validation
     if (!activityData.name.trim()) {
       return NextResponse.json(
         { success: false, error: "Activity name is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!activityData.date) {
       return NextResponse.json(
         { success: false, error: "Activity date is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -70,21 +72,21 @@ export async function POST(request: NextRequest) {
     if (isNaN(hours) || hours <= 0) {
       return NextResponse.json(
         { success: false, error: "Valid hours are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!activityData.description.trim()) {
       return NextResponse.json(
         { success: false, error: "Description is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!activityData.reflection.trim()) {
       return NextResponse.json(
         { success: false, error: "Reflection is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -100,7 +102,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "At least one activity type must be selected",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
         // Use the new SupabaseStorage method for cleaner file handling
         const uploadResult = await SupabaseStorage.uploadActivityFile(
           file,
-          newActivity.id
+          newActivity.id,
         );
 
         fileUrl = uploadResult.url;
@@ -136,7 +138,7 @@ export async function POST(request: NextRequest) {
                 ? fileError.message
                 : "Failed to upload file",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
     }
@@ -144,7 +146,7 @@ export async function POST(request: NextRequest) {
     // Step 3: Associate tags with the activity
     if (formData.get("activityTags")) {
       const activityTags = JSON.parse(
-        formData.get("activityTags") as string
+        formData.get("activityTags") as string,
       ) as Tag[];
 
       await addTagsToActivity(newActivity.id, activityTags, user.id);
@@ -155,7 +157,7 @@ export async function POST(request: NextRequest) {
     // Return success response with the created activity
     const activityResponse = await ActivityQueries.getActivityById(
       newActivity.id,
-      user.id
+      user.id,
     );
 
     return NextResponse.json({
@@ -167,7 +169,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating activity:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

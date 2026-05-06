@@ -15,20 +15,20 @@ export class ActivityQueries {
     userId: string,
     startDate?: Date,
     endDate?: Date,
-    includeDraft?: boolean
+    includeDraft?: boolean,
   ): Promise<ActivityWithTags[]> {
     // Build where conditions dynamically
     const conditions = [eq(activityRecords.userId, userId)];
 
     if (startDate) {
       conditions.push(
-        gte(activityRecords.date, startDate.toISOString().split("T")[0])
+        gte(activityRecords.date, startDate.toISOString().split("T")[0]),
       );
     }
 
     if (endDate) {
       conditions.push(
-        lte(activityRecords.date, endDate.toISOString().split("T")[0])
+        lte(activityRecords.date, endDate.toISOString().split("T")[0]),
       );
     }
     if (!includeDraft) {
@@ -55,7 +55,7 @@ export class ActivityQueries {
   static async getPublishedActivitiesByUserId(
     userId: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<ActivityRecord[]> {
     // Build where conditions dynamically
     const conditions = [
@@ -65,13 +65,13 @@ export class ActivityQueries {
 
     if (startDate) {
       conditions.push(
-        gte(activityRecords.date, startDate.toISOString().split("T")[0])
+        gte(activityRecords.date, startDate.toISOString().split("T")[0]),
       );
     }
 
     if (endDate) {
       conditions.push(
-        lte(activityRecords.date, endDate.toISOString().split("T")[0])
+        lte(activityRecords.date, endDate.toISOString().split("T")[0]),
       );
     }
 
@@ -89,7 +89,7 @@ export class ActivityQueries {
    */
   static async getActivityById(
     id: number,
-    userId: string
+    userId: string,
   ): Promise<ActivityWithTags | null> {
     const row = await db.query.activityRecords.findFirst({
       where: (ar, { and, eq }) => and(eq(ar.id, id), eq(ar.userId, userId)),
@@ -108,7 +108,7 @@ export class ActivityQueries {
    * Create a new activity record
    */
   static async createActivity(
-    activityData: NewActivityRecord
+    activityData: NewActivityRecord,
   ): Promise<ActivityRecord> {
     const result = await db
       .insert(activityRecords)
@@ -123,7 +123,7 @@ export class ActivityQueries {
   static async updateActivity(
     id: number,
     userId: string,
-    activityData: Partial<Omit<ActivityRecord, "id" | "userId" | "createdAt">>
+    activityData: Partial<Omit<ActivityRecord, "id" | "userId" | "createdAt">>,
   ): Promise<ActivityRecord | null> {
     const result = await db
       .update(activityRecords)
@@ -166,7 +166,7 @@ export class ActivityQueries {
   static async getActivityStats(
     userId: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<{
     totalHours: number;
     clinicalHours: number;
@@ -178,7 +178,7 @@ export class ActivityQueries {
     const activities = await this.getPublishedActivitiesByUserId(
       userId,
       startDate,
-      endDate
+      endDate,
     );
 
     const stats = activities.reduce(
@@ -201,7 +201,7 @@ export class ActivityQueries {
         interactiveHours: 0,
         therapeuticHours: 0,
         totalActivities: 0,
-      }
+      },
     );
 
     return stats;
